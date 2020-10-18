@@ -15,6 +15,11 @@ buildscript {
     ext.hiltViewModelVersion = '1.0.0-alpha02'
     ext.fragmentVersion = '1.2.5'
     ext.navigationVersion = '2.3.1'
+    ext.coreTestingVersion = '2.1.0'
+    ext.espressoVersion = '3.3.0'
+    ext.testExtJunit = '1.1.2'
+    ext.uiAutomatorVersion = '2.2.0'
+    ext.junitVersion = '4.13.1'
 
     repositories {
         google()
