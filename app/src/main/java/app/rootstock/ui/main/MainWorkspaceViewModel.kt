@@ -10,11 +10,7 @@ import kotlinx.coroutines.launch
 class MainWorkspaceViewModel @ViewModelInject constructor(private val repository: UserRepository) :
     ViewModel() {
 
-    fun addUser() {
-        viewModelScope.launch {
-            repository.insertUser(User())
-        }
-    }
-
     val user = repository.getUser()
+
+    fun isSignedIn() = false
 }

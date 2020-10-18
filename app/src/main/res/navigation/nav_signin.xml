@@ -2,11 +2,11 @@
 
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:startDestination="@id/workspace_fragment">
+    app:startDestination="@id/signin_fragment">
 
     <fragment
-        android:id="@+id/workspace_fragment"
-        android:name="app.rootstock.ui.workspace.WorkspaceFragment">
+        android:id="@+id/signin_fragment"
+        android:name="app.rootstock.ui.signin.SignUpFragment">
 
     </fragment>
 
