@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 /**
- * User class
+ * User class for local room database
  */
 @Entity
 class User(
@@ -14,3 +14,6 @@ class User(
     val userId: Int? = null,
 )
 
+class UserSignedUp(
+
+)

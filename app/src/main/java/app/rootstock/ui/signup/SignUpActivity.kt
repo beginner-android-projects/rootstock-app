@@ -1,4 +1,4 @@
-package app.rootstock.ui.signin
+package app.rootstock.ui.signup
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity

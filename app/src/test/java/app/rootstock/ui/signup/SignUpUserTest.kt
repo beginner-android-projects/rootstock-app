@@ -1,10 +1,10 @@
-package app.rootstock.ui.signin
+package app.rootstock.ui.signup
 
 import org.junit.Test
 
-class SignInUserTest {
+class SignUpUserTest {
 
-    private val user = SignInUser()
+    private val user = SignUpUser()
 
     private val emailMap = hashSetOf(
         "123" to false,
