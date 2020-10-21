@@ -3,4 +3,8 @@
     <string name="sign_up">Sign up</string>
     <string name="enter_password">Enter password</string>
     <string name="enter_your_email">Enter your email</string>
+    <string name="repeat_password">Repeat password</string>
+    <string name="invalid_email">User with this email already exists</string>
+    <string name="invalid_data">Invalid data</string>
+    <string name="signup_failed">Unable to register. Check your connection</string>
 </resources>

@@ -1,4 +1,9 @@
-//package app.rootstock.api
+package app.rootstock.api
+
+import retrofit2.Response
+import retrofit2.http.Body
+import retrofit2.http.POST
+
 //
 //
 //
@@ -30,3 +35,10 @@
 //
 //
 //}
+data class UserSignUpModel(val email: String, val password: String)
+
+interface UserSignUpService {
+    @POST("/users/create")
+    suspend fun createUser(@Body userSignUp: UserSignUpModel): Response<String>
+
+}

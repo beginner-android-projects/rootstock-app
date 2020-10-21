@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/signin_fragment"
-        android:name="app.rootstock.ui.signin.SignUpFragment">
+        android:name="app.rootstock.ui.signup.SignUpFragment">
 
     </fragment>
 
