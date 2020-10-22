@@ -10,10 +10,10 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:usesCleartextTraffic="true"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Rootstock">
-        <activity android:name=".ui.main.MainWorkspaceActivity">
+        android:theme="@style/Theme.Rootstock"
+        android:usesCleartextTraffic="true">
+        <activity android:name=".ui.launch.LauncherActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -21,7 +21,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.signup.SignUpActivity"/>
+        <activity android:name=".ui.signup.SignUpActivity" />
+        <activity android:name=".ui.main.WorkspaceActivity" />
     </application>
 
 </manifest>

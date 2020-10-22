@@ -68,9 +68,6 @@ class LiveDataCallAdapter<R>(private val responseType: Type) :
                             response.body()?.let {
                                 postValue(Resource.success(data = it))
                             }
-                            Log.d("123", "body")
-                            Log.d("123", response.body().toString())
-                            Log.d("123", response.code().toString())
                         }
 
                         override fun onFailure(call: Call<R>, throwable: Throwable) {

@@ -1,9 +1,11 @@
 package app.rootstock.ui.signup
 
-import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations.map
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import app.rootstock.data.result.Event
 import app.rootstock.data.user.UserRepository
 import kotlinx.coroutines.launch
@@ -25,30 +27,38 @@ class SignUpViewModel @ViewModelInject constructor(
         signUpStatus.value?.peekContent() == EventUserSignUp.LOADING
     }
 
+
     init {
         user.value = SignUpUser.build()
     }
 
     fun signUp() {
+        // return if loading
+        if (_signUpStatus.value?.peekContent() == EventUserSignUp.LOADING) return
+
         user.value?.let {
-            if (!it.isDataValid()) {
-                _signUpStatus.value = Event(EventUserSignUp.INVALID_DATA)
-                return
-            }
 
             _signUpStatus.value = Event(EventUserSignUp.LOADING)
 
-            viewModelScope.launch {
-                val response = runCatching {
-                    registerRepository.register(it)
-                }
+            registerUser(it)
+        }
+    }
 
-                response.getOrNull() ?: let {
-                    _signUpStatus.postValue(Event(EventUserSignUp.SUCCESS))
+    private fun registerUser(user: SignUpUser) {
+        viewModelScope.launch {
+            val response = runCatching {
+                registerRepository.register(user)
+            }
+            response.getOrNull()?.let { res ->
+                if (res.isSuccessful) {
+                    res.body()?.let { userResponse ->
+                        userRepository.insertUser(userResponse)
+                        _signUpStatus.postValue(Event(EventUserSignUp.SUCCESS))
+                    }
                     return@launch
                 }
 
-                when (response.getOrNull()?.code()) {
+                when (res.code()) {
                     400 -> _signUpStatus.postValue(Event(EventUserSignUp.USER_EXISTS))
                     422 -> _signUpStatus.postValue(Event(EventUserSignUp.INVALID_DATA))
                     else -> _signUpStatus.postValue(Event(EventUserSignUp.FAILED))

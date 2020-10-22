@@ -35,6 +35,8 @@
                 android:background="@drawable/edit_text_border"
                 android:hint="@string/enter_your_email"
                 android:inputType="textEmailAddress"
+                android:maxLength="40"
+                android:maxLines="1"
                 android:text="@={viewmodel.user.email}" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -57,6 +59,8 @@
                 android:background="@drawable/edit_text_border"
                 android:hint="@string/enter_password"
                 android:inputType="textPassword"
+                android:maxLength="32"
+                android:maxLines="1"
                 android:text="@={viewmodel.user.password}" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -78,6 +82,8 @@
                 android:background="@drawable/edit_text_border"
                 android:hint="@string/repeat_password"
                 android:inputType="textPassword"
+                android:maxLength="32"
+                android:maxLines="1"
                 android:text="@={viewmodel.user.passwordRepeat}" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -86,6 +92,7 @@
             android:id="@+id/materialButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:enabled="@{viewmodel.user.allValid}"
             android:onClick="@{()->viewmodel.signUp()}"
             android:text="@string/sign_up"
             app:layout_constraintBottom_toBottomOf="parent"

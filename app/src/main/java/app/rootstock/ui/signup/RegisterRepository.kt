@@ -2,6 +2,7 @@ package app.rootstock.ui.signup
 
 import app.rootstock.api.UserSignUpModel
 import app.rootstock.api.UserSignUpService
+import app.rootstock.data.user.User
 import retrofit2.Response
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -27,7 +28,7 @@ import javax.inject.Singleton
 
 class SignUpLoader @Inject constructor(private val signUpService: UserSignUpService) {
 
-    suspend fun register(user: SignUpUser): Response<String> {
+    suspend fun register(user: SignUpUser): Response<User> {
         return signUpService.createUser(UserSignUpModel(user.email, user.password))
     }
 
@@ -38,7 +39,7 @@ class RegisterRepository @Inject constructor(
     private val signUpLoader: SignUpLoader
 ) {
 
-    suspend fun register(signUpUser: SignUpUser): Response<String> {
+    suspend fun register(signUpUser: SignUpUser): Response<User> {
         return signUpLoader.register(signUpUser)
     }
 }

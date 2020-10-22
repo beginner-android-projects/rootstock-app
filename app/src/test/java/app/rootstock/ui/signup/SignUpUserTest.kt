@@ -50,4 +50,5 @@ class SignUpUserTest {
             assert(user.isPasswordValid() == valid)
         }
     }
+
 }

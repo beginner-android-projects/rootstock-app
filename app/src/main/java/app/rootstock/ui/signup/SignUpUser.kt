@@ -42,11 +42,21 @@ class SignUpUser :
 
 
     @Bindable
+    var allValid: Boolean = false
+        set(value) {
+            field = value
+            notifyPropertyChanged(BR.allValid)
+        }
+        get() = isDataValid()
+
+
+    @Bindable
     var email: String = String()
         set(value) {
             field = value
             checkEmail()
             notifyPropertyChanged(BR.email)
+            notifyPropertyChanged(BR.allValid)
         }
         get() = field
 
@@ -56,6 +66,7 @@ class SignUpUser :
             field = value
             checkPassword()
             notifyPropertyChanged(BR.password)
+            notifyPropertyChanged(BR.allValid)
         }
         get() = field
 
@@ -65,6 +76,7 @@ class SignUpUser :
             field = value
             checkPasswordRepeat()
             notifyPropertyChanged(BR.passwordRepeat)
+            notifyPropertyChanged(BR.allValid)
         }
         get() = field
 
@@ -95,5 +107,5 @@ class SignUpUser :
     fun isPasswordRepeatValid(): Boolean =
         password == passwordRepeat
 
-    fun isDataValid() = isEmailValid() && isPasswordValid() && isPasswordRepeatValid()
+    private fun isDataValid() = isEmailValid() && isPasswordValid() && isPasswordRepeatValid()
 }

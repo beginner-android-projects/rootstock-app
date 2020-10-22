@@ -1,5 +1,6 @@
 package app.rootstock.ui.signup
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import app.rootstock.R
 import app.rootstock.databinding.FragmentSignupBinding
+import app.rootstock.ui.main.WorkspaceActivity
 import app.rootstock.utils.makeToast
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -41,20 +43,26 @@ class SignUpFragment : Fragment() {
     private fun setObservers() {
         viewModel.signUpStatus.observe(viewLifecycleOwner) {
             when (it.peekContent()) {
-                EventUserSignUp.SUCCESS -> makeToast("success", true)
+                EventUserSignUp.SUCCESS -> startMainWorkspaceActivity()
                 EventUserSignUp.USER_EXISTS -> makeToast(
                     getString(R.string.invalid_email),
                     long = true
                 )
-                EventUserSignUp.INVALID_DATA -> makeToast(getString(R.string.invalid_data), true)
+                EventUserSignUp.INVALID_DATA -> makeToast(getString(R.string.invalid_data), false)
                 EventUserSignUp.FAILED -> makeToast(
                     getString(R.string.signup_failed),
-                    true
+                    false
                 )
-                else -> {
+                EventUserSignUp.LOADING -> {
                 }
             }
         }
+    }
+
+    private fun startMainWorkspaceActivity() {
+        val intent = Intent(requireContext(), WorkspaceActivity::class.java)
+        startActivity(intent)
+        requireActivity().finishAfterTransition()
     }
 }
 

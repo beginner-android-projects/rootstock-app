@@ -11,7 +11,7 @@ import app.rootstock.utils.DATABASE_NAME
 /**
  * The Room database for this app
  */
-@Database(entities = [User::class], version = 1, exportSchema = false)
+@Database(entities = [User::class], version = 2)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
 

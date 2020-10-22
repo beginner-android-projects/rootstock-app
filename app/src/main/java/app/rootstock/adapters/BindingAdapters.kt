@@ -1,9 +1,7 @@
 package app.rootstock.adapters
 
-import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
-import androidx.annotation.StringRes
 import androidx.databinding.BindingAdapter
 import com.google.android.material.textfield.TextInputLayout
 
