@@ -1,5 +1,6 @@
 package app.rootstock.ui.signup
 
+import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -8,13 +9,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.rootstock.data.result.Event
 import app.rootstock.data.user.UserRepository
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 enum class EventUserSignUp { SUCCESS, USER_EXISTS, INVALID_DATA, FAILED, LOADING }
 
 class SignUpViewModel @ViewModelInject constructor(
     private val userRepository: UserRepository,
-    private val registerRepository: RegisterRepository
+    private val accountRepository: AccountRepository
 ) :
     ViewModel() {
 
@@ -26,7 +30,6 @@ class SignUpViewModel @ViewModelInject constructor(
     val loading: LiveData<Boolean> = map(signUpStatus) {
         signUpStatus.value?.peekContent() == EventUserSignUp.LOADING
     }
-
 
     init {
         user.value = SignUpUser.build()
@@ -47,8 +50,9 @@ class SignUpViewModel @ViewModelInject constructor(
     private fun registerUser(user: SignUpUser) {
         viewModelScope.launch {
             val response = runCatching {
-                registerRepository.register(user)
+                accountRepository.register(user)
             }
+
             response.getOrNull()?.let { res ->
                 if (res.isSuccessful) {
                     res.body()?.let { userResponse ->
@@ -58,13 +62,19 @@ class SignUpViewModel @ViewModelInject constructor(
                     return@launch
                 }
 
-                when (res.code()) {
-                    400 -> _signUpStatus.postValue(Event(EventUserSignUp.USER_EXISTS))
-                    422 -> _signUpStatus.postValue(Event(EventUserSignUp.INVALID_DATA))
-                    else -> _signUpStatus.postValue(Event(EventUserSignUp.FAILED))
+                val event = when (res.code()) {
+                    400 -> EventUserSignUp.USER_EXISTS
+                    422 -> EventUserSignUp.INVALID_DATA
+                    else -> EventUserSignUp.FAILED
                 }
+                _signUpStatus.postValue(Event(event))
             }
         }
+
+    }
+
+    fun stopSignUp() {
+        viewModelScope.cancel()
     }
 
 

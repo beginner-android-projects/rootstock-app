@@ -7,4 +7,8 @@
     <string name="invalid_email">User with this email already exists</string>
     <string name="invalid_data">Invalid data</string>
     <string name="signup_failed">Unable to register. Check your connection</string>
+    <string name="already_account">Already have an account? Log in</string>
+    <string name="log_in">Log in</string>
+    <string name="login_failed">Something went wrong</string>
+    <string name="invalid_email_or_password">Email or password is invalid</string>
 </resources>

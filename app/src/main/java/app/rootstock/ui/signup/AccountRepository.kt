@@ -2,10 +2,13 @@ package app.rootstock.ui.signup
 
 import app.rootstock.api.UserSignUpModel
 import app.rootstock.api.UserSignUpService
+import app.rootstock.data.token.Token
+import app.rootstock.data.token.TokenNetwork
 import app.rootstock.data.user.User
+import app.rootstock.ui.login.LogInLoader
+import app.rootstock.ui.login.LogInUser
 import retrofit2.Response
 import javax.inject.Inject
-import javax.inject.Singleton
 
 //
 //fun <T, A> performGetOperation(databaseQuery: () -> LiveData<T>,
@@ -34,12 +37,16 @@ class SignUpLoader @Inject constructor(private val signUpService: UserSignUpServ
 
 }
 
-@Singleton
-class RegisterRepository @Inject constructor(
-    private val signUpLoader: SignUpLoader
+class AccountRepository @Inject constructor(
+    private val signUpLoader: SignUpLoader,
+    private val logInLoader: LogInLoader
 ) {
 
     suspend fun register(signUpUser: SignUpUser): Response<User> {
         return signUpLoader.register(signUpUser)
+    }
+
+    suspend fun logIn(logInUser: LogInUser): Response<TokenNetwork> {
+        return logInLoader.logIn(logInUser)
     }
 }

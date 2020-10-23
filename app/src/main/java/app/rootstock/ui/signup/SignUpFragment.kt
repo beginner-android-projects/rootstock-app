@@ -5,8 +5,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import app.rootstock.R
 import app.rootstock.databinding.FragmentSignupBinding
 import app.rootstock.ui.main.WorkspaceActivity
@@ -38,6 +40,14 @@ class SignUpFragment : Fragment() {
         binding.viewmodel = viewModel
 
         setObservers()
+
+        view?.findViewById<TextView>(R.id.already_have_account)?.apply {
+            setOnClickListener {
+                val action = SignUpFragmentDirections.actionSigninFragmentToLoginFragment()
+                findNavController().navigate(action)
+            }
+        }
+
     }
 
     private fun setObservers() {
@@ -57,6 +67,11 @@ class SignUpFragment : Fragment() {
                 }
             }
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        viewModel.stopSignUp()
     }
 
     private fun startMainWorkspaceActivity() {
