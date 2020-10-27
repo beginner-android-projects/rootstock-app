@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import app.rootstock.data.token.Token
+import app.rootstock.data.token.TokenDao
 import app.rootstock.data.user.User
 import app.rootstock.data.user.UserDao
 import app.rootstock.utils.DATABASE_NAME
@@ -11,9 +13,10 @@ import app.rootstock.utils.DATABASE_NAME
 /**
  * The Room database for this app
  */
-@Database(entities = [User::class], version = 1, exportSchema = false)
+@Database(entities = [User::class, Token::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
+    abstract fun tokenDao(): TokenDao
 
     companion object {
 

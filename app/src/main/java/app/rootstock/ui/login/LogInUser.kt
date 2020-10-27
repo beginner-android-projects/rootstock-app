@@ -1,12 +1,11 @@
-package app.rootstock.ui.signup
+package app.rootstock.ui.login
 
 import androidx.databinding.BaseObservable
 import androidx.databinding.Bindable
 import app.rootstock.BR
 import java.io.Serializable
 
-
-class SignUpUser :
+class LogInUser :
     BaseObservable(), Serializable {
 
     override fun toString(): String {
@@ -14,12 +13,11 @@ class SignUpUser :
     }
 
     companion object {
-        fun build(): SignUpUser {
-            return SignUpUser()
+        fun build(): LogInUser {
+            return LogInUser()
         }
 
-        // only ascii chars with no spaces or tabs
-        // todo: change 2 to 6
+        // todo change to 6
         private val passwordRegex =
             """^[a-zA-Z0-9@\#\?+!:;'"*\-\$\_&\(\)^,./\\-]{2,32}$""".toRegex()
 
@@ -37,17 +35,8 @@ class SignUpUser :
         get() = field
 
     @Bindable
-    var passwordRepeatValid: Boolean = false
-        get() = field
-
-
-    @Bindable
     var allValid: Boolean = false
-        set(value) {
-            field = value
-            notifyPropertyChanged(BR.allValid)
-        }
-        get() = isDataValid()
+        get() = field
 
 
     @Bindable
@@ -56,7 +45,6 @@ class SignUpUser :
             field = value
             checkEmail()
             notifyPropertyChanged(BR.email)
-            notifyPropertyChanged(BR.allValid)
         }
         get() = field
 
@@ -66,46 +54,29 @@ class SignUpUser :
             field = value
             checkPassword()
             notifyPropertyChanged(BR.password)
-            notifyPropertyChanged(BR.allValid)
-        }
-        get() = field
-
-    @Bindable
-    var passwordRepeat: String = String()
-        set(value) {
-            field = value
-            checkPasswordRepeat()
-            notifyPropertyChanged(BR.passwordRepeat)
-            notifyPropertyChanged(BR.allValid)
         }
         get() = field
 
     private fun checkEmail() {
         emailValid = isEmailValid()
         notifyPropertyChanged(BR.emailValid)
+        checkAllValid()
     }
 
     private fun checkPassword() {
         passwordValid = isPasswordValid()
         notifyPropertyChanged(BR.passwordValid)
-        if (password.length > 5) {
-            checkPasswordRepeat()
-        }
+        checkAllValid()
     }
 
-    private fun checkPasswordRepeat() {
-        passwordRepeatValid = isPasswordRepeatValid()
-        notifyPropertyChanged(BR.passwordRepeatValid)
+    private fun checkAllValid() {
+        allValid = isDataValid()
+        notifyPropertyChanged(BR.allValid)
     }
 
-    private fun isEmailValid(): Boolean =
-        email.matches(emailRegex)
+    private fun isDataValid() = isEmailValid() && isPasswordValid()
 
-    private fun isPasswordValid(): Boolean =
-        password.matches(passwordRegex)
+    private fun isEmailValid(): Boolean = email.matches(emailRegex)
 
-    private fun isPasswordRepeatValid(): Boolean =
-        password == passwordRepeat
-
-    private fun isDataValid() = isEmailValid() && isPasswordValid() && isPasswordRepeatValid()
+    private fun isPasswordValid(): Boolean = password.matches(passwordRegex)
 }

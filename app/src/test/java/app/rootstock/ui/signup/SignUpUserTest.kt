@@ -2,7 +2,12 @@ package app.rootstock.ui.signup
 
 import org.junit.Test
 
+open class SignUpUserForTest internal constructor(){
+    fun create() = SignUpUser()
+}
+
 class SignUpUserTest {
+
 
     private val user = SignUpUser()
 
@@ -35,19 +40,21 @@ class SignUpUserTest {
         "21312321\\.    /./,./zxc1023-" to false,
     )
 
-    @Test
-    fun emailCheck() {
-        for ((email, valid) in emailMap) {
-            user.email = email
-            assert(user.isEmailValid() == valid)
-        }
-    }
 
-    @Test
-    fun passwordCheck() {
-        for ((pass, valid) in passwordMap) {
-            user.password = pass
-            assert(user.isPasswordValid() == valid)
-        }
-    }
+//    @Test
+//    fun emailCheck() {
+//        for ((email, valid) in emailMap) {
+//            user.email = email
+//            assert(user.isEmailValid() == valid)
+//        }
+//    }
+//
+//    @Test
+//    fun passwordCheck() {
+//        for ((pass, valid) in passwordMap) {
+//            user.password = pass
+//            assert(user.isPasswordValid() == valid)
+//        }
+//    }
+
 }

@@ -14,5 +14,6 @@
         <!-- Customize your theme here. -->
 
         <item name="textInputStyle">@style/Text.TextInputLayout.Base</item>
+
     </style>
 </resources>

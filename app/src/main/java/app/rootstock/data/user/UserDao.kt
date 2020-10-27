@@ -8,7 +8,7 @@ import androidx.room.Query
 
 @Dao
 interface UserDao {
-    @Query("select * from user limit 1")
+    @Query("select * from users limit 1")
     fun searchUser(): LiveData<User?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

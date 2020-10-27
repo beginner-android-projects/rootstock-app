@@ -3,17 +3,18 @@ package app.rootstock.data.user
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.gson.annotations.SerializedName
 
 /**
  * User class for local room database
  */
-@Entity
+@Entity(tableName = "users")
 class User(
+    @SerializedName("user_id")
     @ColumnInfo(name = "user_id")
-    @PrimaryKey(autoGenerate = true)
-    val userId: Int? = null,
-)
-
-class UserSignedUp(
-
+    @PrimaryKey
+    val userId: String,
+    @SerializedName("email")
+    @ColumnInfo(name = "email")
+    val email: String
 )
