@@ -1,12 +1,10 @@
 package app.rootstock.ui.signup
 
-import app.rootstock.api.UserSignUpModel
 import app.rootstock.api.UserSignUpService
-import app.rootstock.data.token.Token
 import app.rootstock.data.token.TokenNetwork
 import app.rootstock.data.user.User
+import app.rootstock.data.user.UserWithPassword
 import app.rootstock.ui.login.LogInLoader
-import app.rootstock.ui.login.LogInUser
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -32,7 +30,7 @@ import javax.inject.Inject
 class SignUpLoader @Inject constructor(private val signUpService: UserSignUpService) {
 
     suspend fun register(user: SignUpUser): Response<User> {
-        return signUpService.createUser(UserSignUpModel(user.email, user.password))
+        return signUpService.createUser(user)
     }
 
 }
@@ -46,7 +44,7 @@ class AccountRepository @Inject constructor(
         return signUpLoader.register(signUpUser)
     }
 
-    suspend fun logIn(logInUser: LogInUser): Response<TokenNetwork> {
-        return logInLoader.logIn(logInUser)
+    suspend fun authenticate(user: UserWithPassword): Response<TokenNetwork> {
+        return logInLoader.logIn(user)
     }
 }

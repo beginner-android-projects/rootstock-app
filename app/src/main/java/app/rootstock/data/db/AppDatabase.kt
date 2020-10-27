@@ -8,15 +8,18 @@ import app.rootstock.data.token.Token
 import app.rootstock.data.token.TokenDao
 import app.rootstock.data.user.User
 import app.rootstock.data.user.UserDao
+import app.rootstock.data.workspace.Workspace
+import app.rootstock.data.workspace.WorkspaceDao
 import app.rootstock.utils.DATABASE_NAME
 
 /**
  * The Room database for this app
  */
-@Database(entities = [User::class, Token::class], version = 1)
+@Database(entities = [User::class, Token::class, Workspace::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun tokenDao(): TokenDao
+    abstract fun workspaceDao(): WorkspaceDao
 
     companion object {
 

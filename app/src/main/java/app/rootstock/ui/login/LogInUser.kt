@@ -3,10 +3,11 @@ package app.rootstock.ui.login
 import androidx.databinding.BaseObservable
 import androidx.databinding.Bindable
 import app.rootstock.BR
+import app.rootstock.data.user.UserWithPassword
 import java.io.Serializable
 
 class LogInUser :
-    BaseObservable(), Serializable {
+    BaseObservable(), Serializable, UserWithPassword {
 
     override fun toString(): String {
         return "User: ..."
@@ -40,7 +41,7 @@ class LogInUser :
 
 
     @Bindable
-    var email: String = String()
+    override var email: String = String()
         set(value) {
             field = value
             checkEmail()
@@ -49,7 +50,7 @@ class LogInUser :
         get() = field
 
     @Bindable
-    var password: String = String()
+    override var password: String = String()
         set(value) {
             field = value
             checkPassword()

@@ -3,11 +3,12 @@ package app.rootstock.ui.signup
 import androidx.databinding.BaseObservable
 import androidx.databinding.Bindable
 import app.rootstock.BR
+import app.rootstock.data.user.UserWithPassword
 import java.io.Serializable
 
 
 class SignUpUser :
-    BaseObservable(), Serializable {
+    BaseObservable(), Serializable, UserWithPassword {
 
     override fun toString(): String {
         return "User: ..."
@@ -51,7 +52,7 @@ class SignUpUser :
 
 
     @Bindable
-    var email: String = String()
+    override var email: String = String()
         set(value) {
             field = value
             checkEmail()
@@ -61,7 +62,7 @@ class SignUpUser :
         get() = field
 
     @Bindable
-    var password: String = String()
+    override var password: String = String()
         set(value) {
             field = value
             checkPassword()

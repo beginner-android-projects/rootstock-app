@@ -5,6 +5,11 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
+interface UserWithPassword {
+    val email: String
+    val password: String
+}
+
 /**
  * User class for local room database
  */
