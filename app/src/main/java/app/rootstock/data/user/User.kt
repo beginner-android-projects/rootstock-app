@@ -8,15 +8,13 @@ import com.google.gson.annotations.SerializedName
 /**
  * User class for local room database
  */
-@Entity
+@Entity(tableName = "users")
 class User(
     @SerializedName("user_id")
     @ColumnInfo(name = "user_id")
     @PrimaryKey
     val userId: String,
-
     @SerializedName("email")
     @ColumnInfo(name = "email")
     val email: String
-
 )

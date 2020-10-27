@@ -15,7 +15,7 @@ class WorkspaceFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel.user.observe(this, {
+        viewModel.workspaces.observe(this, {
             Log.d("123", it.toString())
         })
 
