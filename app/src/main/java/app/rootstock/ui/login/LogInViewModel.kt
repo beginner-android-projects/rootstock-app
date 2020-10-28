@@ -36,6 +36,11 @@ class LogInViewModel @ViewModelInject constructor(
         // return if loading
         if (_logInStatus.value?.peekContent() == EventUserLogIn.LOADING) return
 
+        if (user.value?.allValid != true) {
+            _logInStatus.value = Event(EventUserLogIn.INVALID_DATA)
+            return
+        }
+
         user.value?.let {
 
             _logInStatus.value = Event(EventUserLogIn.LOADING)

@@ -1,7 +1,12 @@
 package app.rootstock.ui.signup
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,18 +46,57 @@ class SignUpFragment : Fragment() {
 
         setObservers()
 
-        view?.findViewById<TextView>(R.id.already_have_account)?.apply {
-            setOnClickListener {
-                val action = SignUpFragmentDirections.actionSigninFragmentToLoginFragment()
-                findNavController().navigate(action)
-            }
-        }
+        val txtAlready = view?.findViewById<TextView>(R.id.already_have_account)
+        txtAlready?.let { setUpTextAlready(it) }
 
+        val txtPrivacy = view?.findViewById<TextView>(R.id.privay_policy)
+        txtPrivacy?.let { setUpTextPrivacy(it) }
+
+    }
+
+    private fun setUpTextPrivacy(txtPrivacy: TextView) {
+        txtPrivacy.setOnClickListener {
+            // todo: open web privacy policy
+        }
+        // in case of translations??
+        try {
+            val spannable = SpannableString(txtPrivacy.text ?: getString(R.string.sign_up_privacy))
+            spannable.setSpan(
+                ForegroundColorSpan(requireContext().getColor(R.color.primary)),
+                28,
+                42,
+                Spannable.SPAN_EXCLUSIVE_INCLUSIVE
+            )
+            txtPrivacy.text = spannable
+        } catch (e: IndexOutOfBoundsException) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun setUpTextAlready(txtAlready: TextView) {
+        txtAlready.setOnClickListener {
+            val action = SignUpFragmentDirections.actionSigninFragmentToLoginFragment()
+            findNavController().navigate(action)
+        }
+        // in case of translations??
+        try {
+            val spannable = SpannableString(txtAlready.text ?: getString(R.string.already_account))
+            spannable.setSpan(
+                ForegroundColorSpan(requireContext().getColor(R.color.primary)),
+                25,
+                31,
+                Spannable.SPAN_EXCLUSIVE_INCLUSIVE
+            )
+            txtAlready.text = spannable
+        } catch (e: IndexOutOfBoundsException) {
+            e.printStackTrace()
+        }
     }
 
     private fun setObservers() {
         viewModel.signUpStatus.observe(viewLifecycleOwner) {
-            when (it.peekContent()) {
+            Log.d("123", "$it")
+            when (it.getContentIfNotHandled()) {
                 EventUserSignUp.SUCCESS -> startMainWorkspaceActivity()
                 EventUserSignUp.USER_EXISTS -> makeToast(
                     getString(R.string.invalid_email),

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -15,24 +16,28 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/black">
+
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/email"
+            style="@style/Text.TextInputLayout.Primary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
-            android:layout_marginTop="200dp"
+            android:layout_marginTop="150dp"
             android:layout_marginEnd="32dp"
             app:error="@{viewmodel.user.emailValid}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@+id/hello">
 
             <app.rootstock.views.BaseInputEditText
+                style="@style/Text.EditText.Base"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/edit_text_border"
+                android:background="@drawable/form_edit_text_black"
                 android:hint="@string/enter_your_email"
                 android:inputType="textEmailAddress"
                 android:maxLength="40"
@@ -44,9 +49,11 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/password"
+            style="@style/Text.TextInputLayout.Primary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="32dp"
             app:error="@{viewmodel.user.passwordValid}"
             app:layout_constraintEnd_toEndOf="parent"
@@ -54,9 +61,10 @@
             app:layout_constraintTop_toBottomOf="@+id/email">
 
             <app.rootstock.views.BaseInputEditText
+                style="@style/Text.EditText.Base"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/edit_text_border"
+                android:background="@drawable/form_edit_text_black"
                 android:hint="@string/enter_password"
                 android:inputType="textPassword"
                 android:maxLength="32"
@@ -67,9 +75,12 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/password_repeat"
+            style="@style/Text.TextInputLayout.Primary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
+            android:layout_marginTop="8dp"
+
             android:layout_marginEnd="32dp"
             app:error="@{viewmodel.user.passwordRepeatValid}"
             app:layout_constraintEnd_toEndOf="parent"
@@ -77,9 +88,10 @@
             app:layout_constraintTop_toBottomOf="@+id/password">
 
             <app.rootstock.views.BaseInputEditText
+                style="@style/Text.EditText.Base"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/edit_text_border"
+                android:background="@drawable/form_edit_text_black"
                 android:hint="@string/repeat_password"
                 android:inputType="textPassword"
                 android:maxLength="32"
@@ -90,18 +102,18 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/materialButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:clickable="@{viewmodel.user.allValid &amp;&amp; !viewmodel.loading}"
-            android:enabled="@{viewmodel.user.allValid}"
+            style="@style/AppMaterialButton.Base"
+            android:layout_width="match_parent"
+            android:layout_height="75dp"
+            android:layout_marginBottom="100dp"
             android:onClick="@{()->viewmodel.signUp()}"
             android:text="@string/sign_up"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/email" />
+            app:layout_constraintStart_toStartOf="parent" />
 
         <ProgressBar
+            android:id="@+id/progressBar"
             loading="@{viewmodel.loading}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -112,14 +124,44 @@
 
         <TextView
             android:id="@+id/already_have_account"
-            android:textSize="20sp"
+            style="@style/Text.Info.Bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
             android:text="@string/already_account"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/materialButton" />
+
+        <TextView
+            android:id="@+id/privay_policy"
+            style="@style/Text.Info.Bold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:text="@string/sign_up_privacy"
+            app:layout_constraintBottom_toTopOf="@+id/materialButton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/hello"
+            style="@style/Text.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sign_up_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/guideline_hello" />
+
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_hello"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.07" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

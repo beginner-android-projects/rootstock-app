@@ -42,6 +42,11 @@ class SignUpViewModel @ViewModelInject constructor(
         // return if loading
         if (_signUpStatus.value?.peekContent() == EventUserSignUp.LOADING) return
 
+        if (user.value?.allValid == false) {
+            _signUpStatus.value = Event(EventUserSignUp.INVALID_DATA)
+            return
+        }
+
         user.value?.let {
 
             _signUpStatus.value = Event(EventUserSignUp.LOADING)
