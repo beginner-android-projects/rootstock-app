@@ -2,14 +2,14 @@ package app.rootstock.api
 
 import app.rootstock.data.token.TokenNetwork
 import app.rootstock.data.user.User
+import app.rootstock.data.user.UserWithPassword
+import app.rootstock.ui.signup.SignUpUser
 import retrofit2.Response
 import retrofit2.http.*
 
-data class UserSignUpModel(val email: String, val password: String)
-
 interface UserSignUpService {
     @POST("/users/create")
-    suspend fun createUser(@Body userSignUp: UserSignUpModel): Response<User>
+    suspend fun createUser(@Body userSignUp: SignUpUser): Response<User>
 }
 
 interface UserLogInService {

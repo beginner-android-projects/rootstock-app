@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName
 
 @Entity(tableName = "workspaces")
 data class Workspace(
-    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "name") val id: Int? = 0,
+    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id") val id: Int? = 0,
     @ColumnInfo(name = "name")
     @SerializedName("name")
     val name: String,
@@ -20,11 +20,11 @@ data class Workspace(
     @ColumnInfo(name = "ws_id")
     @SerializedName("ws_id")
     val workspaceId: String,
-    @ColumnInfo(name = "channels")
-    @SerializedName("channels")
-    val channels: List<String>,
-    @ColumnInfo(name = "children")
-    @SerializedName("children")
-    val children: List<String>,
+//    @ColumnInfo(name = "channels")
+//    @SerializedName("channels")
+//    val channels: List<String>,
+//    @ColumnInfo(name = "children")
+//    @SerializedName("children")
+//    val children: List<String>,
 )
 //SELECT f.id, f.name FROM workspaces f JOIN workspaces_tree t ON t.child_id = f.id WHERE t.parent_id = 1;

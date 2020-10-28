@@ -4,14 +4,18 @@ package app.rootstock.di.modules
 import android.content.Context
 import app.rootstock.api.UserLogInService
 import app.rootstock.api.UserSignUpService
+import app.rootstock.api.WorkspaceService
 import app.rootstock.data.db.AppDatabase
 import app.rootstock.data.network.LiveDataCallAdapterFactory
 import app.rootstock.data.token.TokenDao
 import app.rootstock.data.user.UserDao
 import app.rootstock.data.user.UserRepository
+import app.rootstock.data.workspace.WorkspaceDao
 import app.rootstock.ui.login.LogInLoader
 import app.rootstock.ui.signup.AccountRepository
 import app.rootstock.ui.signup.SignUpLoader
+import app.rootstock.ui.workspace.WorkspaceDataSource
+import app.rootstock.ui.workspace.WorkspaceRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -46,32 +50,12 @@ class AppModule {
         return appDatabase.tokenDao()
     }
 
-    @Singleton
-    @Provides
-    fun provideRegisterRepository(
-        signUpLoader: SignUpLoader,
-        logInLoader: LogInLoader
-    ): AccountRepository {
-        return AccountRepository(signUpLoader, logInLoader)
-    }
-
-    @Provides
-    fun provideSignUpLoader(signUpService: UserSignUpService): SignUpLoader {
-        return SignUpLoader(signUpService)
-    }
 
     @Singleton
     @Provides
     fun provideUserRepository(userDao: UserDao, tokenDao: TokenDao): UserRepository {
         return UserRepository(userDao = userDao, tokenDao = tokenDao)
     }
-
-//    @Singleton
-//    @Provides
-//    fun provideRetrofit(): Retrofit =
-//        Retrofit.Builder()
-//            .baseUrl("http://0.0.0.0:8080/")
-//            .build()
 
     @Singleton
     @Provides
@@ -90,6 +74,7 @@ class AppModule {
             .writeTimeout(15, TimeUnit.SECONDS)
             .readTimeout(15, TimeUnit.SECONDS)
             .connectTimeout(15, TimeUnit.SECONDS)
+            // add JSON header interceptor
             .addInterceptor { chain ->
                 val requestBuilder: Request.Builder = chain.request().newBuilder()
                 requestBuilder.header("Content-Type", "application/json")
@@ -97,13 +82,4 @@ class AppModule {
             }
             .build()
 
-    @Provides
-    fun provideUserSignUp(retrofit: Retrofit): UserSignUpService {
-        return retrofit.create(UserSignUpService::class.java)
-    }
-
-    @Provides
-    fun provideUserLogInService(retrofit: Retrofit): UserLogInService {
-        return retrofit.create(UserLogInService::class.java)
-    }
 }

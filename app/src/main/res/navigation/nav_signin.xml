@@ -22,6 +22,15 @@
         android:id="@+id/login_fragment"
         android:name="app.rootstock.ui.login.LogInFragment">
 
+        <action
+            android:id="@+id/action_login_fragment_to_signin_fragment"
+            app:destination="@id/signin_fragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_open_exit"
+            app:popEnterAnim="@anim/fragment_fade_enter"
+            app:popExitAnim="@anim/fragment_fade_exit"
+            app:popUpTo="@id/signin_fragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
 

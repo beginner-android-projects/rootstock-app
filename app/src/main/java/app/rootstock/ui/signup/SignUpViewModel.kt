@@ -8,7 +8,10 @@ import androidx.lifecycle.Transformations.map
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.rootstock.data.result.Event
+import app.rootstock.data.token.Token
 import app.rootstock.data.user.UserRepository
+import app.rootstock.data.user.UserWithPassword
+import app.rootstock.ui.login.EventUserLogIn
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
@@ -39,6 +42,11 @@ class SignUpViewModel @ViewModelInject constructor(
         // return if loading
         if (_signUpStatus.value?.peekContent() == EventUserSignUp.LOADING) return
 
+        if (user.value?.allValid == false) {
+            _signUpStatus.value = Event(EventUserSignUp.INVALID_DATA)
+            return
+        }
+
         user.value?.let {
 
             _signUpStatus.value = Event(EventUserSignUp.LOADING)
@@ -57,11 +65,11 @@ class SignUpViewModel @ViewModelInject constructor(
                 if (res.isSuccessful) {
                     res.body()?.let { userResponse ->
                         userRepository.insertUser(userResponse)
-                        _signUpStatus.postValue(Event(EventUserSignUp.SUCCESS))
+                        // if everything is ok, authenticate user to get tokens
+                        authenticate(user)
                     }
                     return@launch
                 }
-
                 val event = when (res.code()) {
                     400 -> EventUserSignUp.USER_EXISTS
                     422 -> EventUserSignUp.INVALID_DATA
@@ -71,6 +79,32 @@ class SignUpViewModel @ViewModelInject constructor(
             }
         }
 
+    }
+
+    private suspend fun authenticate(user: UserWithPassword) {
+        val response = runCatching {
+            accountRepository.authenticate(user)
+        }
+        response.getOrNull()?.let { res ->
+            if (res.isSuccessful) {
+                res.body()?.let { tokenResponse ->
+                    userRepository.insertToken(
+                        Token(
+                            accessToken = tokenResponse.accessToken,
+                            refreshToken = tokenResponse.refreshToken,
+                            tokenType = tokenResponse.tokenType
+                        )
+                    )
+                    _signUpStatus.postValue(Event(EventUserSignUp.SUCCESS))
+                }
+                return
+            }
+
+            when (res.code()) {
+                400, 422 -> _signUpStatus.postValue(Event(EventUserSignUp.INVALID_DATA))
+                else -> _signUpStatus.postValue(Event(EventUserSignUp.FAILED))
+            }
+        }
     }
 
     fun stopSignUp() {

@@ -1,11 +1,11 @@
 package app.rootstock.ui.login
 
-import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import app.rootstock.data.result.Event
 import app.rootstock.data.token.Token
 import app.rootstock.data.user.UserRepository
+import app.rootstock.data.user.UserWithPassword
 import app.rootstock.ui.signup.AccountRepository
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
@@ -36,18 +36,23 @@ class LogInViewModel @ViewModelInject constructor(
         // return if loading
         if (_logInStatus.value?.peekContent() == EventUserLogIn.LOADING) return
 
+        if (user.value?.allValid != true) {
+            _logInStatus.value = Event(EventUserLogIn.INVALID_DATA)
+            return
+        }
+
         user.value?.let {
 
             _logInStatus.value = Event(EventUserLogIn.LOADING)
 
-            logInUser(it)
+            authenticate(it)
         }
     }
 
-    private fun logInUser(user: LogInUser) {
+    private fun authenticate(user: UserWithPassword) {
         viewModelScope.launch {
             val response = runCatching {
-                accountRepository.logIn(user)
+                accountRepository.authenticate(user)
             }
             response.getOrNull()?.let { res ->
                 if (res.isSuccessful) {
