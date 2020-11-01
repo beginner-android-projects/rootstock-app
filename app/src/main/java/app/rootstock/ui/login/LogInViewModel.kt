@@ -8,6 +8,7 @@ import app.rootstock.data.token.Token
 import app.rootstock.data.user.UserRepository
 import app.rootstock.data.user.UserWithPassword
 import app.rootstock.ui.signup.AccountRepository
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -51,6 +52,7 @@ class LogInViewModel @ViewModelInject constructor(
     }
 
     private fun authenticate(user: UserWithPassword) {
+        stopLogIn()
         viewModelScope.launch {
             when (val token = accountRepository.authenticate(user).first()) {
                 is ResponseResult.Success -> {

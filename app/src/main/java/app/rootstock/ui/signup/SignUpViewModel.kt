@@ -52,6 +52,7 @@ class SignUpViewModel @ViewModelInject constructor(
     }
 
     private fun registerUser(user: SignUpUser) {
+        viewModelScope.cancel()
         viewModelScope.launch {
             when (val userResponse = accountRepository.register(user).first()) {
                 is ResponseResult.Success -> {
