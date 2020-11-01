@@ -1,14 +1,14 @@
 package app.rootstock.api
 
-import app.rootstock.data.workspace.Workspace
+import app.rootstock.data.workspace.WorkspaceNetworkResponse
 import retrofit2.Response
-import retrofit2.http.*
+import retrofit2.http.GET
+import retrofit2.http.Path
 
 
 interface WorkspaceService {
     @GET("/workspaces/{workspaceId}")
-    suspend fun getWorksapce(
-        @Header("Authorization") accessToken: String,
+    suspend fun getWorkspace(
         @Path("workspaceId") workspaceId: String
-    ): Response<Workspace>
+    ): Response<WorkspaceNetworkResponse>
 }

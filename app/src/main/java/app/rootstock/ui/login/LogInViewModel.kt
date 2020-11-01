@@ -2,12 +2,14 @@ package app.rootstock.ui.login
 
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
+import app.rootstock.data.network.ResponseResult
 import app.rootstock.data.result.Event
 import app.rootstock.data.token.Token
 import app.rootstock.data.user.UserRepository
 import app.rootstock.data.user.UserWithPassword
 import app.rootstock.ui.signup.AccountRepository
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 enum class EventUserLogIn { SUCCESS, INVALID_DATA, FAILED, LOADING }
@@ -42,37 +44,53 @@ class LogInViewModel @ViewModelInject constructor(
         }
 
         user.value?.let {
-
             _logInStatus.value = Event(EventUserLogIn.LOADING)
-
             authenticate(it)
+
         }
     }
 
     private fun authenticate(user: UserWithPassword) {
         viewModelScope.launch {
-            val response = runCatching {
-                accountRepository.authenticate(user)
-            }
-            response.getOrNull()?.let { res ->
-                if (res.isSuccessful) {
-                    res.body()?.let { tokenResponse ->
+            when (val token = accountRepository.authenticate(user).first()) {
+                is ResponseResult.Success -> {
+                    if (token.data != null) {
+                        // update local user
                         userRepository.insertToken(
                             Token(
-                                accessToken = tokenResponse.accessToken,
-                                refreshToken = tokenResponse.refreshToken,
-                                tokenType = tokenResponse.tokenType
+                                accessToken = token.data.accessToken,
+                                refreshToken = token.data.refreshToken,
+                                tokenType = token.data.tokenType
                             )
                         )
+                        updateUserLocal(token.data.accessToken)
                         _logInStatus.postValue(Event(EventUserLogIn.SUCCESS))
+                    } else {
+                        _logInStatus.postValue(Event(EventUserLogIn.FAILED))
                     }
-                    return@launch
                 }
+                is ResponseResult.Error -> {
+                    _logInStatus.postValue(Event(EventUserLogIn.FAILED))
+                }
+            }
+        }
+    }
 
-                when (res.code()) {
-                    400, 422 -> _logInStatus.postValue(Event(EventUserLogIn.INVALID_DATA))
-                    else -> _logInStatus.postValue(Event(EventUserLogIn.FAILED))
+
+    private suspend fun updateUserLocal(token: String) {
+        // fetch user from network
+        when (val user = accountRepository.getUserRemote(token).first()) {
+            is ResponseResult.Success -> {
+                if (user.data != null) {
+                    // update local user
+                    userRepository.insertUser(user.data)
+                    _logInStatus.postValue(Event(EventUserLogIn.SUCCESS))
+                } else {
+                    _logInStatus.postValue(Event(EventUserLogIn.FAILED))
                 }
+            }
+            is ResponseResult.Error -> {
+                _logInStatus.postValue(Event(EventUserLogIn.FAILED))
             }
         }
     }

@@ -5,10 +5,12 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import app.rootstock.R
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @AndroidEntryPoint
 class WorkspaceActivity : AppCompatActivity() {
 
+    @ExperimentalCoroutinesApi
     private val viewModel: MainWorkspaceViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
