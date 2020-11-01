@@ -5,8 +5,8 @@ import androidx.room.*
 
 @Dao
 interface TokenDao {
-    @Query("select * from token limit 1")
-    fun searchToken(): LiveData<Token?>
+    @Query("select access_token from token limit 1")
+    suspend fun searchAccessToken(): String?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertToken(token: Token): Long

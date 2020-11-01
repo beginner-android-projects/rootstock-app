@@ -21,7 +21,6 @@ class LaunchViewModel @ViewModelInject constructor(repository: UserRepository) :
         }
     }
 
-
 }
 
 enum class LaunchDestination {

@@ -5,7 +5,7 @@
     <string name="enter_your_email">enter your email</string>
     <string name="repeat_password">repeat password</string>
     <string name="invalid_email">User with this email already exists</string>
-    <string name="invalid_data">Invalid data</string>
+    <string name="invalid">Invalid</string>
     <string name="signup_failed">Unable to register. Check your connection</string>
     <string name="already_account">already have an account? log in</string>
     <string name="no_account">no account? create one</string>

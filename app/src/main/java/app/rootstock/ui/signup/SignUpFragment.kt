@@ -1,7 +1,6 @@
 package app.rootstock.ui.signup
 
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
@@ -95,14 +94,13 @@ class SignUpFragment : Fragment() {
 
     private fun setObservers() {
         viewModel.signUpStatus.observe(viewLifecycleOwner) {
-            Log.d("123", "$it")
             when (it.getContentIfNotHandled()) {
                 EventUserSignUp.SUCCESS -> startMainWorkspaceActivity()
                 EventUserSignUp.USER_EXISTS -> makeToast(
                     getString(R.string.invalid_email),
                     long = true
                 )
-                EventUserSignUp.INVALID_DATA -> makeToast(getString(R.string.invalid_data), false)
+                EventUserSignUp.INVALID_DATA -> makeToast(getString(R.string.invalid), false)
                 EventUserSignUp.FAILED -> makeToast(
                     getString(R.string.signup_failed),
                     false

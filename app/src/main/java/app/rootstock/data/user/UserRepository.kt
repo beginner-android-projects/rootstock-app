@@ -5,6 +5,7 @@ import app.rootstock.data.token.TokenDao
 import javax.inject.Inject
 import javax.inject.Singleton
 
+// todo token repository
 @Singleton
 class UserRepository @Inject constructor(
     private val userDao: UserDao,
@@ -17,8 +18,11 @@ class UserRepository @Inject constructor(
 
     suspend fun insertToken(token: Token) = tokenDao.insertToken(token)
 
+    suspend fun getAccessToken() = tokenDao.searchAccessToken()
+
     suspend fun updateAccessToken(accessToken: String) = tokenDao.updateAccessToken(accessToken)
 
     suspend fun updateRefreshToken(refreshToken: String) = tokenDao.updateRefreshToken(refreshToken)
+
 
 }
