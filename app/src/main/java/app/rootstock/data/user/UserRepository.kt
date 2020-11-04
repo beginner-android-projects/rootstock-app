@@ -18,13 +18,4 @@ class UserRepository @Inject constructor(
 
     suspend fun insertUser(user: User) = userDao.insert(user)
 
-    suspend fun insertToken(token: Token) = tokenDao.insertToken(token)
-
-    suspend fun getAccessToken() = tokenDao.searchAccessToken()
-
-    suspend fun updateAccessToken(accessToken: String) = tokenDao.updateAccessToken(accessToken)
-
-    suspend fun updateRefreshToken(refreshToken: String) = tokenDao.updateRefreshToken(refreshToken)
-
-
 }

@@ -5,6 +5,7 @@ import androidx.lifecycle.*
 import app.rootstock.data.network.ResponseResult
 import app.rootstock.data.result.Event
 import app.rootstock.data.token.Token
+import app.rootstock.data.token.TokenRepository
 import app.rootstock.data.user.UserRepository
 import app.rootstock.data.user.UserWithPassword
 import app.rootstock.ui.signup.AccountRepository
@@ -18,7 +19,8 @@ enum class EventUserLogIn { SUCCESS, INVALID_DATA, FAILED, LOADING }
 
 class LogInViewModel @ViewModelInject constructor(
     private val userRepository: UserRepository,
-    private val accountRepository: AccountRepository
+    private val accountRepository: AccountRepository,
+    private val tokenRepository: TokenRepository
 ) :
     ViewModel() {
 
@@ -57,7 +59,7 @@ class LogInViewModel @ViewModelInject constructor(
                 is ResponseResult.Success -> {
                     if (token.data != null) {
                         // update local user
-                        userRepository.insertToken(
+                        tokenRepository.insertToken(
                             Token(
                                 accessToken = token.data.accessToken,
                                 refreshToken = token.data.refreshToken,

@@ -6,6 +6,8 @@ import app.rootstock.api.UserInfoService
 import app.rootstock.data.db.AppDatabase
 import app.rootstock.data.network.TokenInterceptor
 import app.rootstock.data.token.TokenDao
+import app.rootstock.data.token.TokenRepository
+import app.rootstock.data.token.TokenRepositoryImpl
 import app.rootstock.data.user.UserDao
 import app.rootstock.data.user.UserRepository
 import dagger.Module
@@ -61,9 +63,15 @@ class AppModule {
             .client(client)
             .build()
 
+
     @Provides
-    fun provideTokenInterceptor(userRepository: UserRepository): TokenInterceptor {
-        return TokenInterceptor(userRepository)
+    fun provideTokenRepository(tokenDao: TokenDao): TokenRepository {
+        return TokenRepositoryImpl(tokenDao)
+    }
+
+    @Provides
+    fun provideTokenInterceptor(tokenRepository: TokenRepository): TokenInterceptor {
+        return TokenInterceptor(tokenRepository)
     }
 
     @Provides
