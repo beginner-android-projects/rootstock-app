@@ -14,6 +14,8 @@ class UserRepository @Inject constructor(
 
     fun getUser() = userDao.searchUser()
 
+    suspend fun getUserId() = userDao.getUserId()
+
     suspend fun insertUser(user: User) = userDao.insert(user)
 
     suspend fun insertToken(token: Token) = tokenDao.insertToken(token)
