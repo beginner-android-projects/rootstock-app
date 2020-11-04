@@ -4,6 +4,7 @@ import app.rootstock.api.UserInfoService
 import app.rootstock.api.UserLogInService
 import app.rootstock.api.UserSignUpService
 import app.rootstock.ui.signup.AccountRepository
+import app.rootstock.ui.signup.AccountRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,7 +26,7 @@ object AccountModule {
         logInLoader: UserLogInService,
         userInfoService: UserInfoService
     ): AccountRepository {
-        return AccountRepository(signUpLoader, logInLoader, userInfoService)
+        return AccountRepositoryImpl(signUpLoader, logInLoader, userInfoService)
     }
 
     @Provides

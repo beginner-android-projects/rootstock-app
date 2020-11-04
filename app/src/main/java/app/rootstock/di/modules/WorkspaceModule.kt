@@ -5,6 +5,7 @@ import app.rootstock.data.channel.ChannelDao
 import app.rootstock.data.db.AppDatabase
 import app.rootstock.data.workspace.WorkspaceDao
 import app.rootstock.ui.workspace.WorkspaceRepository
+import app.rootstock.ui.workspace.WorkspaceRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -41,6 +42,6 @@ object WorkspaceModule {
         workspaceDao: WorkspaceDao,
         channelDao: ChannelDao,
     ): WorkspaceRepository {
-        return WorkspaceRepository(workspaceDataSource, workspaceDao, channelDao)
+        return WorkspaceRepositoryImpl(workspaceDataSource, workspaceDao, channelDao)
     }
 }

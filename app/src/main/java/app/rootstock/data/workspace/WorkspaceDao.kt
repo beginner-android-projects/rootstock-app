@@ -19,7 +19,7 @@ interface WorkspaceDao {
     @Query("select * from workspaces where ws_id in (select child from workspaces_tree where parent = :id);")
     suspend fun getChildrenWorkspacesById(id: String): List<Workspace>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     @JvmSuppressWildcards
     @Transaction
     suspend fun insertHierarchy(hierarchy: List<WorkspaceTree>)

@@ -13,16 +13,22 @@ import kotlinx.coroutines.flow.flow
 import retrofit2.Response
 import javax.inject.Inject
 
+interface AccountRepository {
+    suspend fun register(user: SignUpUser): Flow<ResponseResult<User?>>
+    suspend fun authenticate(user: UserWithPassword): Flow<ResponseResult<TokenNetwork?>>
+    suspend fun getUserRemote(token: String): Flow<ResponseResult<User?>>
+}
+
 /**
  * Repository for user account manipulation
  */
-class AccountRepository @Inject constructor(
+class AccountRepositoryImpl @Inject constructor(
     private val signUpService: UserSignUpService,
     private val logInService: UserLogInService,
     private val userInfoService: UserInfoService,
-) {
+): AccountRepository {
 
-    suspend fun register(user: SignUpUser): Flow<ResponseResult<User?>> = flow {
+    override suspend fun register(user: SignUpUser): Flow<ResponseResult<User?>> = flow {
         val tokenResponse = signUpService.createUser(user)
 
         val state = when (tokenResponse.isSuccessful) {
@@ -35,7 +41,7 @@ class AccountRepository @Inject constructor(
     }
 
 
-    suspend fun authenticate(user: UserWithPassword): Flow<ResponseResult<TokenNetwork?>> = flow {
+    override suspend fun authenticate(user: UserWithPassword): Flow<ResponseResult<TokenNetwork?>> = flow {
         val tokenResponse = logInService.logIn(username = user.email, password = user.password)
 
         val state = when (tokenResponse.isSuccessful) {
@@ -50,7 +56,7 @@ class AccountRepository @Inject constructor(
     /**
      * requests user_id and email after login in case of email update
      */
-    suspend fun getUserRemote(token: String): Flow<ResponseResult<User?>> = flow {
+    override suspend fun getUserRemote(token: String): Flow<ResponseResult<User?>> = flow {
         val userResponse = userInfoService.getUser(token)
 
         val state = when (userResponse.isSuccessful) {

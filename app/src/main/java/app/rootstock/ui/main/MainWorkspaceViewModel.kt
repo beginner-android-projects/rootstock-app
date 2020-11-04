@@ -41,7 +41,7 @@ class MainWorkspaceViewModel @ViewModelInject constructor(
                 return@launch
             }
 
-            workspaceRepository.getMainWorkspace(userId)
+            workspaceRepository.getWorkspace(userId)
                 .collect {
                     when (it) {
                         is ResponseResult.Success -> {

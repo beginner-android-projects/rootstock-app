@@ -10,6 +10,7 @@ import app.rootstock.data.token.TokenRepository
 import app.rootstock.data.token.TokenRepositoryImpl
 import app.rootstock.data.user.UserDao
 import app.rootstock.data.user.UserRepository
+import app.rootstock.data.user.UserRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -45,12 +46,10 @@ class AppModule {
     @Singleton
     @Provides
     fun provideUserRepository(
-        userDao: UserDao,
-        tokenDao: TokenDao
+        userDao: UserDao
     ): UserRepository {
-        return UserRepository(
+        return UserRepositoryImpl(
             userDao = userDao,
-            tokenDao = tokenDao,
         )
     }
 

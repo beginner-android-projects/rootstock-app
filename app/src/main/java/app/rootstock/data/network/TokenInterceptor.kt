@@ -1,7 +1,6 @@
 package app.rootstock.data.network
 
 import app.rootstock.data.token.TokenRepository
-import app.rootstock.data.user.UserRepository
 import kotlinx.coroutines.*
 import okhttp3.*
 import javax.inject.Inject
