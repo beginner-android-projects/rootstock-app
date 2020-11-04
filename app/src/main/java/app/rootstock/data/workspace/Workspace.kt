@@ -1,38 +1,60 @@
 package app.rootstock.data.workspace
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.room.*
+import app.rootstock.data.channel.Channel
 import com.google.gson.annotations.SerializedName
 
-@Entity(tableName = "workspaces")
+interface WorkspaceI {
+    val workspaceId: String
+    val name: String
+    val imageUrl: String?
+    val backgroundColor: String
+}
+
+@Entity(
+    tableName = "workspaces",
+    indices = [Index("ws_id")],
+)
 data class Workspace(
     @PrimaryKey
     @ColumnInfo(name = "ws_id")
-    val workspaceId: String,
+    @SerializedName("ws_id")
+    override val workspaceId: String,
     @ColumnInfo(name = "name")
     @SerializedName("name")
-    val name: String,
+    override val name: String,
     @ColumnInfo(name = "background_color")
-    val backgroundColor: String,
-    @ColumnInfo(name = "image_url")
-    val imageUrl: String?,
-//    @ColumnInfo(name = "channels")
-//    @SerializedName("channels")
-//    val channels: List<String>,
-//    @ColumnInfo(name = "children")
-//    @SerializedName("children")
-//    val children: List<String>,
-)
-//SELECT f.id, f.name FROM workspaces f JOIN workspaces_tree t ON t.child_id = f.id WHERE t.parent_id = 1;
-
-data class WorkspaceNetworkResponse(
-    @SerializedName("name")
-    val name: String,
     @SerializedName("background_color")
-    val backgroundColor: String,
+    override val backgroundColor: String,
+    @ColumnInfo(name = "image_url")
     @SerializedName("image_url")
-    val imageUrl: String?,
-    @SerializedName("ws_id")
-    val workspaceId: String
+    override val imageUrl: String?,
+): WorkspaceI
+
+/**
+ * This class represents 1:m relationship in Workspace - Channels tables (Needed for Room)
+ */
+data class WorkspaceWithChannels(
+    @Embedded val workspace: Workspace,
+    @Relation(
+        parentColumn = "ws_id",
+        entityColumn = "workspace_id"
+    )
+    val channels: List<Channel>,
 )
+
+
+data class WorkspaceWithChildren(
+    @SerializedName("name")
+    override val name: String,
+    @SerializedName("background_color")
+    override val backgroundColor: String,
+    @SerializedName("image_url")
+    override val imageUrl: String?,
+    @SerializedName("ws_id")
+    override val workspaceId: String,
+    @SerializedName("channels")
+    val channels: List<Channel>,
+    @SerializedName("children")
+    val children: List<Workspace>,
+): WorkspaceI

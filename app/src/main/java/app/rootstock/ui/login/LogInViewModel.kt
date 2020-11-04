@@ -52,7 +52,6 @@ class LogInViewModel @ViewModelInject constructor(
     }
 
     private fun authenticate(user: UserWithPassword) {
-        stopLogIn()
         viewModelScope.launch {
             when (val token = accountRepository.authenticate(user).first()) {
                 is ResponseResult.Success -> {

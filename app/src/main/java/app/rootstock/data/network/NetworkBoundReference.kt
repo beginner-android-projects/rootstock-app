@@ -60,7 +60,7 @@ abstract class NetworkBoundRepository<RESULT, REQUEST> {
      * Returns the data from persistence storage.
      */
     @WorkerThread
-    protected abstract fun fetchFromLocal(): Flow<RESULT>
+    protected abstract suspend fun fetchFromLocal(): Flow<RESULT>
 
     /**
      * Received data from network.
