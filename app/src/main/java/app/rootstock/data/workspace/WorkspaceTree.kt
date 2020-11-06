@@ -1,6 +1,5 @@
 package app.rootstock.data.workspace
 
-import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
@@ -24,8 +23,6 @@ import androidx.room.PrimaryKey
 data class WorkspaceTree(
     @PrimaryKey(autoGenerate = true)
     val id: Int? = null,
-    @ColumnInfo(name = "parent")
     val parent: String,
-    @ColumnInfo(name = "child")
     val child: String,
 )

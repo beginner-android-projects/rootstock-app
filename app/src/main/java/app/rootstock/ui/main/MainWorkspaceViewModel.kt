@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.rootstock.data.network.ResponseResult
+import app.rootstock.data.network.ServerAuthenticator
 import app.rootstock.data.result.Event
 import app.rootstock.data.user.UserRepository
 import app.rootstock.data.workspace.WorkspaceWithChildren
@@ -13,6 +14,13 @@ import app.rootstock.ui.workspace.WorkspaceRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import okhttp3.MediaType
+import okhttp3.OkHttpClient
+import okhttp3.ResponseBody
+import retrofit2.HttpException
+import retrofit2.Response
+import retrofit2.Retrofit
+import java.net.Authenticator
 
 enum class MainWorkspaceEvent {
     NO_USER, ERROR

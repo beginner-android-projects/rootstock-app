@@ -19,6 +19,7 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun getUserId() = userDao.getUserId()
 
-    override suspend fun insertUser(user: User) = userDao.insert(user)
+    override suspend fun insertUser(user: User) = userDao.deleteAndInsert(user)
+
 
 }

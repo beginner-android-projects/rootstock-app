@@ -3,7 +3,7 @@ package app.rootstock.data.db
 import androidx.room.TypeConverter
 import java.util.*
 
-class TokenConverters {
+class DateConverter {
     @TypeConverter
     fun toDate(dateLong: Long): Date {
         return Date(dateLong)

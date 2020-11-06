@@ -3,6 +3,7 @@ package app.rootstock.di.modules
 import app.rootstock.api.WorkspaceService
 import app.rootstock.data.channel.ChannelDao
 import app.rootstock.data.db.AppDatabase
+import app.rootstock.data.token.TokenService
 import app.rootstock.data.workspace.WorkspaceDao
 import app.rootstock.ui.workspace.WorkspaceRepository
 import app.rootstock.ui.workspace.WorkspaceRepositoryImpl

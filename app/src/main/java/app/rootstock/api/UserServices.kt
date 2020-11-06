@@ -1,6 +1,6 @@
 package app.rootstock.api
 
-import app.rootstock.data.token.TokenNetwork
+import app.rootstock.data.token.Token
 import app.rootstock.data.user.User
 import app.rootstock.ui.signup.SignUpUser
 import retrofit2.Response
@@ -17,7 +17,7 @@ interface UserLogInService {
     suspend fun logIn(
         @Field("username") username: String,
         @Field("password") password: String
-    ): Response<TokenNetwork>
+    ): Response<Token>
 
 }
 

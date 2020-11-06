@@ -82,7 +82,7 @@ class LogInFragment : Fragment() {
                     false
                 )
                 EventUserLogIn.FAILED -> makeToast(
-                    getString(R.string.login_failed),
+                    getString(R.string.invalid_email),
                     false
                 )
                 EventUserLogIn.LOADING -> {

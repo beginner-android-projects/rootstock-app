@@ -1,5 +1,6 @@
 package app.rootstock.ui.signup
 
+import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -54,7 +55,6 @@ class SignUpViewModel @ViewModelInject constructor(
     }
 
     private fun registerUser(user: SignUpUser) {
-        viewModelScope.cancel()
         viewModelScope.launch {
             when (val userResponse = accountRepository.register(user).first()) {
                 is ResponseResult.Success -> {

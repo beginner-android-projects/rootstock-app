@@ -10,7 +10,9 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import app.rootstock.databinding.FragmentLoginBinding
 import app.rootstock.databinding.FragmentMainWorkspaceBinding
+import app.rootstock.ui.main.MainWorkspaceEvent
 import app.rootstock.ui.main.MainWorkspaceViewModel
+import app.rootstock.utils.makeToast
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
@@ -21,7 +23,6 @@ class WorkspaceFragment : Fragment() {
     private val viewModel: MainWorkspaceViewModel by viewModels()
 
     private lateinit var binding: FragmentMainWorkspaceBinding
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,9 +38,23 @@ class WorkspaceFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
+        setObservers()
+    }
 
+    private fun setObservers() {
+        viewModel.eventWorkspace.observe(viewLifecycleOwner) {
+            when (it.getContentIfNotHandled()) {
+                MainWorkspaceEvent.NO_USER -> {
+                    makeToast("Please relogin to see workspaces")
+                }
+                MainWorkspaceEvent.ERROR -> {
+                    makeToast("Some errors with network...")
+                }
+                null -> {
+                }
+            }
+        }
         viewModel.workspace.observe(viewLifecycleOwner) {
-            Log.d("123 ---- observing ----", "$it")
         }
     }
 

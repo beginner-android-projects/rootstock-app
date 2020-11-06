@@ -1,5 +1,6 @@
 package app.rootstock.ui.login
 
+import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import app.rootstock.data.network.ResponseResult
@@ -9,7 +10,6 @@ import app.rootstock.data.token.TokenRepository
 import app.rootstock.data.user.UserRepository
 import app.rootstock.data.user.UserWithPassword
 import app.rootstock.ui.signup.AccountRepository
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -20,7 +20,7 @@ enum class EventUserLogIn { SUCCESS, INVALID_DATA, FAILED, LOADING }
 class LogInViewModel @ViewModelInject constructor(
     private val userRepository: UserRepository,
     private val accountRepository: AccountRepository,
-    private val tokenRepository: TokenRepository
+    private val tokenLocalDataSource: TokenRepository
 ) :
     ViewModel() {
 
@@ -59,17 +59,11 @@ class LogInViewModel @ViewModelInject constructor(
                 is ResponseResult.Success -> {
                     if (token.data != null) {
                         // update local user
-                        tokenRepository.insertToken(
-                            Token(
-                                accessToken = token.data.accessToken,
-                                refreshToken = token.data.refreshToken,
-                                tokenType = token.data.tokenType
-                            )
-                        )
+                        tokenLocalDataSource.insertToken(token.data)
                         updateUserLocal(token.data.accessToken)
                         _logInStatus.postValue(Event(EventUserLogIn.SUCCESS))
                     } else {
-                        _logInStatus.postValue(Event(EventUserLogIn.FAILED))
+                        _logInStatus.postValue(Event(EventUserLogIn.INVALID_DATA))
                     }
                 }
                 is ResponseResult.Error -> {

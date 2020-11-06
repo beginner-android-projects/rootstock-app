@@ -20,8 +20,6 @@ data class Workspace(
     @ColumnInfo(name = "ws_id")
     @SerializedName("ws_id")
     override val workspaceId: String,
-    @ColumnInfo(name = "name")
-    @SerializedName("name")
     override val name: String,
     @ColumnInfo(name = "background_color")
     @SerializedName("background_color")
@@ -45,7 +43,6 @@ data class WorkspaceWithChannels(
 
 
 data class WorkspaceWithChildren(
-    @SerializedName("name")
     override val name: String,
     @SerializedName("background_color")
     override val backgroundColor: String,
@@ -53,8 +50,6 @@ data class WorkspaceWithChildren(
     override val imageUrl: String?,
     @SerializedName("ws_id")
     override val workspaceId: String,
-    @SerializedName("channels")
     val channels: List<Channel>,
-    @SerializedName("children")
     val children: List<Workspace>,
 ): WorkspaceI

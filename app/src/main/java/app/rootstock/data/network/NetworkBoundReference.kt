@@ -1,6 +1,7 @@
 package app.rootstock.data.network
 
 import androidx.annotation.WorkerThread
+import app.rootstock.data.workspace.WorkspaceWithChildren
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch

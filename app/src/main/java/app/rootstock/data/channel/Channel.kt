@@ -1,11 +1,10 @@
 package app.rootstock.data.channel
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.PrimaryKey
+import androidx.room.*
+import app.rootstock.data.db.DateConverter
 import app.rootstock.data.workspace.Workspace
 import com.google.gson.annotations.SerializedName
+import java.util.*
 
 interface ChannelI {
     val name: String
@@ -14,7 +13,6 @@ interface ChannelI {
     var workspaceId: String?
     val imageUrl: String?
     val backgroundColor: String?
-
 }
 
 @Entity(
@@ -25,9 +23,8 @@ interface ChannelI {
         childColumns = ["workspace_id"]
     )]
 )
+@TypeConverters(DateConverter::class)
 data class Channel(
-    @SerializedName("name")
-    @ColumnInfo(name = "name")
     override val name: String,
     @PrimaryKey
     @ColumnInfo(name = "channel_id")
@@ -44,7 +41,7 @@ data class Channel(
     override val imageUrl: String?,
     @ColumnInfo(name = "last_update")
     @SerializedName("last_update")
-    val lastUpdate: String,
+    val lastUpdate: Date,
     @ColumnInfo(name = "workspace_id")
     @SerializedName("workspace_id")
     override var workspaceId: String? = null

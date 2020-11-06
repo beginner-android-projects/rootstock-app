@@ -1,32 +1,34 @@
 package app.rootstock.data.network
 
 import app.rootstock.data.token.TokenRepository
-import kotlinx.coroutines.*
+import kotlinx.coroutines.runBlocking
 import okhttp3.*
 import javax.inject.Inject
 
-class TokenInterceptor @Inject constructor(private val tokenRepository: TokenRepository) :
+class TokenInterceptor @Inject constructor(
+    private val tokenRepository: TokenRepository,
+) :
     Interceptor {
 
+    var currentToken: String? = null
+
     override fun intercept(chain: Interceptor.Chain): Response {
-        val token = runBlocking {
-            tokenRepository.getAccessToken()
+
+        if (currentToken == null) {
+            currentToken = runBlocking {
+                tokenRepository.getAccessToken()
+            }
+
         }
-        token ?: return chain.proceed(chain.request())
-        val request = createRequestWithAccessToken(chain.request(), token)
-        return chain.proceed(request)
+        currentToken?.let {
+            val request = createRequestWithAccessToken(chain.request(), it)
+            return chain.proceed(request)
+        } ?: return chain.proceed(chain.request())
     }
 
-    private fun createRequestWithAccessToken(request: Request, token: String): Request {
-        return request.newBuilder().header("Authorization", "Bearer $token").build()
-    }
+    private fun createRequestWithAccessToken(request: Request, token: String): Request =
+        request.newBuilder().header("Authorization", "Bearer $token").build()
 
 
 }
 
-class ServerAuthenticator @Inject constructor() : Authenticator {
-    override fun authenticate(route: Route?, response: Response): Request? {
-        TODO()
-    }
-
-}
