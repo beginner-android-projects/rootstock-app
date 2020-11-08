@@ -10,7 +10,7 @@ interface ChannelI {
     val name: String
     val channelId: Long
     val lastMessage: String?
-    var workspaceId: String?
+    var workspaceId: String
     val imageUrl: String?
     val backgroundColor: String?
 }
@@ -44,6 +44,6 @@ data class Channel(
     val lastUpdate: Date,
     @ColumnInfo(name = "workspace_id")
     @SerializedName("workspace_id")
-    override var workspaceId: String? = null
+    override var workspaceId: String
 ) : ChannelI
 

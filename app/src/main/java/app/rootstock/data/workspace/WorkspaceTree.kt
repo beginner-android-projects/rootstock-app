@@ -2,9 +2,12 @@ package app.rootstock.data.workspace
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
-
+/**
+ * Table to store workspace-workspace relationship to represent hierarchical order.
+ */
 @Entity(
     tableName = "workspaces_tree",
     foreignKeys = [
@@ -18,7 +21,8 @@ import androidx.room.PrimaryKey
             parentColumns = ["ws_id"],
             childColumns = ["child"]
         )
-    ]
+    ],
+    indices = [Index("parent"), Index("child")],
 )
 data class WorkspaceTree(
     @PrimaryKey(autoGenerate = true)

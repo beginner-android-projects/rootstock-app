@@ -11,7 +11,7 @@ interface UserWithPassword {
 }
 
 /**
- * User class for local room database
+ * User class
  */
 @Entity(tableName = "users")
 class User(

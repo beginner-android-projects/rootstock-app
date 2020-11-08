@@ -37,6 +37,12 @@ class LogInFragment : Fragment() {
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val toolbar = view.findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
+        toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
+        toolbar.setNavigationOnClickListener { requireActivity().onBackPressed() }
+    }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -44,19 +50,9 @@ class LogInFragment : Fragment() {
 
         setObservers()
 
-        val txtNoAccount = view?.findViewById<TextView>(R.id.no_account)
-        txtNoAccount?.let { setUpTextNoAccount(it) }
-    }
-
-    val navigateToLogInFragment = {
-        val action = LogInFragmentDirections.actionLoginFragmentToSigninFragment()
-        findNavController().navigate(action)
     }
 
     private fun setUpTextNoAccount(txtNoAccount: TextView) {
-        txtNoAccount.setOnClickListener {
-            navigateToLogInFragment()
-        }
         // in case of translations??
         try {
             val spannable = SpannableString(txtNoAccount.text ?: getString(R.string.no_account))
@@ -82,7 +78,7 @@ class LogInFragment : Fragment() {
                     false
                 )
                 EventUserLogIn.FAILED -> makeToast(
-                    getString(R.string.invalid_email),
+                    getString(R.string.login_failed),
                     false
                 )
                 EventUserLogIn.LOADING -> {

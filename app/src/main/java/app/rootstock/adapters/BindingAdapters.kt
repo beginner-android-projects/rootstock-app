@@ -17,9 +17,18 @@ fun bindingError(view: TextInputLayout, valid: Boolean) {
 }
 
 @BindingAdapter("loading")
-fun bindingLoading(view: ProgressBar, loading: Boolean) {
+fun bindingLoading(view: View, loading: Boolean) {
     if (!loading) {
         if (view.visibility == View.VISIBLE) view.visibility = View.GONE
+        return
+    }
+    view.visibility = View.VISIBLE
+}
+
+@BindingAdapter("overlay_visible")
+fun bindingLoadingOverlay(view: View, loading: Boolean) {
+    if (!loading) {
+        if (view.visibility == View.VISIBLE) view.visibility = View.INVISIBLE
         return
     }
     view.visibility = View.VISIBLE

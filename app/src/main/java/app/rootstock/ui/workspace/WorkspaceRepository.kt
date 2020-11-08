@@ -47,9 +47,7 @@ class WorkspaceRepositoryImpl @Inject constructor(
                         workspaceLocal.insertAll(it.children)
 
                         // insert channels
-                        channelLocal.insertAll(it.channels.onEach { channel ->
-                            channel.workspaceId = it.workspaceId
-                        })
+                        channelLocal.insertAll(it.channels)
 
                         // create hierarchy
                         val list = mutableListOf<WorkspaceTree>()

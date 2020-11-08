@@ -2,35 +2,44 @@
 
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:startDestination="@id/signin_fragment">
+    app:startDestination="@id/intro_fragment">
+    <fragment
+        android:id="@+id/intro_fragment"
+        android:name="app.rootstock.ui.intro.IntroFragment">
+        <action
+            android:id="@+id/action_intro_fragment_to_signin_fragment"
+            app:destination="@id/signin_fragment" />
+        <action
+            android:id="@+id/action_intro_fragment_to_login_fragment"
+            app:destination="@id/login_fragment" />
+    </fragment>
+
 
     <fragment
         android:id="@+id/signin_fragment"
         android:name="app.rootstock.ui.signup.SignUpFragment">
-
         <action
-            android:id="@+id/action_signin_fragment_to_login_fragment"
-
-            app:destination="@id/login_fragment"
-            app:enterAnim="@anim/fragment_open_enter"
-            app:exitAnim="@anim/fragment_open_exit"
-            app:popEnterAnim="@anim/fragment_fade_enter"
-            app:popExitAnim="@anim/fragment_fade_exit" />
+            android:id="@+id/action_signin_fragment_to_intro_fragment"
+            app:destination="@id/intro_fragment" />
     </fragment>
 
     <fragment
         android:id="@+id/login_fragment"
         android:name="app.rootstock.ui.login.LogInFragment">
 
+<!--        <action-->
+<!--            android:id="@+id/action_login_fragment_to_signin_fragment"-->
+<!--            app:destination="@id/signin_fragment"-->
+<!--            app:enterAnim="@anim/fragment_open_enter"-->
+<!--            app:exitAnim="@anim/fragment_open_exit"-->
+<!--            app:popEnterAnim="@anim/fragment_fade_enter"-->
+<!--            app:popExitAnim="@anim/fragment_fade_exit"-->
+<!--            app:popUpTo="@id/signin_fragment"-->
+<!--            app:popUpToInclusive="true" />-->
+<!--        -->
         <action
-            android:id="@+id/action_login_fragment_to_signin_fragment"
-            app:destination="@id/signin_fragment"
-            app:enterAnim="@anim/fragment_open_enter"
-            app:exitAnim="@anim/fragment_open_exit"
-            app:popEnterAnim="@anim/fragment_fade_enter"
-            app:popExitAnim="@anim/fragment_fade_exit"
-            app:popUpTo="@id/signin_fragment"
-            app:popUpToInclusive="true" />
+            android:id="@+id/action_login_fragment_to_intro_fragment"
+            app:destination="@id/intro_fragment" />
     </fragment>
 
 

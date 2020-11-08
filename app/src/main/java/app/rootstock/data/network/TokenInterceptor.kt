@@ -16,7 +16,7 @@ class TokenInterceptor @Inject constructor(
 
         if (currentToken == null) {
             currentToken = runBlocking {
-                tokenRepository.getAccessToken()
+                tokenRepository.getToken()?.accessToken
             }
 
         }

@@ -10,8 +10,10 @@
     <string name="already_account">already have an account? log in</string>
     <string name="no_account">no account? create one</string>
     <string name="log_in">log in</string>
-    <string name="login_failed">Something went wrong</string>
+    <string name="login_failed">Unable to log in. Check your connection</string>
     <string name="invalid_email_or_password">Email or password is invalid</string>
-    <string name="sign_up_title">Hello!</string>
+    <string name="intro_title">Hello!</string>
     <string name="sign_up_privacy">signing up you agree to our privacy policy</string>
+    <string name="signup_title">Start by creating account</string>
+    <string name="login_title">Log in to existing account</string>
 </resources>

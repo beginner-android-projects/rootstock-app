@@ -67,7 +67,7 @@ class LogInViewModel @ViewModelInject constructor(
                     }
                 }
                 is ResponseResult.Error -> {
-                    _logInStatus.postValue(Event(EventUserLogIn.FAILED))
+                    _logInStatus.postValue(Event(EventUserLogIn.INVALID_DATA))
                 }
             }
         }
@@ -88,6 +88,7 @@ class LogInViewModel @ViewModelInject constructor(
             }
             is ResponseResult.Error -> {
                 _logInStatus.postValue(Event(EventUserLogIn.FAILED))
+
             }
         }
     }

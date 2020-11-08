@@ -33,7 +33,7 @@ class ServerAuthenticator @Inject constructor(
 
         // get refresh token from db
         val refreshToken = runBlocking {
-            tokenRepository.getRefreshToken()
+            tokenRepository.getToken()?.refreshToken
         }
         if (refreshToken == null) {
             relogin()

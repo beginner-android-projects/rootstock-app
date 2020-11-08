@@ -1,7 +1,6 @@
 package app.rootstock.data.network
 
 import androidx.annotation.WorkerThread
-import app.rootstock.data.workspace.WorkspaceWithChildren
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -23,10 +22,8 @@ sealed class ResponseResult<T> {
 }
 
 /**
- * A repository which provides resource from local database as well as remote end point.
- *
- * [RESULT] represents the type for database.
- * [REQUEST] represents the type for network.
+ * [RESULT] type for db.
+ * [REQUEST] type for network.
  */
 @ExperimentalCoroutinesApi
 abstract class NetworkBoundRepository<RESULT, REQUEST> {

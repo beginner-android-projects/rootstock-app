@@ -6,6 +6,9 @@ import androidx.room.*
 @Dao
 interface UserDao {
 
+    /**
+     * We want only one user to be in db
+     */
     @Transaction
     suspend fun deleteAndInsert(user: User) {
         deleteAll()
