@@ -5,6 +5,9 @@ import kotlinx.coroutines.runBlocking
 import okhttp3.*
 import javax.inject.Inject
 
+/**
+ * Interceptor that adds an Authorization header with valid jwt access token
+ */
 class TokenInterceptor @Inject constructor(
     private val tokenRepository: TokenRepository,
 ) :
@@ -20,6 +23,7 @@ class TokenInterceptor @Inject constructor(
             }
 
         }
+
         currentToken?.let {
             val request = createRequestWithAccessToken(chain.request(), it)
             return chain.proceed(request)
@@ -28,6 +32,10 @@ class TokenInterceptor @Inject constructor(
 
     private fun createRequestWithAccessToken(request: Request, token: String): Request =
         request.newBuilder().header("Authorization", "Bearer $token").build()
+
+    fun nullToken() {
+        currentToken = null
+    }
 
 
 }

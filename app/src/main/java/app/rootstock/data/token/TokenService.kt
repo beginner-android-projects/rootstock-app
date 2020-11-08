@@ -12,9 +12,13 @@ interface TokenService {
         @Body tokenUpdate: TokenUpdate
     ): Response<Token>
 
+    /**
+     * Should return 204 No Content
+     */
     @POST("/revoke-refresh")
     suspend fun revokeToken(
+        @Header("Authorization") accessToken: String,
         @Body tokenRevoke: TokenRevoke,
-    ): Response<Any>
+    ): Response<Void>
 }
 

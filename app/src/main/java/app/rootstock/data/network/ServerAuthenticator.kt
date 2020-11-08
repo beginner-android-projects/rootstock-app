@@ -13,7 +13,11 @@ import okhttp3.Route
 import javax.inject.Inject
 import javax.inject.Singleton
 
-
+/**
+ * Authenticator that handles 401 Unauthorized error.
+ * Refreshes access token using refresh token or emits an relogin event
+ * through [ReLogInObservable] when refresh token is also expired.
+ */
 @Singleton
 class ServerAuthenticator @Inject constructor(
     private val tokenRepository: TokenRepository,
@@ -21,10 +25,8 @@ class ServerAuthenticator @Inject constructor(
     private val reLogInObservable: ReLogInObservable,
 ) : Authenticator {
 
-    private var currentRefreshToken: String? = null
-
     override fun authenticate(route: Route?, response: Response): Request? {
-        // wrong access token
+        // prevent infinite loops
         if (!response.request().header("Authorization")
                 .equals("Bearer " + tokenInterceptor.currentToken)
         ) {
@@ -59,7 +61,6 @@ class ServerAuthenticator @Inject constructor(
         }
 
         tokenInterceptor.currentToken = newToken.accessToken
-        currentRefreshToken = newToken.refreshToken
 
         // update token in db
         runBlocking {
@@ -69,13 +70,15 @@ class ServerAuthenticator @Inject constructor(
         // revoke old token
         // todo: inject coroutine context
         CoroutineScope(Dispatchers.Main).launch {
-            tokenRepository.revokeToken(refreshToken)
+            tokenRepository.revokeToken(refreshToken, newToken.accessToken)
         }
         return response.request().newBuilder()
             .header("Authorization", "Bearer ${newToken.accessToken}").build()
     }
 
     private fun relogin() {
+        // null token so in case of relogin we'll get a fresh one from db
+        tokenInterceptor.nullToken()
         reLogInObservable.notifyObservers()
     }
 

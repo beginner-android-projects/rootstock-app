@@ -22,4 +22,5 @@ data class TokenUpdate constructor(
 
 data class TokenRevoke constructor(
     @SerializedName("refresh_token") val refreshToken: String,
+    @SerializedName("user_id") val userId: String,
 )

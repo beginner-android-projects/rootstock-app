@@ -64,5 +64,5 @@ abstract class NetworkBoundRepository<RESULT, REQUEST> {
      * Received data from network.
      */
     @WorkerThread
-    protected abstract suspend fun fetchFromRemote(): REQUEST
+    protected abstract suspend fun fetchFromRemote(): REQUEST?
 }

@@ -30,7 +30,6 @@ import javax.inject.Singleton
 @Module
 class AppModule {
 
-
     companion object {
         const val SERVER_DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS"
         const val API_BASE_URL = "http://192.168.43.116:8000"
@@ -81,7 +80,7 @@ class AppModule {
     }
 
     /**
-     * specify date format to correctly convert date object from server to [java.util.Date]
+     * Provide Gson and specify date format to correctly convert date object from server's to [java.util.Date]
      */
     @Provides
     @Singleton

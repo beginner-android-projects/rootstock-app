@@ -28,14 +28,6 @@
         </include>
 
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline_email"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.28" />
-
-
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/email"
             style="@style/Text.TextInputLayout.Primary"

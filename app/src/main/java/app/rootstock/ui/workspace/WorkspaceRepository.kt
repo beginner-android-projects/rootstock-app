@@ -82,10 +82,10 @@ class WorkspaceRepositoryImpl @Inject constructor(
                 }
             }
 
-            override suspend fun fetchFromRemote(): WorkspaceWithChildren {
+            override suspend fun fetchFromRemote(): WorkspaceWithChildren? {
                 val workspaceResponse = workspaceRemoteSource.getWorkspace(workspaceId)
                 Log.d("123 ----- remote -----", "${workspaceResponse.body()}")
-                return workspaceResponse.body()!!
+                return workspaceResponse.body()
             }
         }.asFlow()
 
