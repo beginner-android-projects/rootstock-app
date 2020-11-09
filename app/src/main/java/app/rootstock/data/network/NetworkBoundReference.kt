@@ -22,10 +22,8 @@ sealed class ResponseResult<T> {
 }
 
 /**
- * A repository which provides resource from local database as well as remote end point.
- *
- * [RESULT] represents the type for database.
- * [REQUEST] represents the type for network.
+ * [RESULT] type for db.
+ * [REQUEST] type for network.
  */
 @ExperimentalCoroutinesApi
 abstract class NetworkBoundRepository<RESULT, REQUEST> {
@@ -60,11 +58,11 @@ abstract class NetworkBoundRepository<RESULT, REQUEST> {
      * Returns the data from persistence storage.
      */
     @WorkerThread
-    protected abstract fun fetchFromLocal(): Flow<RESULT>
+    protected abstract suspend fun fetchFromLocal(): Flow<RESULT>
 
     /**
      * Received data from network.
      */
     @WorkerThread
-    protected abstract suspend fun fetchFromRemote(): REQUEST
+    protected abstract suspend fun fetchFromRemote(): REQUEST?
 }

@@ -10,6 +10,7 @@
 
     <color name="primary">#7800D7</color>
     <color name="text_grey">#B2B2B2</color>
+    <color name="layout_overlay">#000000</color>
     <color name="colorButtonDisabled">#B2B2B2</color>
     <color name="colorButtonEnabled">@color/primary</color>
 </resources>

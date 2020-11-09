@@ -11,15 +11,12 @@ interface UserWithPassword {
 }
 
 /**
- * User class for local room database
+ * User class
  */
 @Entity(tableName = "users")
 class User(
-    @SerializedName("user_id")
+    @PrimaryKey @SerializedName("user_id")
     @ColumnInfo(name = "user_id")
-    @PrimaryKey
     val userId: String,
-    @SerializedName("email")
-    @ColumnInfo(name = "email")
     val email: String
 )

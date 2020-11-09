@@ -15,6 +15,7 @@
 
         <item name="fontFamily">@font/montserrat</item>
         <item name="textInputStyle">@style/Text.TextInputLayout.Base</item>
+        <item name="android:progressBarStyle">@style/ProgressBar.Base</item>
 
     </style>
 </resources>

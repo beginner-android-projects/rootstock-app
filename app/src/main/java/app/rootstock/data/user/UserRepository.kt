@@ -1,28 +1,25 @@
 package app.rootstock.data.user
 
-import app.rootstock.data.token.Token
-import app.rootstock.data.token.TokenDao
+import androidx.lifecycle.LiveData
 import javax.inject.Inject
 import javax.inject.Singleton
 
-// todo token repository
+interface UserRepository {
+    fun getUser(): LiveData<User?>
+    suspend fun getUserId(): String?
+    suspend fun insertUser(user: User)
+}
+
 @Singleton
-class UserRepository @Inject constructor(
-    private val userDao: UserDao,
-    private val tokenDao: TokenDao
-) {
+class UserRepositoryImpl @Inject constructor(
+    private val userDao: UserDao
+) : UserRepository {
 
-    fun getUser() = userDao.searchUser()
+    override fun getUser() = userDao.searchUser()
 
-    suspend fun insertUser(user: User) = userDao.insert(user)
+    override suspend fun getUserId() = userDao.getUserId()
 
-    suspend fun insertToken(token: Token) = tokenDao.insertToken(token)
-
-    suspend fun getAccessToken() = tokenDao.searchAccessToken()
-
-    suspend fun updateAccessToken(accessToken: String) = tokenDao.updateAccessToken(accessToken)
-
-    suspend fun updateRefreshToken(refreshToken: String) = tokenDao.updateRefreshToken(refreshToken)
+    override suspend fun insertUser(user: User) = userDao.deleteAndInsert(user)
 
 
 }

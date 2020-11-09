@@ -8,6 +8,16 @@
         android:id="@+id/workspace_fragment"
         android:name="app.rootstock.ui.workspace.WorkspaceFragment">
 
+        <action
+            android:id="@+id/action_workspace_fragment_self"
+            app:destination="@id/workspace_fragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:popEnterAnim="@anim/fragment_fade_enter" />
+        <argument
+            android:name="workspaceId"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
 
 

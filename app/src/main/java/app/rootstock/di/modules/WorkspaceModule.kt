@@ -1,9 +1,12 @@
 package app.rootstock.di.modules
 
 import app.rootstock.api.WorkspaceService
+import app.rootstock.data.channel.ChannelDao
 import app.rootstock.data.db.AppDatabase
+import app.rootstock.data.token.TokenService
 import app.rootstock.data.workspace.WorkspaceDao
 import app.rootstock.ui.workspace.WorkspaceRepository
+import app.rootstock.ui.workspace.WorkspaceRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,6 +26,11 @@ object WorkspaceModule {
         return appDatabase.workspaceDao()
     }
 
+    @Provides
+    fun provideChannelDao(appDatabase: AppDatabase): ChannelDao {
+        return appDatabase.channelDao()
+    }
+
 
     @Provides
     fun provideWorkspaceService(retrofit: Retrofit): WorkspaceService {
@@ -32,8 +40,9 @@ object WorkspaceModule {
     @Provides
     fun provideWorkspaceRepository(
         workspaceDataSource: WorkspaceService,
-        workspaceDao: WorkspaceDao
+        workspaceDao: WorkspaceDao,
+        channelDao: ChannelDao,
     ): WorkspaceRepository {
-        return WorkspaceRepository(workspaceDataSource, workspaceDao)
+        return WorkspaceRepositoryImpl(workspaceDataSource, workspaceDao, channelDao)
     }
 }

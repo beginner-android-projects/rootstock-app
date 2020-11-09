@@ -5,14 +5,13 @@ import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
+import androidx.navigation.findNavController
 import app.rootstock.R
 import app.rootstock.databinding.FragmentSignupBinding
 import app.rootstock.ui.main.WorkspaceActivity
@@ -38,6 +37,13 @@ class SignUpFragment : Fragment() {
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val toolbar = view.findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
+        toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
+        toolbar.setNavigationOnClickListener { view.findNavController().navigateUp() }
+    }
+
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -45,11 +51,9 @@ class SignUpFragment : Fragment() {
 
         setObservers()
 
-        val txtAlready = view?.findViewById<TextView>(R.id.already_have_account)
-        txtAlready?.let { setUpTextAlready(it) }
-
-        val txtPrivacy = view?.findViewById<TextView>(R.id.privay_policy)
+        val txtPrivacy = view?.findViewById<TextView>(R.id.privacy_policy)
         txtPrivacy?.let { setUpTextPrivacy(it) }
+
 
     }
 
@@ -67,26 +71,6 @@ class SignUpFragment : Fragment() {
                 Spannable.SPAN_EXCLUSIVE_INCLUSIVE
             )
             txtPrivacy.text = spannable
-        } catch (e: IndexOutOfBoundsException) {
-            e.printStackTrace()
-        }
-    }
-
-    private fun setUpTextAlready(txtAlready: TextView) {
-        txtAlready.setOnClickListener {
-            val action = SignUpFragmentDirections.actionSigninFragmentToLoginFragment()
-            findNavController().navigate(action)
-        }
-        // in case of translations??
-        try {
-            val spannable = SpannableString(txtAlready.text ?: getString(R.string.already_account))
-            spannable.setSpan(
-                ForegroundColorSpan(requireContext().getColor(R.color.primary)),
-                25,
-                31,
-                Spannable.SPAN_EXCLUSIVE_INCLUSIVE
-            )
-            txtAlready.text = spannable
         } catch (e: IndexOutOfBoundsException) {
             e.printStackTrace()
         }

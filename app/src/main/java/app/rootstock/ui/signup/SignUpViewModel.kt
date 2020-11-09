@@ -1,5 +1,6 @@
 package app.rootstock.ui.signup
 
+import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -9,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import app.rootstock.data.network.ResponseResult
 import app.rootstock.data.result.Event
 import app.rootstock.data.token.Token
+import app.rootstock.data.token.TokenRepository
 import app.rootstock.data.user.UserRepository
 import app.rootstock.data.user.UserWithPassword
 import kotlinx.coroutines.cancel
@@ -19,7 +21,8 @@ enum class EventUserSignUp { SUCCESS, USER_EXISTS, INVALID_DATA, FAILED, LOADING
 
 class SignUpViewModel @ViewModelInject constructor(
     private val userRepository: UserRepository,
-    private val accountRepository: AccountRepository
+    private val accountRepository: AccountRepository,
+    private val tokenRepository: TokenRepository
 ) :
     ViewModel() {
 
@@ -75,7 +78,7 @@ class SignUpViewModel @ViewModelInject constructor(
             is ResponseResult.Success -> {
                 if (token.data != null) {
                     // update local user
-                    userRepository.insertToken(
+                    tokenRepository.insertToken(
                         Token(
                             accessToken = token.data.accessToken,
                             refreshToken = token.data.refreshToken,
