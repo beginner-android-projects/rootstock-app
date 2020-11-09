@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface WorkspaceDao {
     // select root workspace for user
-    @Query("select ws_id, name, background_color, image_url from workspaces as w inner join users on w.ws_id = users.user_id limit 1")
+    @Query("select ws_id, name, background_color, image_url, created_at from workspaces as w inner join users on w.ws_id = users.user_id limit 1")
     fun getMainWorkspace(): Flow<Workspace>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

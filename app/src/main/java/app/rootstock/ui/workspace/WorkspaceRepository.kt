@@ -41,6 +41,7 @@ class WorkspaceRepositoryImpl @Inject constructor(
                                 workspaceId = it.workspaceId,
                                 backgroundColor = it.backgroundColor,
                                 imageUrl = it.imageUrl,
+                                createdAt = it.createdAt,
                             )
                         )
                         // insert children workspaces
@@ -64,7 +65,9 @@ class WorkspaceRepositoryImpl @Inject constructor(
             }
 
             override suspend fun fetchFromLocal(): Flow<WorkspaceWithChildren?> {
-                val workspaces = workspaceLocal.getChildrenWorkspacesById(workspaceId)
+                val workspaces = workspaceLocal.getChildrenWorkspacesById(workspaceId).sortedBy {
+                    it.createdAt
+                }
                 val workspaceWithChannels =
                     workspaceLocal.getWorkspaceWithChannels(workspaceId)
                         ?: return flow { emit(null) }
@@ -76,7 +79,8 @@ class WorkspaceRepositoryImpl @Inject constructor(
                             imageUrl = workspaceWithChannels.workspace.imageUrl,
                             backgroundColor = workspaceWithChannels.workspace.backgroundColor,
                             children = workspaces,
-                            channels = workspaceWithChannels.channels
+                            channels = workspaceWithChannels.channels,
+                            createdAt = workspaceWithChannels.workspace.createdAt,
                         )
                     )
                 }
@@ -84,7 +88,6 @@ class WorkspaceRepositoryImpl @Inject constructor(
 
             override suspend fun fetchFromRemote(): WorkspaceWithChildren? {
                 val workspaceResponse = workspaceRemoteSource.getWorkspace(workspaceId)
-                Log.d("123 ----- remote -----", "${workspaceResponse.body()}")
                 return workspaceResponse.body()
             }
         }.asFlow()

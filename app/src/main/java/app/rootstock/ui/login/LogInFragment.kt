@@ -12,11 +12,9 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
 import app.rootstock.R
 import app.rootstock.databinding.FragmentLoginBinding
 import app.rootstock.ui.main.WorkspaceActivity
-import app.rootstock.ui.signup.SignUpFragmentDirections
 import app.rootstock.utils.makeToast
 import dagger.hilt.android.AndroidEntryPoint
 

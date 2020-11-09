@@ -2,32 +2,39 @@ package app.rootstock.data.workspace
 
 import androidx.room.*
 import app.rootstock.data.channel.Channel
+import app.rootstock.data.db.DateConverter
 import com.google.gson.annotations.SerializedName
+import java.util.*
 
 interface WorkspaceI {
     val workspaceId: String
     val name: String
     val imageUrl: String?
     val backgroundColor: String
+    val createdAt: Date
 }
 
 @Entity(
     tableName = "workspaces",
     indices = [Index("ws_id")],
 )
+@TypeConverters(DateConverter::class)
 data class Workspace(
     @PrimaryKey
     @ColumnInfo(name = "ws_id")
     @SerializedName("ws_id")
     override val workspaceId: String,
-    override val name: String,
+    override var name: String,
     @ColumnInfo(name = "background_color")
     @SerializedName("background_color")
     override val backgroundColor: String,
     @ColumnInfo(name = "image_url")
     @SerializedName("image_url")
     override val imageUrl: String?,
-): WorkspaceI
+    @ColumnInfo(name = "created_at")
+    @SerializedName("created_at")
+    override val createdAt: Date
+) : WorkspaceI
 
 /**
  * This class represents 1:m relationship in Workspace - Channels tables (Needed for Room)
@@ -43,13 +50,15 @@ data class WorkspaceWithChannels(
 
 
 data class WorkspaceWithChildren(
-    override val name: String,
+    override var name: String,
     @SerializedName("background_color")
     override val backgroundColor: String,
     @SerializedName("image_url")
-    override val imageUrl: String?,
+    override var imageUrl: String?,
     @SerializedName("ws_id")
     override val workspaceId: String,
-    val channels: List<Channel>,
-    val children: List<Workspace>,
-): WorkspaceI
+    @SerializedName("created_at")
+    override val createdAt: Date,
+    var channels: List<Channel>,
+    var children: List<Workspace>,
+) : WorkspaceI

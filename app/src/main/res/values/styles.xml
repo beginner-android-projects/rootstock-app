@@ -65,4 +65,17 @@
         <item name="android:elevation">30dp</item>
     </style>
 
+
+
+    <style name="BaseCardView" parent="Base.CardView">
+        <item name="cardCornerRadius">20dp</item>
+    </style>
+
+    <style name="CardView.Workspace" parent="BaseCardView">
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:foreground">?attr/selectableItemBackground</item>
+    </style>
+
+
 </resources>

@@ -1,61 +1,101 @@
 package app.rootstock.ui.workspace
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
-import app.rootstock.databinding.FragmentLoginBinding
-import app.rootstock.databinding.FragmentMainWorkspaceBinding
-import app.rootstock.ui.main.MainWorkspaceEvent
-import app.rootstock.ui.main.MainWorkspaceViewModel
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import app.rootstock.adapters.WorkspacePagerAdapter
+import app.rootstock.databinding.FragmentWorkspaceBinding
+import app.rootstock.ui.main.WorkspaceEvent
+import app.rootstock.ui.main.WorkspaceViewModel
 import app.rootstock.utils.makeToast
+import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+
 
 @AndroidEntryPoint
 @ExperimentalCoroutinesApi
 class WorkspaceFragment : Fragment() {
 
-    private val viewModel: MainWorkspaceViewModel by viewModels()
+    private val args: WorkspaceFragmentArgs by navArgs()
 
-    private lateinit var binding: FragmentMainWorkspaceBinding
+    private val viewModel: WorkspaceViewModel by activityViewModels()
+
+    private lateinit var binding: FragmentWorkspaceBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentMainWorkspaceBinding.inflate(inflater, container, false).apply {
+        binding = FragmentWorkspaceBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
         }
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-    override fun onStart() {
-        super.onStart()
+        // setup adapter for viewpager with tablayout
+        val adapter = WorkspacePagerAdapter(this)
+        binding.pager.adapter = adapter
+        TabLayoutMediator(binding.tabLayout, binding.pager) { tab, position ->
+            tab.text = when (position) {
+                1 -> "channels"
+                else -> "workspaces"
+            }
+        }.attach()
+        viewModel.loadWorkspace(args.workspaceId)
         setObservers()
+
     }
 
     private fun setObservers() {
         viewModel.eventWorkspace.observe(viewLifecycleOwner) {
-            when (it.getContentIfNotHandled()) {
-                MainWorkspaceEvent.NO_USER -> {
+            when (val content = it.getContentIfNotHandled()) {
+                is WorkspaceEvent.OpenWorkspace -> {
+                    openWorkspace(content.workspaceId)
+                }
+                is WorkspaceEvent.NoUser -> {
                     makeToast("Please relogin to see workspaces")
                 }
-                MainWorkspaceEvent.ERROR -> {
+                is WorkspaceEvent.Error -> {
                     makeToast("Some errors with network...")
+
                 }
                 null -> {
                 }
             }
         }
-        viewModel.workspace.observe(viewLifecycleOwner) {
-        }
+
+        activity?.onBackPressedDispatcher?.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (args.workspaceId != null)
+                        findNavController().navigateUp()
+                    else activity?.finish()
+                }
+            })
+    }
+
+    /**
+     * navigates to workspace using workspaceId
+     * If workspaceId is null, we are in a root workspace
+     */
+    private fun openWorkspace(workspaceId: String) {
+        findNavController().navigate(
+            WorkspaceFragmentDirections.actionWorkspaceFragmentSelf(
+                workspaceId
+            )
+        )
     }
 
 

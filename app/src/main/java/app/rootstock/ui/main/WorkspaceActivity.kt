@@ -16,7 +16,7 @@ import javax.inject.Inject
 class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
 
     @ExperimentalCoroutinesApi
-    private val viewModel: MainWorkspaceViewModel by viewModels()
+    private val viewModel: WorkspaceViewModel by viewModels()
 
     @Inject
     lateinit var reLogInObservable: ReLogInObservable
@@ -24,7 +24,6 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_workspace)
-
     }
 
     override fun onStart() {
