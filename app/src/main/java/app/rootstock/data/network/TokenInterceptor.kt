@@ -3,6 +3,7 @@ package app.rootstock.data.network
 import app.rootstock.data.token.TokenRepository
 import kotlinx.coroutines.runBlocking
 import okhttp3.*
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 /**
@@ -36,7 +37,6 @@ class TokenInterceptor @Inject constructor(
     fun nullToken() {
         currentToken = null
     }
-
 
 }
 

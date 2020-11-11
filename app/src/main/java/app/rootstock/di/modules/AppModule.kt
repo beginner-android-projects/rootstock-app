@@ -18,13 +18,13 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
-import okhttp3.Interceptor
+import okhttp3.Cache
 import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.File
 import javax.inject.Singleton
+
 
 @InstallIn(ApplicationComponent::class)
 @Module
@@ -135,16 +135,35 @@ class AppModule {
     }
 
     @Provides
+    fun provideCacheInterceptor(): CacheInterceptor {
+        return CacheInterceptor()
+    }
+
+    @Provides
+    fun getCache(@ApplicationContext context: Context): Cache {
+        val httpCacheDirectory = File(context.cacheDir, "http-cache")
+        val cacheSize = 10 * 1024 * 1024 // 10 MiB
+        return Cache(httpCacheDirectory, cacheSize.toLong())
+    }
+
+    @Provides
     fun getClient(
         tokenInterceptor: TokenInterceptor,
         authenticator: ServerAuthenticator,
         jsonInterceptor: JsonInterceptor,
-    ): OkHttpClient =
-        OkHttpClient.Builder()
+        cacheInterceptor: CacheInterceptor,
+        cache: Cache
+
+    ): OkHttpClient {
+
+        return OkHttpClient.Builder()
             // add JSON header interceptor
+            .addNetworkInterceptor(cacheInterceptor)
             .addInterceptor(jsonInterceptor)
             .addInterceptor(tokenInterceptor)
             .authenticator(authenticator)
+            .cache(cache)
             .build()
+    }
 
 }

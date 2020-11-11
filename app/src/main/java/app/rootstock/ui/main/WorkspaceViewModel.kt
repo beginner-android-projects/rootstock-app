@@ -1,6 +1,5 @@
 package app.rootstock.ui.main
 
-import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import app.rootstock.adapters.WorkspaceEventHandler
@@ -20,6 +19,7 @@ sealed class WorkspaceEvent {
     class OpenWorkspace(val workspaceId: String) : WorkspaceEvent()
     class NoUser() : WorkspaceEvent()
     class Error() : WorkspaceEvent()
+    class NavigateToRoot() : WorkspaceEvent()
 }
 
 @ExperimentalCoroutinesApi
@@ -46,6 +46,9 @@ class WorkspaceViewModel @ViewModelInject constructor(
 
     private val _eventWorkspace = MutableLiveData<Event<WorkspaceEvent>>()
     val eventWorkspace: LiveData<Event<WorkspaceEvent>> get() = _eventWorkspace
+
+    private val _pagerPosition = MutableLiveData<Int>()
+    val pagerPosition: LiveData<Int> get() = _pagerPosition
 
 
     fun loadWorkspace(workspaceId: String?) {
@@ -85,5 +88,14 @@ class WorkspaceViewModel @ViewModelInject constructor(
         _workspace.value = null
         _eventWorkspace.value = Event(WorkspaceEvent.OpenWorkspace(workspaceId))
     }
+
+    fun animateFab(position: Int) {
+        _pagerPosition.value = position
+    }
+
+    fun navigateToRoot() {
+        _eventWorkspace.value = Event(WorkspaceEvent.NavigateToRoot())
+    }
+
 
 }
