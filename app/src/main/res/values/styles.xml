@@ -66,7 +66,6 @@
     </style>
 
 
-
     <style name="BaseCardView" parent="Base.CardView">
         <item name="cardCornerRadius">20dp</item>
     </style>
@@ -77,5 +76,13 @@
         <item name="android:foreground">?attr/selectableItemBackground</item>
     </style>
 
+    <style name="ShapeAppearence.RoundedRectangle" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">10dp</item>
+        <item name="cornerSizeTopRight">10dp</item>
+        <item name="cornerSizeBottomLeft">10dp</item>
+        <item name="cornerSizeBottomRight">10dp</item>
+        <item name="cornerRadius">10dp</item>
+    </style>
 
 </resources>

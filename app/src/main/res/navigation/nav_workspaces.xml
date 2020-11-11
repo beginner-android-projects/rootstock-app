@@ -11,8 +11,7 @@
         <action
             android:id="@+id/action_workspace_fragment_self"
             app:destination="@id/workspace_fragment"
-            app:enterAnim="@anim/fragment_open_enter"
-            app:popEnterAnim="@anim/fragment_fade_enter" />
+            app:enterAnim="@anim/fragment_open_enter" />
         <argument
             android:name="workspaceId"
             android:defaultValue="@null"
