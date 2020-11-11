@@ -103,7 +103,6 @@ class WorkspaceFragment : Fragment() {
                     makeToast("Please relogin to see workspaces")
                 }
                 is WorkspaceEvent.Error -> {
-                    makeToast("Some errors with network...")
 
                 }
                 is WorkspaceEvent.NavigateToRoot -> {
