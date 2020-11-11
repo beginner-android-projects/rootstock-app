@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="androidx.lifecycle.LiveData" />
+
+        <import type="java.util.List" />
+
+        <variable
+            name="positionIndex"
+            type="int" />
+
+        <variable
+            name="workspaceEventHandler"
+            type="app.rootstock.adapters.WorkspaceEventHandler" />
+
+
+        <variable
+            name="channels"
+            type="LiveData&lt;List&lt;app.rootstock.data.channel.Channel>&gt;" />
+    </data>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{(channels.size() > positionIndex) ? channels.get(positionIndex).name : ``}"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                tools:text="shablon text" />
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+</layout>
