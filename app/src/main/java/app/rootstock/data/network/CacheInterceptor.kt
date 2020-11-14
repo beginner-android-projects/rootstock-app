@@ -10,7 +10,7 @@ class CacheInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val response: Response = chain.proceed(chain.request())
         val cacheControl = CacheControl.Builder()
-            .maxAge(1, TimeUnit.MINUTES) // 15 minutes cache
+            .maxAge(5, TimeUnit.MINUTES)
             .build()
         return response.newBuilder()
             .removeHeader("Pragma")

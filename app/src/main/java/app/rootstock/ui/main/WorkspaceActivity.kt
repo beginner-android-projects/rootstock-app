@@ -2,6 +2,7 @@ package app.rootstock.ui.main
 
 import android.animation.ObjectAnimator
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -38,6 +39,8 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
         setContentView(R.layout.activity_main_workspace)
 
         findViewById<FloatingActionButton>(R.id.fab)?.apply {
+            // make icon white
+            setColorFilter(Color.WHITE)
             shapeAppearanceModel =
                 shapeAppearanceModel.withCornerSize { 30f }
         }

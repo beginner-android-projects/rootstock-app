@@ -1,46 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <import type="androidx.lifecycle.LiveData" />
 
-        <import type="java.util.List" />
-
-        <variable
-            name="positionIndex"
-            type="int" />
-
         <variable
             name="workspaceEventHandler"
             type="app.rootstock.adapters.WorkspaceEventHandler" />
 
-
         <variable
             name="channels"
-            type="LiveData&lt;List&lt;app.rootstock.data.channel.Channel>&gt;" />
+            type="app.rootstock.data.channel.Channel" />
     </data>
 
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp">
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="96dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        app:cardElevation="10dp"
+        app:cardCornerRadius="20dp">
 
-        <RelativeLayout
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="96dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp">
+
+            <ImageView
+                android:id="@+id/channel_color"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/circle_channel"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/channel_edit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:src="@drawable/ic_more"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/name"
-                android:layout_width="match_parent"
+                style="@style/Text.Usual"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@{(channels.size() > positionIndex) ? channels.get(positionIndex).name : ``}"
-                android:textAlignment="center"
+                android:layout_marginStart="10dp"
+                android:maxLines="1"
+                android:fontFamily="@font/montserrat"
+                android:text="@{channels.name}"
+                android:textAlignment="textStart"
                 android:textColor="@color/black"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/guideline_title"
+                app:layout_constraintEnd_toStartOf="@id/channel_edit"
+                app:layout_constraintStart_toEndOf="@+id/channel_color"
                 tools:text="shablon text" />
-        </RelativeLayout>
+
+            <TextView
+                android:id="@+id/last_message"
+                lastMessage="@{channels.lastMessage}"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="5dp"
+                android:maxLines="2"
+                android:textAlignment="textStart"
+                android:textColor="@color/black"
+                app:layout_constraintEnd_toStartOf="@id/channel_edit"
+                app:layout_constraintStart_toEndOf="@+id/channel_color"
+                app:layout_constraintTop_toTopOf="@+id/guideline_title"
+                tools:text="This is last message probably in three lines Here we are assan" />
 
 
-    </RelativeLayout>
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0.40" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
 </layout>

@@ -14,6 +14,5 @@
             app:defaultNavHost="true"
             app:navGraph="@navigation/nav_signin" />
 
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

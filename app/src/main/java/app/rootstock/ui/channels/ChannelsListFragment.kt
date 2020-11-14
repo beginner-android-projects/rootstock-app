@@ -1,19 +1,16 @@
 package app.rootstock.ui.channels
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
-import app.rootstock.R
 import app.rootstock.adapters.ChannelListAdapter
-import app.rootstock.adapters.WorkspaceListAdapter
 import app.rootstock.databinding.FragmentChannelsListBinding
-import app.rootstock.databinding.FragmentWorkspaceListBinding
 import app.rootstock.ui.main.WorkspaceViewModel
+import app.rootstock.utils.convertDpToPx
+import app.rootstock.views.SpacingItemDecoration
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
@@ -43,12 +40,19 @@ class ChannelsListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setObservers()
         adapter = ChannelListAdapter(
             lifecycleOwner = this,
-            channels = viewModel.channels,
         )
         binding.recyclerView.adapter = adapter
-        setObservers()
+
+        val itemDecorator =
+            SpacingItemDecoration(
+                endSpacing = requireContext().convertDpToPx(dp = 25f).toInt(),
+                startSpacing = requireContext().convertDpToPx(dp = 15f).toInt(),
+            )
+        binding.recyclerView.addItemDecoration(itemDecorator)
+
     }
 
     private fun setObservers() {

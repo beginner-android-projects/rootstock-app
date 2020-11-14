@@ -12,6 +12,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import app.rootstock.R
 import app.rootstock.adapters.WorkspacePagerAdapter
@@ -64,11 +65,13 @@ class WorkspaceFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // setup adapter for viewpager with tablayout
-        val adapter = WorkspacePagerAdapter(this)
-
-        binding.pager.registerOnPageChangeCallback(changeFab)
-
-        binding.pager.adapter = adapter
+        val adapterToSet = WorkspacePagerAdapter(this)
+        binding.pager.apply {
+            adapter = adapterToSet
+            registerOnPageChangeCallback(changeFab)
+            // disable overscroll effect
+            (getChildAt(0) as RecyclerView).overScrollMode = RecyclerView.OVER_SCROLL_NEVER
+        }
         TabLayoutMediator(binding.tabLayout, binding.pager) { tab, position ->
             tab.text = when (position) {
                 1 -> "channels"
@@ -85,8 +88,8 @@ class WorkspaceFragment : Fragment() {
         if (workspaceId != null) return
         lifecycleScope.launch {
             val parent = view?.findViewById<View>(R.id.favourites_placeholder)
-            val favouriteFragment = FavouriteFragment()
             if (parent != null) {
+                val favouriteFragment = FavouriteFragment()
                 parentFragmentManager.beginTransaction()
                     .add(R.id.favourites_placeholder, favouriteFragment).commit()
             }

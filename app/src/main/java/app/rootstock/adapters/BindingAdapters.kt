@@ -1,13 +1,10 @@
 package app.rootstock.adapters
 
-import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.databinding.BindingAdapter
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.textfield.TextInputLayout
-import retrofit2.http.Url
 
 
 @BindingAdapter("error")
@@ -36,6 +33,18 @@ fun bindingLoadingOverlay(view: View, loading: Boolean) {
         return
     }
     view.visibility = View.VISIBLE
+}
+
+@BindingAdapter("lastMessage")
+fun bindingChannelLastMessage(textView: TextView, lastMessage: String?) {
+    if (lastMessage == null) {
+        textView.text = "No memo yet"
+    } else textView.text = lastMessage
+}
+
+@BindingAdapter("drawableInt")
+fun bindDrawableInt(imageView: ImageView, id: Int){
+    imageView.setImageResource(id)
 }
 //
 //

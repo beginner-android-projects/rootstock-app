@@ -37,7 +37,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/app_bar"
-            android:background="@color/black"
             android:overScrollMode="never">
 
 
@@ -67,105 +66,23 @@
                     android:layout_marginTop="16dp"
                     android:text="@{viewmodel.userData.email}"
                     android:textAlignment="center"
-                    android:textColor="@color/white"
                     app:layout_constraintTop_toBottomOf="@id/imageView"
-                    tools:text="asnasndiaod@masd.ds" />
+                    tools:text="asnasnasmdaodpadiaod@masd.ds" />
 
-                <RelativeLayout
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    tools:listitem="@layout/item_settings"
                     android:layout_marginTop="32dp"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/email">
 
-                    <RelativeLayout
-                        android:id="@+id/workspaces"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp">
 
-                        <ImageView
-                            android:id="@+id/workspaces_icon"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_alignParentTop="true"
-                            android:layout_alignParentBottom="true"
-                            android:layout_marginStart="32dp"
-                            android:src="@drawable/ic_baseline_work_24" />
-
-                        <TextView
-                            style="@style/Text.Usual.Settings"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentTop="true"
-                            android:layout_alignParentBottom="true"
-                            android:layout_toEndOf="@id/workspaces_icon"
-                            android:gravity="center_vertical"
-                            android:paddingStart="30dp"
-                            android:text="workspaces   213"
-                            android:textColor="@color/white" />
-                    </RelativeLayout>
-
-
-                    <RelativeLayout
-                        android:id="@+id/channels"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:layout_below="@id/workspaces">
-
-                        <ImageView
-                            android:id="@+id/channels_icon"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_alignParentTop="true"
-                            android:layout_alignParentBottom="true"
-                            android:layout_marginStart="32dp"
-                            android:src="@drawable/ic_baseline_work_24" />
-
-                        <TextView
-                            style="@style/Text.Usual.Settings"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentTop="true"
-                            android:layout_alignParentBottom="true"
-                            android:layout_toEndOf="@id/channels_icon"
-                            android:gravity="center_vertical"
-                            android:paddingStart="30dp"
-                            android:text="channels   341"
-                            android:textColor="@color/white" />
-                    </RelativeLayout>
-
-                    <RelativeLayout
-
-                        android:id="@+id/favourite_channels"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:layout_below="@id/channels">
-
-                        <ImageView
-                            android:id="@+id/favourite_channels_icon"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_alignParentTop="true"
-                            android:layout_alignParentBottom="true"
-                            android:layout_marginStart="32dp"
-                            android:src="@drawable/ic_baseline_work_24" />
-
-                        <TextView
-                            style="@style/Text.Usual.Settings"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentTop="true"
-                            android:layout_alignParentBottom="true"
-                            android:layout_toEndOf="@id/favourite_channels_icon"
-                            android:gravity="center_vertical"
-                            android:paddingStart="30dp"
-                            android:text="favourite channels   213"
-                            android:textColor="@color/white" />
-                    </RelativeLayout>
-
-                </RelativeLayout>
+                </androidx.recyclerview.widget.RecyclerView>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

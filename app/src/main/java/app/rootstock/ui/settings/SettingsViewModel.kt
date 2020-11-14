@@ -1,19 +1,29 @@
 package app.rootstock.ui.settings
 
-import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import app.rootstock.data.user.UserRepository
 import dagger.hilt.android.scopes.ActivityScoped
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+
+
+interface SettingsItemClick{
+    fun invoke()
+}
+
 
 @ActivityScoped
 class SettingsViewModel @ViewModelInject constructor(
     private val userRepository: UserRepository,
 ) :
     ViewModel() {
+
+    fun signOut() {
+
+    }
+
+    fun deleteAccount() {
+
+    }
 
     val userData = userRepository.getUser()
 
