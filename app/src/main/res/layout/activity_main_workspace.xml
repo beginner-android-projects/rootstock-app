@@ -9,6 +9,26 @@
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginBottom="?attr/actionBarSize"
         app:defaultNavHost="true"
         app:navGraph="@navigation/nav_workspaces" />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        app:menu="@menu/bottom_navigation_menu" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        style="@style/ShapeAppearence.RoundedRectangle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@null"
+        android:src="@drawable/ic_add_24_white"
+        app:backgroundTint="@color/primary"
+        app:elevation="10dp"
+        app:layout_anchor="@id/bottom_app_bar"
+        app:layout_anchorGravity="center_horizontal" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

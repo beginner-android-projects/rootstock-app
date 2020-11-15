@@ -16,6 +16,8 @@
         <item name="fontFamily">@font/montserrat</item>
         <item name="textInputStyle">@style/Text.TextInputLayout.Base</item>
         <item name="android:progressBarStyle">@style/ProgressBar.Base</item>
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearence.RoundedRectangle</item>
+        <item name="android:ellipsize">end</item>
 
     </style>
 </resources>

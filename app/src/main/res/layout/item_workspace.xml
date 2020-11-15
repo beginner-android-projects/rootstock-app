@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="androidx.lifecycle.LiveData" />
+
+        <import type="java.util.List" />
+
+        <variable
+            name="positionIndex"
+            type="int" />
+
+        <variable
+            name="workspaceEventHandler"
+            type="app.rootstock.adapters.WorkspaceEventHandler" />
+
+
+        <variable
+            name="workspaces"
+            type="LiveData&lt;List&lt;app.rootstock.data.workspace.Workspace>&gt;" />
+
+    </data>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp">
+
+        <androidx.cardview.widget.CardView
+            style="@style/CardView.Workspace"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:backgroundTint="@color/primary"
+            android:onClick="@{() -> workspaceEventHandler.workspaceClicked(workspaces.get(positionIndex).workspaceId)}">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@{(workspaces.size() > positionIndex) ? workspaces.get(positionIndex).name : ``}"
+                    android:textAlignment="center"
+                    android:textColor="@color/white"
+                    tools:text="shablon text" />
+            </RelativeLayout>
+
+        </androidx.cardview.widget.CardView>
+
+    </RelativeLayout>
+</layout>

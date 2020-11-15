@@ -14,6 +14,9 @@
     <string name="invalid_email_or_password">Email or password is invalid</string>
     <string name="intro_title">Hello!</string>
     <string name="sign_up_privacy">signing up you agree to our privacy policy</string>
-    <string name="signup_title">Start by creating account</string>
-    <string name="login_title">Log in to existing account</string>
+    <string name="signup_title">Start by\ncreating account</string>
+    <string name="login_title">Log in\nto existing account</string>
+    <string name="privacy_policy">privacy policy</string>
+    <string name="settings_sign_out">sign out</string>
+    <string name="settings_delete_account">delete account</string>
 </resources>
