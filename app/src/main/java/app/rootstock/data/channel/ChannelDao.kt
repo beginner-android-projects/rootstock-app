@@ -18,4 +18,7 @@ interface ChannelDao {
     @Transaction
     suspend fun insertAll(channels: List<Channel>)
 
+    @Update
+    suspend fun update(channel: Channel)
+
 }

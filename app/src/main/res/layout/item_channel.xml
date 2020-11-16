@@ -8,17 +8,14 @@
         <import type="androidx.lifecycle.LiveData" />
 
         <variable
-            name="workspaceEventHandler"
-            type="app.rootstock.adapters.WorkspaceEventHandler" />
-
-        <variable
             name="channels"
             type="app.rootstock.data.channel.Channel" />
     </data>
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/card"
         android:layout_width="match_parent"
-        android:layout_height="96dp"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         app:cardElevation="10dp"
@@ -27,9 +24,11 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="96dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp">
+            android:layout_height="wrap_content"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp">
 
             <ImageView
                 android:id="@+id/channel_color"
@@ -75,7 +74,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:layout_marginTop="5dp"
                 android:maxLines="2"
                 android:textAlignment="textStart"
                 android:textColor="@color/black"

@@ -3,8 +3,10 @@ package app.rootstock.data.network
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
+import javax.inject.Inject
 
-class JsonInterceptor : Interceptor {
+class JsonInterceptor @Inject constructor() : Interceptor {
+
     override fun intercept(chain: Interceptor.Chain): Response {
         val requestBuilder: Request.Builder = chain.request().newBuilder()
         requestBuilder.header("Content-Type", "application/json")

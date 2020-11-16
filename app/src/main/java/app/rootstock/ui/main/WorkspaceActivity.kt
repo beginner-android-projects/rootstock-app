@@ -3,8 +3,14 @@ package app.rootstock.ui.main
 import android.animation.ObjectAnimator
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.Log
+import android.view.View
+import android.view.ViewGroup
 import androidx.activity.viewModels
+import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
@@ -68,6 +74,34 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
             if (it == null) return@observe
             animateFab(it)
         }
+
+        viewModel.eventChannel.observe(this) {
+            when (it.getContentIfNotHandled()) {
+                ChannelEvent.CHANNEL_EDIT_OPEN -> {
+                    val vg = window.decorView.rootView as? ViewGroup ?: return@observe
+                    applyDim(vg, DIM_AMOUNT)
+                }
+                ChannelEvent.CHANNEL_EDIT_EXIT -> {
+                    val vg = window.decorView.rootView as? ViewGroup ?: return@observe
+                    clearDim(vg)
+                }
+                null -> {
+                }
+            }
+        }
+    }
+
+    private fun applyDim(@NonNull parent: ViewGroup, dimAmount: Float) {
+        val dim: Drawable = ColorDrawable(Color.BLACK)
+        dim.setBounds(0, 0, parent.width, parent.height)
+        dim.alpha = (255 * dimAmount).toInt()
+        val overlay = parent.overlay
+        overlay.add(dim)
+    }
+
+    private fun clearDim(@NonNull parent: ViewGroup) {
+        val overlay = parent.overlay
+        overlay.clear()
     }
 
     private fun animateFab(position: Int) {
@@ -107,8 +141,8 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
     }
 
     companion object {
-        // 200 ms
         const val ANIMATION_DURATION_FAB = 200L
+        const val DIM_AMOUNT = 0.7f
     }
 
 }

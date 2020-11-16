@@ -140,10 +140,17 @@ class AppModule {
     }
 
     @Provides
+    @Singleton
     fun getCache(@ApplicationContext context: Context): Cache {
         val httpCacheDirectory = File(context.cacheDir, "http-cache")
         val cacheSize = 10 * 1024 * 1024 // 10 MiB
         return Cache(httpCacheDirectory, cacheSize.toLong())
+    }
+
+    @Provides
+    @Singleton
+    fun getCacheCleaner(okHttpClient: OkHttpClient): CacheCleaner {
+        return CacheCleaner(okHttpClient)
     }
 
     @Provides
@@ -155,7 +162,6 @@ class AppModule {
         cache: Cache
 
     ): OkHttpClient {
-
         return OkHttpClient.Builder()
             // add JSON header interceptor
             .addNetworkInterceptor(cacheInterceptor)
@@ -164,6 +170,7 @@ class AppModule {
             .authenticator(authenticator)
             .cache(cache)
             .build()
+
     }
 
 }

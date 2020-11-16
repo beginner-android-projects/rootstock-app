@@ -25,7 +25,7 @@ interface ChannelI {
 )
 @TypeConverters(DateConverter::class)
 data class Channel(
-    override val name: String,
+    override var name: String,
     @PrimaryKey
     @ColumnInfo(name = "channel_id")
     @SerializedName("channel_id")
@@ -35,7 +35,7 @@ data class Channel(
     override val lastMessage: String?,
     @ColumnInfo(name = "background_color")
     @SerializedName("background_color")
-    override val backgroundColor: String,
+    override var backgroundColor: String,
     @ColumnInfo(name = "image_url")
     @SerializedName("image_url")
     override val imageUrl: String?,
