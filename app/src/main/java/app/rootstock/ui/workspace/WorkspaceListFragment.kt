@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.recyclerview.widget.RecyclerView
 import app.rootstock.adapters.WorkspaceEventHandler
 import app.rootstock.adapters.WorkspaceListAdapter
 import app.rootstock.databinding.FragmentWorkspaceListBinding
@@ -40,7 +41,6 @@ class WorkspaceListFragment : Fragment() {
     }
 
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         adapter = WorkspaceListAdapter(
@@ -49,12 +49,18 @@ class WorkspaceListFragment : Fragment() {
             workspaceEventHandler = viewModel
         )
         binding.recyclerView.adapter = adapter
+        binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                viewModel.pageScrolled()
+            }
+        })
         setObservers()
     }
 
     private fun setObservers() {
         viewModel.workspacesChildren.observe(viewLifecycleOwner) {
-            if (it != null){
+            if (it != null) {
                 if (::adapter.isInitialized) {
                     adapter.submitList(it)
                 }

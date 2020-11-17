@@ -2,7 +2,9 @@ package app.rootstock.adapters
 
 import android.graphics.Color
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.cardview.widget.CardView
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -10,15 +12,15 @@ import androidx.recyclerview.widget.RecyclerView
 import app.rootstock.data.channel.Channel
 import app.rootstock.databinding.ItemChannelBinding
 
-class ChannelListAdapter constructor(
+class ChannelListAdapter(
     private val lifecycleOwner: LifecycleOwner,
-//    private val channels: LiveData<List<Channel>>,
+    private val editDialog: (v: View, c: Channel) -> Unit,
 ) : ListAdapter<Channel, ChannelListAdapter.ChannelViewHolder>(
     object :
         DiffUtil.ItemCallback<Channel>() {
 
         override fun areItemsTheSame(oldItem: Channel, newItem: Channel): Boolean {
-            return oldItem == newItem
+            return oldItem.channelId == newItem.channelId
         }
 
         override fun areContentsTheSame(oldItem: Channel, newItem: Channel): Boolean {
@@ -30,14 +32,13 @@ class ChannelListAdapter constructor(
     inner class ChannelViewHolder constructor(
         private val binding: ItemChannelBinding,
         private val lifecycleOwner: LifecycleOwner,
-//        private val channels: LiveData<List<Channel>>,
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: Channel) {
-//            binding.channels = channels
             binding.channels = item
             binding.lifecycleOwner = lifecycleOwner
             binding.executePendingBindings()
             binding.channelColor.setColorFilter(Color.parseColor(item.backgroundColor))
+            binding.channelEdit.setOnClickListener { editDialog(it, item) }
         }
     }
 

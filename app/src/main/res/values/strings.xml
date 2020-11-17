@@ -19,4 +19,13 @@
     <string name="privacy_policy">privacy policy</string>
     <string name="settings_sign_out">sign out</string>
     <string name="settings_delete_account">delete account</string>
+    <string name="edit_channel">edit channel</string>
+    <string name="delete_channel">delete channel</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
+    <string name="save">save</string>
+    <string name="cancel">cancel</string>
+    <string name="channel_name">channel name</string>
+    <string name="delete_channel_body">Are you sure you want to delete %1$s?</string>
+    <string name="delete">delete</string>
 </resources>

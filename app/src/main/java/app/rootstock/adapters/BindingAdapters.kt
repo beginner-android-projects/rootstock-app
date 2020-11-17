@@ -1,10 +1,13 @@
 package app.rootstock.adapters
 
+import android.graphics.Color
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.google.android.material.textfield.TextInputLayout
+import java.lang.Exception
 
 
 @BindingAdapter("error")
@@ -43,9 +46,22 @@ fun bindingChannelLastMessage(textView: TextView, lastMessage: String?) {
 }
 
 @BindingAdapter("drawableInt")
-fun bindDrawableInt(imageView: ImageView, id: Int){
+fun bindDrawableInt(imageView: ImageView, id: Int) {
     imageView.setImageResource(id)
 }
+
+
+@BindingAdapter("colorFilter")
+fun bindColorFilter(imageView: ImageView, color: String) {
+    try {
+        val c = Color.parseColor(color)
+        imageView.setColorFilter(c)
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+}
+
+
 //
 //
 //@BindingAdapter(value = ["imageUrl", "placeholder"], requireAll = false)

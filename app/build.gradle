@@ -50,6 +50,7 @@ android {
 }
 
 dependencies {
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
     compileOnly "com.squareup.inject:assisted-inject-annotations-dagger2:$assistedInjectVersion"
     kapt "com.google.dagger:dagger-android-processor:2.28.3"
     kapt "com.google.dagger:hilt-android-compiler:$hiltVersion"
@@ -105,6 +106,9 @@ dependencies {
     // retrofit
     implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
     implementation "com.squareup.retrofit2:converter-gson:$gsonConverterVersion"
+
+    // backdrop
+//    implementation 'com.github.pedromassango:IBackdrop:2.2.0'
 
 
     // Moshi Retrofit Converter

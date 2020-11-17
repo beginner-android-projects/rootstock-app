@@ -18,4 +18,10 @@ interface ChannelDao {
     @Transaction
     suspend fun insertAll(channels: List<Channel>)
 
+    @Update
+    suspend fun update(channel: Channel)
+
+    @Query("delete from channels where channel_id = :channelId")
+    suspend fun deleteChannel(channelId: Long)
+
 }

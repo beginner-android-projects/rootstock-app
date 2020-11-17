@@ -9,9 +9,11 @@ import app.rootstock.data.result.Event
 import app.rootstock.data.user.UserRepository
 import app.rootstock.data.workspace.Workspace
 import app.rootstock.data.workspace.WorkspaceWithChildren
+import app.rootstock.ui.channels.ChannelRepositoryImpl
 import app.rootstock.ui.workspace.WorkspaceRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 
@@ -22,14 +24,25 @@ sealed class WorkspaceEvent {
     class NavigateToRoot() : WorkspaceEvent()
 }
 
+enum class ChannelEvent {
+    CHANNEL_EDIT_OPEN, CHANNEL_EDIT_EXIT, CHANNEL_DELETED, ERROR
+}
+
+enum class PagerEvent {
+    PAGER_SCROLLED
+}
+
 @ExperimentalCoroutinesApi
 class WorkspaceViewModel @ViewModelInject constructor(
     private val userRepository: UserRepository,
-    private val workspaceRepository: WorkspaceRepository
+    private val workspaceRepository: WorkspaceRepository,
+    private val channelRepository: ChannelRepositoryImpl,
 ) :
     ViewModel(), WorkspaceEventHandler {
 
     private val _workspace = MutableLiveData<WorkspaceWithChildren>()
+
+    var isAtRoot: Boolean? = null
 
     val workspace: LiveData<WorkspaceWithChildren>
         get() = _workspace
@@ -39,16 +52,30 @@ class WorkspaceViewModel @ViewModelInject constructor(
         workspaceWithChildren.children
     }
 
-    val channels: LiveData<List<Channel>> = _workspace.map { workspaceWithChildren ->
-        workspaceWithChildren ?: return@map listOf()
-        workspaceWithChildren.channels
-    }
+    val channels: LiveData<MutableList<Channel>>
+        get() = _channels
+
+    private val _channels: MutableLiveData<MutableList<Channel>> = MutableLiveData(mutableListOf())
 
     private val _eventWorkspace = MutableLiveData<Event<WorkspaceEvent>>()
     val eventWorkspace: LiveData<Event<WorkspaceEvent>> get() = _eventWorkspace
 
+    private val _eventChannel = MutableLiveData<Event<ChannelEvent>>()
+    val eventChannel: LiveData<Event<ChannelEvent>> get() = _eventChannel
+
     private val _pagerPosition = MutableLiveData<Int>()
     val pagerPosition: LiveData<Int> get() = _pagerPosition
+
+    private val _pagerScrolled = MutableLiveData<Event<PagerEvent>>()
+    val pagerScrolled: LiveData<Event<PagerEvent>> get() = _pagerScrolled
+
+    fun editChannelStart() {
+        _eventChannel.value = Event(ChannelEvent.CHANNEL_EDIT_OPEN)
+    }
+
+    fun editChannelStop() {
+        _eventChannel.value = Event(ChannelEvent.CHANNEL_EDIT_EXIT)
+    }
 
 
     fun loadWorkspace(workspaceId: String?) {
@@ -69,9 +96,12 @@ class WorkspaceViewModel @ViewModelInject constructor(
                     .collect {
                         when (it) {
                             is ResponseResult.Success -> {
+                                it.data ?: return@collect
                                 _workspace.value =
-                                    it.data?.apply { children.sortedBy { child -> child.createdAt } }
-                                        ?.apply { channels.sortedBy { channel -> channel.lastUpdate } }
+                                    it.data.apply { children.sortedBy { child -> child.createdAt } }
+                                _channels.value = it.data.channels.toMutableList().apply {
+                                    sortBy { channel -> channel.lastUpdate }
+                                }
                             }
                             is ResponseResult.Error -> {
                                 _eventWorkspace.postValue(Event(WorkspaceEvent.Error()))
@@ -84,6 +114,7 @@ class WorkspaceViewModel @ViewModelInject constructor(
 
 
     override fun workspaceClicked(workspaceId: String) {
+        pageScrolled()
         // set to null to avoid blinking workspaces
         _workspace.value = null
         _eventWorkspace.value = Event(WorkspaceEvent.OpenWorkspace(workspaceId))
@@ -95,6 +126,73 @@ class WorkspaceViewModel @ViewModelInject constructor(
 
     fun navigateToRoot() {
         _eventWorkspace.value = Event(WorkspaceEvent.NavigateToRoot())
+    }
+
+    fun updateChannel(channel: Channel) {
+        if (isChannelValid(channel)) {
+            // if new data is valid, update locally and send request to the server
+            _channels.value = _channels.value?.apply {
+                val oldChannel = find { channel.channelId == it.channelId }
+                // return if there were no changes
+                if (oldChannel?.equals(channel) == true) return
+                oldChannel?.apply {
+                    name = channel.name
+                    backgroundColor = channel.backgroundColor
+                }
+            }
+            viewModelScope.launch {
+                updateChannelTwo(channel)
+            }
+        } else {
+            // todo
+            // notify
+        }
+//
+    }
+
+
+    private suspend fun updateChannelTwo(channelToUpdate: Channel) {
+        // fetch user from network
+        when (val channel = channelRepository.updateChannel(channelToUpdate).first()) {
+            is ResponseResult.Success -> {
+
+            }
+            is ResponseResult.Error -> {
+            }
+            else -> {
+            }
+        }
+    }
+
+
+    private fun isChannelValid(channel: Channel): Boolean {
+        if (channel.name.isBlank()) return false
+        return true
+    }
+
+    fun deleteChannel(channelId: Long) {
+        _channels.value = _channels.value?.apply {
+            val c = find { it.channelId == channelId }
+            remove(c)
+        }
+        viewModelScope.launch {
+            when (channelRepository.deleteChannel(channelId).first()) {
+                is ResponseResult.Success -> {
+                    _eventChannel.value = Event(ChannelEvent.CHANNEL_DELETED)
+                }
+                is ResponseResult.Error -> {
+                    _eventChannel.value = Event(ChannelEvent.ERROR)
+                }
+            }
+        }
+    }
+
+    fun pageScrolled() {
+        _pagerScrolled.value = Event(PagerEvent.PAGER_SCROLLED)
+    }
+
+    fun setRoot(atRoot: Boolean) {
+        isAtRoot = atRoot
     }
 
 
