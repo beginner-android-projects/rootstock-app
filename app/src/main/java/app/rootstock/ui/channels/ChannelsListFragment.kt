@@ -2,7 +2,6 @@ package app.rootstock.ui.channels
 
 import android.content.res.Resources
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +15,7 @@ import app.rootstock.data.channel.Channel
 import app.rootstock.databinding.FragmentChannelsListBinding
 import app.rootstock.ui.main.WorkspaceViewModel
 import app.rootstock.utils.convertDpToPx
+import app.rootstock.views.ChannelDeleteDialogFragment
 import app.rootstock.views.ChannelEditDialogFragment
 import app.rootstock.views.SpacingItemDecoration
 import dagger.hilt.android.AndroidEntryPoint
@@ -46,7 +46,7 @@ class ChannelsListFragment : Fragment() {
 
     private fun openEditDialog(anchor: View, channel: Channel) {
         viewModel.editChannelStart()
-        showPopup(anchor, channel)
+        showEditPopup(anchor, channel)
     }
 
 
@@ -77,7 +77,7 @@ class ChannelsListFragment : Fragment() {
         }
     }
 
-    private fun showPopup(anchor: View, channel: Channel) {
+    private fun showEditPopup(anchor: View, channel: Channel) {
         val popUpView = layoutInflater.inflate(R.layout.popup_edit_channel, null)
         val width = LinearLayout.LayoutParams.WRAP_CONTENT
         val height = LinearLayout.LayoutParams.WRAP_CONTENT
@@ -85,10 +85,12 @@ class ChannelsListFragment : Fragment() {
         var yoff = requireContext().convertDpToPx(60f).toInt()
         val location = IntArray(2)
         anchor.getLocationOnScreen(location)
+
         // difference between screen size and anchor location on y axis
         val ydiff = Resources.getSystem().displayMetrics.heightPixels - location[1]
         // if popup is going to be close to bottom nav bar, force yoff in opposite direction
         if (ydiff.toFloat() / Resources.getSystem().displayMetrics.heightPixels < 0.35f) yoff *= -3
+
         popupWindow.showAsDropDown(anchor, 0, yoff)
         popupWindow.setOnDismissListener { viewModel.editChannelStop() }
 
@@ -97,10 +99,20 @@ class ChannelsListFragment : Fragment() {
             val dialog = ChannelEditDialogFragment(channel)
             dialog.show(requireActivity().supportFragmentManager, DIALOG_CHANNEL_EDIT)
         }
+        popUpView.findViewById<View>(R.id.delete)?.setOnClickListener {
+            popupWindow.dismiss()
+            val dialog = ChannelDeleteDialogFragment(channel, delete = ::deleteChannel)
+            dialog.show(requireActivity().supportFragmentManager, DIALOG_CHANNEL_DELETE)
+        }
+    }
+
+    private fun deleteChannel(channelId: Long) {
+        viewModel.deleteChannel(channelId)
     }
 
     companion object {
-        private const val DIALOG_CHANNEL_EDIT = "dialog_schedule_hints"
+        private const val DIALOG_CHANNEL_EDIT = "dialog_channel_edit"
+        private const val DIALOG_CHANNEL_DELETE = "dialog_channel_delete"
 
     }
 

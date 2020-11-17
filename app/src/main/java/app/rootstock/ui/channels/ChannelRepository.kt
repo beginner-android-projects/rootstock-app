@@ -17,7 +17,7 @@ class ChannelRepositoryImpl @Inject constructor(
     private val cacheCleaner: CacheCleaner,
 ) {
 
-    fun updateChannel(channel: Channel): Flow<ResponseResult<Channel?>> = flow {
+    suspend fun updateChannel(channel: Channel): Flow<ResponseResult<Channel?>> = flow {
         var isSuccess = false
         val channelResponse =
             channelRemoteSource.updateChannel(channelId = channel.channelId, channel = channel)
@@ -30,6 +30,27 @@ class ChannelRepositoryImpl @Inject constructor(
         }
         if (isSuccess) {
             updateLocal(channelResponse.body())
+            cacheCleaner.cleanCache()
+        }
+        emit(state)
+
+    }.catch {
+        emit(ResponseResult.error("Something went wrong!"))
+    }
+
+    suspend fun deleteChannel(channelId: Long): Flow<ResponseResult<Void?>> = flow {
+        var success = false
+        val channelResponse =
+            channelRemoteSource.deleteChannel(channelId = channelId)
+
+        val state = when (channelResponse.isSuccessful) {
+            true -> {
+                success = true; ResponseResult.success(channelResponse.body())
+            }
+            else -> ResponseResult.error(channelResponse.message())
+        }
+        if (success) {
+            channelLocal.deleteChannel(channelId)
             cacheCleaner.cleanCache()
         }
         emit(state)

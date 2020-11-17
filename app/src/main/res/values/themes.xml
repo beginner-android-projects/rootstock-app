@@ -20,6 +20,9 @@
         <item name="android:ellipsize">end</item>
 
         <item name="materialAlertDialogTheme">@style/AlertDialog.Theme</item>
+        <item name="toolbarStyle">@style/AppToolbar</item>
+        <item name="android:toolbarStyle">@style/AppToolbar</item>
 
     </style>
+
 </resources>

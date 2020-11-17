@@ -79,22 +79,10 @@ class WorkspaceFragment : Fragment() {
             }
         }.attach()
         viewModel.loadWorkspace(args.workspaceId)
+        viewModel.setRoot(isAtRoot())
         setObservers()
-        setUpFavourites(args.workspaceId)
-
     }
 
-    private fun setUpFavourites(workspaceId: String?) {
-        if (workspaceId != null) return
-        lifecycleScope.launch {
-            val parent = view?.findViewById<View>(R.id.favourites_placeholder)
-            if (parent != null) {
-                val favouriteFragment = FavouriteFragment()
-                parentFragmentManager.beginTransaction()
-                    .add(R.id.favourites_placeholder, favouriteFragment).commit()
-            }
-        }
-    }
 
     private fun setObservers() {
         viewModel.eventWorkspace.observe(viewLifecycleOwner) {

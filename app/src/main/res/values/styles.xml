@@ -19,6 +19,12 @@
         <item name="android:textSize">16sp</item>
     </style>
 
+
+    <style name="AlertDialogMaterialTheme" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="buttonBarPositiveButtonStyle">@style/AppMaterialButton.Base</item>
+        <item name="buttonBarNegativeButtonStyle">@style/AppMaterialButton.Base</item>
+    </style>
+
     <style name="AppMaterialButton.Base" parent="Widget.MaterialComponents.Button">
         <item name="backgroundTint">@color/color_state_button</item>
         <item name="android:layout_marginStart">32dp</item>
@@ -112,7 +118,7 @@
     </style>
 
     <style name="AlertDialog.BodyText" parent="MaterialAlertDialog.MaterialComponents.Body.Text">
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">18sp</item>
         <item name="android:textAlignment">viewStart</item>
         <item name="android:lineSpacingExtra">4sp</item>
     </style>
@@ -140,6 +146,16 @@
     </style>
 
     <style name="AlertDialog.ButtonBar.Base" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+
+    <style name="AppToolbar" parent="Widget.MaterialComponents.Toolbar.Primary">
+        <item name="titleTextAppearance">@style/AppToolbar.Title.Text</item>
+    </style>
+
+    <style name="AppToolbar.Title.Text" parent="">
         <item name="android:textSize">18sp</item>
         <item name="android:textStyle">bold</item>
     </style>

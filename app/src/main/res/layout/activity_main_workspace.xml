@@ -4,14 +4,46 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/nav_host"
-        android:name="androidx.navigation.fragment.NavHostFragment"
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="0dp"
+        android:background="@color/primary">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/home_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:navigationIcon="@drawable/ic_arrow_down"
+            app:titleTextColor="@color/white" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <app.rootstock.views.Backdrop
+        android:id="@+id/backdrop_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="?attr/actionBarSize"
-        app:defaultNavHost="true"
-        app:navGraph="@navigation/nav_workspaces" />
+        android:layout_marginTop="56dp"
+        app:closeIcon="@drawable/ic_arrow_up"
+        app:openIcon="@drawable/ic_arrow_down"
+        app:toolbar="@id/home_toolbar">
+
+        <RelativeLayout
+            android:id="@+id/favourites_container"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/favourites_background" />
+
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/nav_host"
+            android:name="androidx.navigation.fragment.NavHostFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="?attr/actionBarSize"
+            app:defaultNavHost="true"
+            app:navGraph="@navigation/nav_workspaces" />
+    </app.rootstock.views.Backdrop>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_app_bar"

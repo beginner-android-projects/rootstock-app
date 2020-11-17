@@ -20,7 +20,7 @@ class ChannelListAdapter(
         DiffUtil.ItemCallback<Channel>() {
 
         override fun areItemsTheSame(oldItem: Channel, newItem: Channel): Boolean {
-            return oldItem == newItem
+            return oldItem.channelId == newItem.channelId
         }
 
         override fun areContentsTheSame(oldItem: Channel, newItem: Channel): Boolean {

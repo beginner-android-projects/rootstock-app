@@ -26,4 +26,6 @@
     <string name="save">save</string>
     <string name="cancel">cancel</string>
     <string name="channel_name">channel name</string>
+    <string name="delete_channel_body">Are you sure you want to delete %1$s?</string>
+    <string name="delete">delete</string>
 </resources>

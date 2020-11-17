@@ -21,4 +21,7 @@ interface ChannelDao {
     @Update
     suspend fun update(channel: Channel)
 
+    @Query("delete from channels where channel_id = :channelId")
+    suspend fun deleteChannel(channelId: Long)
+
 }
