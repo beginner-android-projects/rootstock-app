@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:bind="http://schemas.android.com/apk/res-auto">
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -11,21 +12,29 @@
 
         <import type="app.rootstock.ui.login.EventUserLogIn" />
 
-
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <include
-            android:id="@+id/include_toolbar"
-            layout="@layout/transparent_app_bar"
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/header_login"
+            app:elevation="0dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-        </include>
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize" />
+        </com.google.android.material.appbar.AppBarLayout>
+
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/email"
@@ -104,12 +113,13 @@
             android:id="@+id/hello"
             style="@style/Text.Title"
             android:layout_width="wrap_content"
-            android:layout_marginEnd="32dp"
-            android:minLines="2"
-            android:layout_marginStart="32dp"
-            android:maxLines="2"
             android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:maxLines="2"
+            android:minLines="2"
             android:text="@string/login_title"
+            android:textColor="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/guideline_title" />
@@ -120,12 +130,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.15" />
+            app:layout_constraintGuide_percent="0.12" />
 
 
         <include
             layout="@layout/dark_overlay"
-            bind:isLoading="@{viewmodel.loading}">
+            bind:isLoading="@{viewmodel.loading}"
+            tools:visibility="gone">
 
         </include>
 

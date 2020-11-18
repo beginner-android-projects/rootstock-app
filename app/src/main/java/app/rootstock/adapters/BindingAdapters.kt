@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
+import app.rootstock.R
 import com.google.android.material.textfield.TextInputLayout
 import java.lang.Exception
 
@@ -41,7 +42,7 @@ fun bindingLoadingOverlay(view: View, loading: Boolean) {
 @BindingAdapter("lastMessage")
 fun bindingChannelLastMessage(textView: TextView, lastMessage: String?) {
     if (lastMessage == null) {
-        textView.text = "No memo yet"
+        textView.text = context.getString(R.string.channels_no_last_message)
     } else textView.text = lastMessage
 }
 
@@ -60,6 +61,7 @@ fun bindColorFilter(imageView: ImageView, color: String) {
         e.printStackTrace()
     }
 }
+
 @BindingAdapter("backgroundColor")
 fun bindColorFilter(view: View, color: String) {
     try {
