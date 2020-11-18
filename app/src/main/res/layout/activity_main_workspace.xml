@@ -7,12 +7,12 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:elevation="0dp"
-        android:background="@color/primary">
+        android:background="@color/primary"
+        android:elevation="0dp">
 
         <androidx.appcompat.widget.Toolbar
-            style="@style/AppToolbar"
             android:id="@+id/home_toolbar"
+            style="@style/AppToolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:navigationIcon="@drawable/ic_arrow_down"

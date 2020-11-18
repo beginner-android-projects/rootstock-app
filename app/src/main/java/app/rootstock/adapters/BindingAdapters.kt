@@ -42,7 +42,7 @@ fun bindingLoadingOverlay(view: View, loading: Boolean) {
 @BindingAdapter("lastMessage")
 fun bindingChannelLastMessage(textView: TextView, lastMessage: String?) {
     if (lastMessage == null) {
-        textView.text = context.getString(R.string.channels_no_last_message)
+        textView.text = textView.context.getString(R.string.channels_no_last_message)
     } else textView.text = lastMessage
 }
 
