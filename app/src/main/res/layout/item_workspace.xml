@@ -5,52 +5,72 @@
 
     <data>
 
-        <import type="androidx.lifecycle.LiveData" />
-
-        <import type="java.util.List" />
-
-        <variable
-            name="positionIndex"
-            type="int" />
-
         <variable
             name="workspaceEventHandler"
             type="app.rootstock.adapters.WorkspaceEventHandler" />
 
 
         <variable
-            name="workspaces"
-            type="LiveData&lt;List&lt;app.rootstock.data.workspace.Workspace>&gt;" />
+            name="workspace"
+            type="app.rootstock.data.workspace.Workspace" />
 
     </data>
 
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp">
+    <androidx.cardview.widget.CardView
+        style="@style/CardView.Workspace"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:onClick="@{() -> workspaceEventHandler.workspaceClicked(workspace.workspaceId)}"
+        app:cardElevation="10dp">
 
-        <androidx.cardview.widget.CardView
-            style="@style/CardView.Workspace"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:backgroundTint="@color/primary"
-            android:onClick="@{() -> workspaceEventHandler.workspaceClicked(workspaces.get(positionIndex).workspaceId)}">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RelativeLayout
+                android:id="@+id/preview"
+                backgroundColor="@{workspace.backgroundColor}"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                app:layout_constraintTop_toTopOf="parent">
+
+            </RelativeLayout>
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/preview">
 
                 <TextView
                     android:id="@+id/name"
+                    style="@style/Text.Item.Workspace"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@{(workspaces.size() > positionIndex) ? workspaces.get(positionIndex).name : ``}"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginEnd="24dp"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:text="@{workspace.name}"
                     android:textAlignment="center"
-                    android:textColor="@color/white"
                     tools:text="shablon text" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:src="@drawable/ic_more" />
+
             </RelativeLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        </androidx.cardview.widget.CardView>
+    </androidx.cardview.widget.CardView>
 
-    </RelativeLayout>
 </layout>

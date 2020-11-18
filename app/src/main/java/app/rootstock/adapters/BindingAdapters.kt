@@ -60,6 +60,15 @@ fun bindColorFilter(imageView: ImageView, color: String) {
         e.printStackTrace()
     }
 }
+@BindingAdapter("backgroundColor")
+fun bindColorFilter(view: View, color: String) {
+    try {
+        val c = Color.parseColor(color)
+        view.setBackgroundColor(c)
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+}
 
 
 //

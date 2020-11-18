@@ -9,6 +9,7 @@ import app.rootstock.data.result.Event
 import app.rootstock.data.user.UserRepository
 import app.rootstock.data.workspace.Workspace
 import app.rootstock.data.workspace.WorkspaceWithChildren
+import app.rootstock.ui.channels.ChannelRepository
 import app.rootstock.ui.channels.ChannelRepositoryImpl
 import app.rootstock.ui.workspace.WorkspaceRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -36,7 +37,7 @@ enum class PagerEvent {
 class WorkspaceViewModel @ViewModelInject constructor(
     private val userRepository: UserRepository,
     private val workspaceRepository: WorkspaceRepository,
-    private val channelRepository: ChannelRepositoryImpl,
+    private val channelRepository: ChannelRepository,
 ) :
     ViewModel(), WorkspaceEventHandler {
 
@@ -193,6 +194,12 @@ class WorkspaceViewModel @ViewModelInject constructor(
 
     fun setRoot(atRoot: Boolean) {
         isAtRoot = atRoot
+    }
+
+    fun addChannel(channel: Channel) {
+        _channels.value = _channels.value?.apply {
+            add(channel)
+        }
     }
 
 

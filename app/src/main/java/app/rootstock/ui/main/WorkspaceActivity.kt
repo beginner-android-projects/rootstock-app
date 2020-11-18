@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.Log
 import android.view.ViewGroup
 import androidx.activity.viewModels
 import androidx.annotation.NonNull
@@ -14,11 +15,16 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.lifecycleScope
 import app.rootstock.R
+import app.rootstock.data.channel.Channel
+import app.rootstock.data.network.CreateOperation
 import app.rootstock.data.network.ReLogInObservable
 import app.rootstock.data.network.ReLogInObserver
+import app.rootstock.ui.channels.ChannelsListFragment
 import app.rootstock.ui.settings.SettingsActivity
 import app.rootstock.ui.signup.RegisterActivity
 import app.rootstock.utils.convertDpToPx
+import app.rootstock.views.ChannelCreateDialogFragment
+import app.rootstock.views.ChannelEditDialogFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
@@ -49,7 +55,7 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
             shapeAppearanceModel =
                 shapeAppearanceModel.withCornerSize { 30f }
             // set listeners
-            setOnClickListener { addItem() }
+            setOnClickListener { openAddItemDialog() }
         }
 
         findViewById<BottomNavigationView>(R.id.bottom_app_bar)?.apply {
@@ -68,8 +74,33 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
 
     }
 
-    private fun addItem() {
+    private fun createChannelOperation(op: CreateOperation<Channel?>) {
+        when (op) {
+            is CreateOperation.Success -> {
+                op.obj?.let { viewModel.addChannel(it) }
+            }
+            is CreateOperation.Error -> {
+                // todo toast/snackbar
+            }
+        }
+    }
 
+    private fun openAddItemDialog() {
+        when (viewModel.pagerPosition.value) {
+            1 -> {
+                val dialog = viewModel.workspace.value?.workspaceId?.let {
+                    ChannelCreateDialogFragment(
+                        it, ::createChannelOperation
+                    )
+                }
+                dialog?.show(
+                    supportFragmentManager,
+                    DIALOG_CHANNEL_CREATE
+                )
+            }
+            else -> {
+            }
+        }
     }
 
     private fun navigateToSettings() {
@@ -167,6 +198,7 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
     companion object {
         const val ANIMATION_DURATION_FAB = 200L
         const val DIM_AMOUNT = 0.3f
+        const val DIALOG_CHANNEL_CREATE = "DIALOG_CHANNEL_CREATE"
     }
 
 

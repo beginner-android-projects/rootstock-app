@@ -9,6 +9,7 @@ import android.widget.LinearLayout
 import android.widget.PopupWindow
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.recyclerview.widget.RecyclerView
 import app.rootstock.R
 import app.rootstock.adapters.ChannelListAdapter
 import app.rootstock.data.channel.Channel
@@ -62,9 +63,17 @@ class ChannelsListFragment : Fragment() {
         val itemDecorator =
             SpacingItemDecoration(
                 endSpacing = requireContext().convertDpToPx(dp = 25f).toInt(),
-                startSpacing = requireContext().convertDpToPx(dp = 15f).toInt(),
+                startSpacing = requireContext().convertDpToPx(dp = CHANNEL_START_SPACING).toInt(),
             )
-        binding.recyclerView.addItemDecoration(itemDecorator)
+        binding.recyclerView.apply {
+            addItemDecoration(itemDecorator)
+            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+                    viewModel.pageScrolled()
+                }
+            })
+        }
 
     }
 
@@ -113,6 +122,7 @@ class ChannelsListFragment : Fragment() {
     companion object {
         private const val DIALOG_CHANNEL_EDIT = "dialog_channel_edit"
         private const val DIALOG_CHANNEL_DELETE = "dialog_channel_delete"
+        private const val CHANNEL_START_SPACING = 15f
 
     }
 

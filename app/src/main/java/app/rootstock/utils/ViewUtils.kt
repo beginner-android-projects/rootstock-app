@@ -14,11 +14,11 @@ fun Context.convertDpToPx(dp: Float): Float {
 
 
 /**
- * @param columnWidth - in dp
+ * @param columnWidthDp - in dp
  */
-fun RecyclerView.autoFitColumns(columnWidth: Int, spanCountNum: Int) {
+fun RecyclerView.autoFitColumns(columnWidthDp: Int, spanCountNum: Int) {
     val displayMetrics = this.context.resources.displayMetrics
     val noOfColumns =
-        ((displayMetrics.widthPixels / displayMetrics.density) / columnWidth).toInt()
+        ((displayMetrics.widthPixels / displayMetrics.density) / columnWidthDp).toInt()
     this.layoutManager = GridLayoutManager(this.context, noOfColumns).apply { spanCount = spanCountNum }
 }
