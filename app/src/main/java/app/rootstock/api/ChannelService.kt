@@ -1,12 +1,10 @@
 package app.rootstock.api
 
 import app.rootstock.data.channel.Channel
+import app.rootstock.data.channel.CreateChannelRequest
 import app.rootstock.data.workspace.WorkspaceWithChildren
 import retrofit2.Response
-import retrofit2.http.Body
-import retrofit2.http.DELETE
-import retrofit2.http.PATCH
-import retrofit2.http.Path
+import retrofit2.http.*
 
 interface ChannelService {
 
@@ -21,4 +19,10 @@ interface ChannelService {
     suspend fun deleteChannel(
         @Path("channelId") channelId: Long
     ): Response<Void>
+
+
+    @POST("/channels/")
+    suspend fun createChannel(
+        @Body channel: CreateChannelRequest,
+    ): Response<Channel>
 }

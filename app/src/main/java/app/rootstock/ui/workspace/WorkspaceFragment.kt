@@ -67,6 +67,8 @@ class WorkspaceFragment : Fragment() {
         // setup adapter for viewpager with tablayout
         val adapterToSet = WorkspacePagerAdapter(this)
         binding.pager.apply {
+            // preload also channel fragment
+            offscreenPageLimit = 2;
             adapter = adapterToSet
             registerOnPageChangeCallback(changeFab)
             // disable overscroll effect

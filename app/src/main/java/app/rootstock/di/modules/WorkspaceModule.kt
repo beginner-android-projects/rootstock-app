@@ -6,6 +6,7 @@ import app.rootstock.data.channel.ChannelDao
 import app.rootstock.data.db.AppDatabase
 import app.rootstock.data.network.CacheCleaner
 import app.rootstock.data.workspace.WorkspaceDao
+import app.rootstock.ui.channels.ChannelRepository
 import app.rootstock.ui.channels.ChannelRepositoryImpl
 import app.rootstock.ui.workspace.WorkspaceRepository
 import app.rootstock.ui.workspace.WorkspaceRepositoryImpl
@@ -58,7 +59,7 @@ object WorkspaceModule {
         channelService: ChannelService,
         channelDao: ChannelDao,
         cacheCleaner: CacheCleaner
-    ): ChannelRepositoryImpl {
+    ): ChannelRepository {
         return ChannelRepositoryImpl(channelService, channelDao, cacheCleaner)
     }
 }

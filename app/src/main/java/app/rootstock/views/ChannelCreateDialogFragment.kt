@@ -6,17 +6,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDialogFragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import app.rootstock.R
 import app.rootstock.adapters.ColorListAdapter
 import app.rootstock.data.channel.Channel
 import app.rootstock.data.channel.ChannelConstants.channelPossibleColors
 import app.rootstock.data.channel.ChannelConstants.defaultChannelColor
-import app.rootstock.databinding.DialogChannelEditBinding
-import app.rootstock.ui.main.WorkspaceViewModel
+import app.rootstock.data.network.CreateOperation
+import app.rootstock.databinding.DialogChannelCreateBinding
+import app.rootstock.ui.channels.ChannelCreateViewModel
 import app.rootstock.utils.autoFitColumns
 import app.rootstock.utils.convertDpToPx
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -25,23 +25,20 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.lang.RuntimeException
 
 
-/**
- * Dialog that appears when editing channel.
- */
 @AndroidEntryPoint
 @ExperimentalCoroutinesApi
-class ChannelEditDialogFragment(private val channel: Channel) : AppCompatDialogFragment() {
+class ChannelCreateDialogFragment(
+    private val workspaceId: String,
+    private val channelResult: ((CreateOperation<Channel?>) -> Unit)
+) : AppCompatDialogFragment() {
 
     companion object {
         private const val spanCount = 4
-
     }
 
-    private var currentColor: String? = null
+    private lateinit var binding: DialogChannelCreateBinding
 
-    private lateinit var binding: DialogChannelEditBinding
-
-    private val viewModel: WorkspaceViewModel by activityViewModels()
+    private val viewModel: ChannelCreateViewModel by viewModels()
 
     private val adapterToSet = ColorListAdapter(items = channelPossibleColors, ::onColorClicked)
 
@@ -54,21 +51,23 @@ class ChannelEditDialogFragment(private val channel: Channel) : AppCompatDialogF
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DialogChannelEditBinding.inflate(layoutInflater, container, true)
+        binding = DialogChannelCreateBinding.inflate(layoutInflater, container, true)
         return binding.root
     }
 
     private fun onColorClicked(position: Int?) {
         if (position == null) return
-
         val isPicked =
             binding.colorsRv.findViewHolderForAdapterPosition(position)?.itemView?.findViewById<ChannelPickImageView>(
                 R.id.color_item
             )?.isPicked
 
-        // if color is picked by user, change line accordingly
-        // otherwise, return to the initial color
-        if (isPicked == false) changeColor(channel.backgroundColor)
+        // if not picked by user, change to default color because there is no channel yet created
+        if (isPicked == false) viewModel.channel.value?.color?.let {
+            changeColor(
+                defaultChannelColor
+            )
+        }
         else changeColor(channelPossibleColors[position])
 
         // unpick previously picked color
@@ -89,13 +88,13 @@ class ChannelEditDialogFragment(private val channel: Channel) : AppCompatDialogF
             Color.parseColor(defaultChannelColor)
         }
         binding.colorLine.setColorFilter(colorToSet)
-        currentColor = color
+        viewModel.channel.value?.color = color
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         binding.apply {
-            channel = this@ChannelEditDialogFragment.channel
+            viewmodel = this@ChannelCreateDialogFragment.viewModel
             lifecycleOwner = viewLifecycleOwner
             executePendingBindings()
         }
@@ -115,17 +114,17 @@ class ChannelEditDialogFragment(private val channel: Channel) : AppCompatDialogF
             (requireDialog() as AlertDialog).setView(binding.root)
         }
         binding.save.setOnClickListener {
-            val newChannel = channel.copy()
-            newChannel.apply {
-                name = view?.findViewById<EditText>(R.id.channel_edit_name_text)?.text.toString()
-                currentColor?.let {
-                    backgroundColor = it
-                }
-            }
-            viewModel.updateChannel(newChannel)
-            dismiss()
+            viewModel.createChannel(workspaceId)
         }
         binding.cancel.setOnClickListener { dismiss() }
+
+        viewModel.eventChannel.observe(viewLifecycleOwner) {
+            if (it != null) {
+                val op = it.getContentIfNotHandled() ?: return@observe
+                channelResult(op)
+                dismiss()
+            }
+        }
     }
 
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="max_channel_name" format="integer" type="dimen">32</item>
-
+    <dimen name="dialog_channel_create_line_color_width">5dp</dimen>
 </resources>
