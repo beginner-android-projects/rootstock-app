@@ -10,7 +10,7 @@ import app.rootstock.R
 
 class ColorListAdapter constructor(
     private val items: List<String>,
-    private val onColorClicked: ((view: View, position: Int?) -> Unit)
+    private val onColorClicked: ((position: Int?) -> Unit)
 ) : RecyclerView.Adapter<ColorListAdapter.ColorViewHolder>() {
 
     var previousPickedPosition: Int? = null
@@ -22,7 +22,7 @@ class ColorListAdapter constructor(
             itemView.findViewById<ImageView>(R.id.color_item)
                 ?.setColorFilter(Color.parseColor(item))
             itemView.findViewById<ImageView>(R.id.color_item)?.setOnClickListener {
-                onColorClicked(it, position)
+                onColorClicked(position)
                 previousPickedPosition = position
             }
         }

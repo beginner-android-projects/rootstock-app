@@ -13,7 +13,11 @@ import app.rootstock.adapters.WorkspaceListAdapter
 import app.rootstock.databinding.FragmentWorkspaceListBinding
 import app.rootstock.ui.main.WorkspaceEvent
 import app.rootstock.ui.main.WorkspaceViewModel
+import app.rootstock.utils.autoFitColumns
+import app.rootstock.utils.convertDpToPx
 import app.rootstock.utils.makeToast
+import app.rootstock.views.GridSpacingItemDecorator
+import app.rootstock.views.GridSpacingItemDecoratorWithCustomCenter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
@@ -45,10 +49,18 @@ class WorkspaceListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         adapter = WorkspaceListAdapter(
             lifecycleOwner = this,
-            workspaces = viewModel.workspacesChildren,
             workspaceEventHandler = viewModel
         )
         binding.recyclerView.adapter = adapter
+        binding.recyclerView.autoFitColumns(WORKSPACE_COLUMN_WIDTH_DP, WORKSPACE_SPAN_COUNT)
+        binding.recyclerView.addItemDecoration(
+            GridSpacingItemDecoratorWithCustomCenter(
+                spanCount = WORKSPACE_SPAN_COUNT,
+                spacing = requireContext().convertDpToPx(20f).toInt(),
+                centerSpacing = requireContext().convertDpToPx(10f).toInt(),
+                bottomSpacing = requireContext().convertDpToPx(30f).toInt()
+            )
+        )
         binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
@@ -66,6 +78,11 @@ class WorkspaceListFragment : Fragment() {
                 }
             }
         }
+    }
+
+    companion object{
+        const val WORKSPACE_SPAN_COUNT = 2
+        const val WORKSPACE_COLUMN_WIDTH_DP = 100
     }
 
 

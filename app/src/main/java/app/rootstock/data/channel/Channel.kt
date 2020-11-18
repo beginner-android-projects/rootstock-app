@@ -47,3 +47,18 @@ data class Channel(
     override var workspaceId: String
 ) : ChannelI
 
+
+object ChannelConstants {
+    val channelPossibleColors = listOf(
+        "#f0ff0f",
+        "#f3fa0f",
+        "#b0ff0a",
+        "#c01f0a",
+        "#c01f0a",
+        "#c01f0a",
+        "#c01f0a",
+        "#c01f0a",
+    )
+    const val defaultChannelColor = "#f0ff0f"
+    const val channelNameMaxLength = 32
+}
