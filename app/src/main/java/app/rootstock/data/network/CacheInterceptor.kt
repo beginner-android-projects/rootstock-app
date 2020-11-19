@@ -1,11 +1,12 @@
 package app.rootstock.data.network
 
-import android.content.Context
-import android.util.Log
-import okhttp3.*
-import java.io.File
+import okhttp3.CacheControl
+import okhttp3.Interceptor
+import okhttp3.OkHttpClient
+import okhttp3.Response
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import javax.inject.Singleton
 
 
 class CacheInterceptor() : Interceptor {
@@ -24,6 +25,7 @@ class CacheInterceptor() : Interceptor {
 }
 
 
+@Singleton
 class CacheCleaner @Inject constructor(private val okHttpClient: OkHttpClient) {
 
     fun cleanCache() {

@@ -1,11 +1,14 @@
 package app.rootstock.adapters
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import app.rootstock.data.channel.Channel
 import app.rootstock.data.workspace.Workspace
+import app.rootstock.data.workspace.WorkspaceI
 import app.rootstock.databinding.ItemWorkspaceBinding
 
 interface WorkspaceEventHandler {
@@ -14,9 +17,10 @@ interface WorkspaceEventHandler {
 
 class WorkspaceListAdapter constructor(
     private val lifecycleOwner: LifecycleOwner,
-    private val workspaceEventHandler: WorkspaceEventHandler
+    private val workspaceEventHandler: WorkspaceEventHandler,
+    private val editDialog: (v: View, w: WorkspaceI) -> Unit,
 
-) :
+    ) :
     androidx.recyclerview.widget.ListAdapter<Workspace, WorkspaceListAdapter.WorkspaceViewHolder>(
         object :
             DiffUtil.ItemCallback<Workspace>() {
@@ -39,6 +43,7 @@ class WorkspaceListAdapter constructor(
             binding.workspace = item
             binding.workspaceEventHandler = workspaceEventHandler
             binding.lifecycleOwner = lifecycleOwner
+            binding.editWorkspace.setOnClickListener { editDialog(it, item) }
             binding.executePendingBindings()
         }
     }

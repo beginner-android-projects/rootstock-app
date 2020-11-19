@@ -6,7 +6,6 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.util.Log
 import android.view.ViewGroup
 import androidx.activity.viewModels
 import androidx.annotation.NonNull
@@ -19,12 +18,10 @@ import app.rootstock.data.channel.Channel
 import app.rootstock.data.network.CreateOperation
 import app.rootstock.data.network.ReLogInObservable
 import app.rootstock.data.network.ReLogInObserver
-import app.rootstock.ui.channels.ChannelsListFragment
 import app.rootstock.ui.settings.SettingsActivity
 import app.rootstock.ui.signup.RegisterActivity
 import app.rootstock.utils.convertDpToPx
 import app.rootstock.views.ChannelCreateDialogFragment
-import app.rootstock.views.ChannelEditDialogFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
@@ -121,13 +118,13 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
             animateFab(it)
         }
 
-        viewModel.eventChannel.observe(this) {
+        viewModel.eventEdit.observe(this) {
             when (it.getContentIfNotHandled()) {
-                ChannelEvent.CHANNEL_EDIT_OPEN -> {
+                EditEvent.EDIT_OPEN -> {
                     val vg = window.decorView.rootView as? ViewGroup ?: return@observe
                     applyDim(vg, DIM_AMOUNT)
                 }
-                ChannelEvent.CHANNEL_EDIT_EXIT -> {
+                EditEvent.EDIT_EXIT -> {
                     val vg = window.decorView.rootView as? ViewGroup ?: return@observe
                     clearDim(vg)
                 }

@@ -16,8 +16,9 @@ import app.rootstock.data.channel.Channel
 import app.rootstock.databinding.FragmentChannelsListBinding
 import app.rootstock.ui.main.WorkspaceViewModel
 import app.rootstock.utils.convertDpToPx
-import app.rootstock.views.ChannelDeleteDialogFragment
+import app.rootstock.views.DeleteDialogFragment
 import app.rootstock.views.ChannelEditDialogFragment
+import app.rootstock.views.DeleteDialogType
 import app.rootstock.views.SpacingItemDecoration
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -46,7 +47,7 @@ class ChannelsListFragment : Fragment() {
     }
 
     private fun openEditDialog(anchor: View, channel: Channel) {
-        viewModel.editChannelStart()
+        viewModel.editDialogOpened()
         showEditPopup(anchor, channel)
     }
 
@@ -87,7 +88,7 @@ class ChannelsListFragment : Fragment() {
     }
 
     private fun showEditPopup(anchor: View, channel: Channel) {
-        val popUpView = layoutInflater.inflate(R.layout.popup_edit_channel, null)
+        val popUpView = layoutInflater.inflate(R.layout.popup_edit, null)
         val width = LinearLayout.LayoutParams.WRAP_CONTENT
         val height = LinearLayout.LayoutParams.WRAP_CONTENT
         val popupWindow = PopupWindow(popUpView, width, height, true)
@@ -110,7 +111,12 @@ class ChannelsListFragment : Fragment() {
         }
         popUpView.findViewById<View>(R.id.delete)?.setOnClickListener {
             popupWindow.dismiss()
-            val dialog = ChannelDeleteDialogFragment(channel, delete = ::deleteChannel)
+            val dialog = DeleteDialogFragment(
+                name = channel.name,
+                delete = ::deleteChannel,
+                id = channel.channelId,
+                deleteType = DeleteDialogType.CHANNEL
+            )
             dialog.show(requireActivity().supportFragmentManager, DIALOG_CHANNEL_DELETE)
         }
     }

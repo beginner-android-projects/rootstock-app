@@ -10,7 +10,6 @@ import app.rootstock.data.user.UserRepository
 import app.rootstock.data.workspace.Workspace
 import app.rootstock.data.workspace.WorkspaceWithChildren
 import app.rootstock.ui.channels.ChannelRepository
-import app.rootstock.ui.channels.ChannelRepositoryImpl
 import app.rootstock.ui.workspace.WorkspaceRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
@@ -25,8 +24,8 @@ sealed class WorkspaceEvent {
     class NavigateToRoot() : WorkspaceEvent()
 }
 
-enum class ChannelEvent {
-    CHANNEL_EDIT_OPEN, CHANNEL_EDIT_EXIT, CHANNEL_DELETED, ERROR
+enum class EditEvent {
+    EDIT_OPEN, EDIT_EXIT
 }
 
 enum class PagerEvent {
@@ -61,8 +60,8 @@ class WorkspaceViewModel @ViewModelInject constructor(
     private val _eventWorkspace = MutableLiveData<Event<WorkspaceEvent>>()
     val eventWorkspace: LiveData<Event<WorkspaceEvent>> get() = _eventWorkspace
 
-    private val _eventChannel = MutableLiveData<Event<ChannelEvent>>()
-    val eventChannel: LiveData<Event<ChannelEvent>> get() = _eventChannel
+    private val _eventChannel = MutableLiveData<Event<EditEvent>>()
+    val eventEdit: LiveData<Event<EditEvent>> get() = _eventChannel
 
     private val _pagerPosition = MutableLiveData<Int>()
     val pagerPosition: LiveData<Int> get() = _pagerPosition
@@ -70,12 +69,12 @@ class WorkspaceViewModel @ViewModelInject constructor(
     private val _pagerScrolled = MutableLiveData<Event<PagerEvent>>()
     val pagerScrolled: LiveData<Event<PagerEvent>> get() = _pagerScrolled
 
-    fun editChannelStart() {
-        _eventChannel.value = Event(ChannelEvent.CHANNEL_EDIT_OPEN)
+    fun editDialogOpened() {
+        _eventChannel.value = Event(EditEvent.EDIT_OPEN)
     }
 
     fun editChannelStop() {
-        _eventChannel.value = Event(ChannelEvent.CHANNEL_EDIT_EXIT)
+        _eventChannel.value = Event(EditEvent.EDIT_EXIT)
     }
 
 
@@ -142,17 +141,16 @@ class WorkspaceViewModel @ViewModelInject constructor(
                 }
             }
             viewModelScope.launch {
-                updateChannelTwo(channel)
+                updateChannelRemote(channel)
             }
         } else {
             // todo
             // notify
         }
-//
     }
 
 
-    private suspend fun updateChannelTwo(channelToUpdate: Channel) {
+    private suspend fun updateChannelRemote(channelToUpdate: Channel) {
         // fetch user from network
         when (val channel = channelRepository.updateChannel(channelToUpdate).first()) {
             is ResponseResult.Success -> {
@@ -179,10 +177,8 @@ class WorkspaceViewModel @ViewModelInject constructor(
         viewModelScope.launch {
             when (channelRepository.deleteChannel(channelId).first()) {
                 is ResponseResult.Success -> {
-                    _eventChannel.value = Event(ChannelEvent.CHANNEL_DELETED)
                 }
                 is ResponseResult.Error -> {
-                    _eventChannel.value = Event(ChannelEvent.ERROR)
                 }
             }
         }
@@ -199,6 +195,25 @@ class WorkspaceViewModel @ViewModelInject constructor(
     fun addChannel(channel: Channel) {
         _channels.value = _channels.value?.apply {
             add(channel)
+        }
+    }
+
+    fun deleteWorkspace(wsId: String) {
+        _workspace.value = _workspace.value?.apply {
+            children.apply {
+                val w = find { it.workspaceId == wsId }
+                remove(w)
+            }
+        }
+        viewModelScope.launch {
+            when (workspaceRepository.deleteWorkspace(wsId).first()) {
+                is ResponseResult.Success -> {
+//                    _eventChannel.value = Event(ChannelEvent.CHANNEL_DELETED)
+                }
+                is ResponseResult.Error -> {
+//                    _eventChannel.value = Event(ChannelEvent.ERROR)
+                }
+            }
         }
     }
 

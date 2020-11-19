@@ -11,9 +11,7 @@ import app.rootstock.data.channel.CreateChannelRequest
 import app.rootstock.data.network.CreateOperation
 import app.rootstock.data.network.ResponseResult
 import app.rootstock.data.result.Event
-import app.rootstock.ui.main.ChannelEvent
 import dagger.hilt.android.scopes.FragmentScoped
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 

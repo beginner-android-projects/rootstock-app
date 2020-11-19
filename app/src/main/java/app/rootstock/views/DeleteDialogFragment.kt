@@ -9,12 +9,24 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDialogFragment
 import app.rootstock.R
 import app.rootstock.data.channel.Channel
+import app.rootstock.data.workspace.Workspace
 import app.rootstock.databinding.DialogChannelDeleteBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import java.util.*
 
-class ChannelDeleteDialogFragment(
-    private val channel: Channel,
-    private val delete: ((channelId: Long) -> Unit)
+enum class DeleteDialogType {
+    CHANNEL, WORKSPACE
+}
+
+/**
+ * Dialog Fragment for deleting an entity with @param id and @param name
+ * Used for deleting [Channel] and [Workspace]
+ */
+class DeleteDialogFragment<T>(
+    private val name: String,
+    private val id: T,
+    private val deleteType: DeleteDialogType,
+    private val delete: ((id: T) -> Unit),
 ) : AppCompatDialogFragment() {
 
     private lateinit var binding: DialogChannelDeleteBinding
@@ -36,15 +48,13 @@ class ChannelDeleteDialogFragment(
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         binding.apply {
-            channel = this@ChannelDeleteDialogFragment.channel
+            type = deleteType.name.toLowerCase(Locale.ROOT)
             lifecycleOwner = viewLifecycleOwner
             executePendingBindings()
-
             message.text = getString(
-                R.string.delete_channel_body,
-                this@ChannelDeleteDialogFragment.channel.name
+                R.string.delete_channel_body, name
             )
-            delete.setOnClickListener { delete(this@ChannelDeleteDialogFragment.channel.channelId); dismiss() }
+            delete.setOnClickListener { delete(id); dismiss() }
             cancel.setOnClickListener { dismiss() }
         }
         if (showsDialog) {

@@ -59,6 +59,7 @@
                     tools:text="shablon text" />
 
                 <ImageView
+                    android:id="@+id/edit_workspace"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"

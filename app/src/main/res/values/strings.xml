@@ -30,4 +30,6 @@
     <string name="delete">delete</string>
     <string name="add_new_channel">add new channel</string>
     <string name="channels_no_last_message">No memo yet</string>
+    <string name="edit_workspace">edit workspace</string>
+    <string name="delete_workspace">delete workspace</string>
 </resources>

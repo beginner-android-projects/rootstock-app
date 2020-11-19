@@ -3,11 +3,13 @@ package app.rootstock.ui.workspace
 import android.util.Log
 import app.rootstock.api.WorkspaceService
 import app.rootstock.data.channel.ChannelDao
+import app.rootstock.data.network.CacheCleaner
 import app.rootstock.data.network.NetworkBoundRepository
 import app.rootstock.data.network.ResponseResult
 import app.rootstock.data.workspace.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import okhttp3.ResponseBody
 import java.lang.Exception
@@ -19,12 +21,18 @@ interface WorkspaceRepository {
      * returns workspace by id either from local storage or network
      */
     suspend fun getWorkspace(workspaceId: String): Flow<ResponseResult<WorkspaceWithChildren?>>
+
+    /**
+     * sends a DELETE request for @param workspaceId
+     */
+    suspend fun deleteWorkspace(workspaceId: String): Flow<ResponseResult<Void?>>
 }
 
 class WorkspaceRepositoryImpl @Inject constructor(
     private val workspaceRemoteSource: WorkspaceService,
     private val workspaceLocal: WorkspaceDao,
     private val channelLocal: ChannelDao,
+    private val cacheCleaner: CacheCleaner
 ) : WorkspaceRepository {
 
 
@@ -45,10 +53,10 @@ class WorkspaceRepositoryImpl @Inject constructor(
                             )
                         )
                         // insert children workspaces
-                        workspaceLocal.insertAll(it.children)
+                        workspaceLocal.upsertAll(it.children)
 
                         // insert channels
-                        channelLocal.insertAll(it.channels)
+                        channelLocal.upsertAll(it.channels)
 
                         // create hierarchy
                         val list = mutableListOf<WorkspaceTree>()
@@ -78,7 +86,7 @@ class WorkspaceRepositoryImpl @Inject constructor(
                             name = workspaceWithChannels.workspace.name,
                             imageUrl = workspaceWithChannels.workspace.imageUrl,
                             backgroundColor = workspaceWithChannels.workspace.backgroundColor,
-                            children = workspaces,
+                            children = workspaces.toMutableList(),
                             channels = workspaceWithChannels.channels,
                             createdAt = workspaceWithChannels.workspace.createdAt,
                         )
@@ -91,6 +99,28 @@ class WorkspaceRepositoryImpl @Inject constructor(
                 return workspaceResponse.body()
             }
         }.asFlow()
+
+
+    override suspend fun deleteWorkspace(workspaceId: String): Flow<ResponseResult<Void?>> = flow {
+        var success = false
+        val channelResponse =
+            workspaceRemoteSource.deleteWorkspace(workspaceId)
+
+        val state = when (channelResponse.isSuccessful) {
+            true -> {
+                success = true; ResponseResult.success(channelResponse.body())
+            }
+            else -> ResponseResult.error(channelResponse.message())
+        }
+        if (success) {
+            workspaceLocal.delete(workspaceId)
+            cacheCleaner.cleanCache()
+        }
+        emit(state)
+
+    }.catch {
+        emit(ResponseResult.error("Something went wrong!"))
+    }
 
 
 }

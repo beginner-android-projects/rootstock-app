@@ -50,8 +50,9 @@ object WorkspaceModule {
         workspaceDataSource: WorkspaceService,
         workspaceDao: WorkspaceDao,
         channelDao: ChannelDao,
+        cacheCleaner: CacheCleaner
     ): WorkspaceRepository {
-        return WorkspaceRepositoryImpl(workspaceDataSource, workspaceDao, channelDao)
+        return WorkspaceRepositoryImpl(workspaceDataSource, workspaceDao, channelDao, cacheCleaner)
     }
 
     @Provides

@@ -13,15 +13,19 @@ interface ChannelI {
     var workspaceId: String
     val imageUrl: String?
     val backgroundColor: String?
+    val lastUpdate: Date
 }
 
 @Entity(
     tableName = "channels",
-    foreignKeys = [ForeignKey(
-        entity = Workspace::class,
-        parentColumns = ["ws_id"],
-        childColumns = ["workspace_id"]
-    )]
+    foreignKeys = [
+        ForeignKey(
+            entity = Workspace::class,
+            parentColumns = ["ws_id"],
+            childColumns = ["workspace_id"],
+            onDelete = ForeignKey.CASCADE
+        )],
+    indices = [Index("workspace_id")],
 )
 @TypeConverters(DateConverter::class)
 data class Channel(
@@ -41,7 +45,7 @@ data class Channel(
     override val imageUrl: String?,
     @ColumnInfo(name = "last_update")
     @SerializedName("last_update")
-    val lastUpdate: Date,
+    override val lastUpdate: Date,
     @ColumnInfo(name = "workspace_id")
     @SerializedName("workspace_id")
     override var workspaceId: String
