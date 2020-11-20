@@ -2,7 +2,6 @@ package app.rootstock.ui.workspace
 
 import android.content.res.Resources
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,7 +19,7 @@ import app.rootstock.ui.main.WorkspaceViewModel
 import app.rootstock.utils.autoFitColumns
 import app.rootstock.utils.convertDpToPx
 import app.rootstock.views.DeleteDialogFragment
-import app.rootstock.views.DeleteDialogType
+import app.rootstock.views.ItemType
 import app.rootstock.views.GridSpacingItemDecoratorWithCustomCenter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -125,7 +124,7 @@ class WorkspaceListFragment : Fragment() {
                 name = workspace.name,
                 id = workspace.workspaceId,
                 delete = ::delete,
-                deleteType = DeleteDialogType.WORKSPACE
+                deleteType = ItemType.WORKSPACE
             )
             dialog.show(
                 requireActivity().supportFragmentManager,

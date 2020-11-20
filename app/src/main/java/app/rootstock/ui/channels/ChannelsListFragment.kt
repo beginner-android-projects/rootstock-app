@@ -18,7 +18,7 @@ import app.rootstock.ui.main.WorkspaceViewModel
 import app.rootstock.utils.convertDpToPx
 import app.rootstock.views.DeleteDialogFragment
 import app.rootstock.views.ChannelEditDialogFragment
-import app.rootstock.views.DeleteDialogType
+import app.rootstock.views.ItemType
 import app.rootstock.views.SpacingItemDecoration
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -115,7 +115,7 @@ class ChannelsListFragment : Fragment() {
                 name = channel.name,
                 delete = ::deleteChannel,
                 id = channel.channelId,
-                deleteType = DeleteDialogType.CHANNEL
+                deleteType = ItemType.CHANNEL
             )
             dialog.show(requireActivity().supportFragmentManager, DIALOG_CHANNEL_DELETE)
         }

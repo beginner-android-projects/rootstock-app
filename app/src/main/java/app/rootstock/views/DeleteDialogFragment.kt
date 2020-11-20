@@ -14,7 +14,7 @@ import app.rootstock.databinding.DialogChannelDeleteBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.util.*
 
-enum class DeleteDialogType {
+enum class ItemType {
     CHANNEL, WORKSPACE
 }
 
@@ -25,7 +25,7 @@ enum class DeleteDialogType {
 class DeleteDialogFragment<T>(
     private val name: String,
     private val id: T,
-    private val deleteType: DeleteDialogType,
+    private val deleteType: ItemType,
     private val delete: ((id: T) -> Unit),
 ) : AppCompatDialogFragment() {
 
