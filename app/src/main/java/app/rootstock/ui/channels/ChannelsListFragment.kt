@@ -9,17 +9,16 @@ import android.widget.LinearLayout
 import android.widget.PopupWindow
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import app.rootstock.R
 import app.rootstock.adapters.ChannelListAdapter
 import app.rootstock.data.channel.Channel
 import app.rootstock.databinding.FragmentChannelsListBinding
 import app.rootstock.ui.main.WorkspaceViewModel
+import app.rootstock.ui.workspace.WorkspaceFragmentDirections
 import app.rootstock.utils.convertDpToPx
-import app.rootstock.views.DeleteDialogFragment
-import app.rootstock.views.ChannelEditDialogFragment
-import app.rootstock.views.ItemType
-import app.rootstock.views.SpacingItemDecoration
+import app.rootstock.views.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
@@ -51,13 +50,18 @@ class ChannelsListFragment : Fragment() {
         showEditPopup(anchor, channel)
     }
 
+    private fun openChannel(channel: Channel) {
+        val action = WorkspaceFragmentDirections.actionWorkspaceFragmentToChannelActivity(channel)
+        findNavController().navigate(action)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setObservers()
         adapter = ChannelListAdapter(
             lifecycleOwner = this,
-            editDialog = ::openEditDialog
+            editDialog = ::openEditDialog,
+            openChannel = ::openChannel
         )
         binding.recyclerView.adapter = adapter
 
@@ -111,12 +115,18 @@ class ChannelsListFragment : Fragment() {
         }
         popUpView.findViewById<View>(R.id.delete)?.setOnClickListener {
             popupWindow.dismiss()
-            val dialog = DeleteDialogFragment(
-                name = channel.name,
+            val content = getString(
+                R.string.delete_channel_body, channel.name
+            )
+            val deleteObj = DeleteObj(
+                content = content,
                 delete = ::deleteChannel,
                 id = channel.channelId,
-                deleteType = ItemType.CHANNEL
+                deleteType = ItemType.CHANNEL,
+                bold = Pair(32, content.length - 1)
             )
+            val dialog = DeleteDialogFragment(deleteObj)
+
             dialog.show(requireActivity().supportFragmentManager, DIALOG_CHANNEL_DELETE)
         }
     }

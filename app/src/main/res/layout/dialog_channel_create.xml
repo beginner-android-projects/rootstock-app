@@ -13,8 +13,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="10dp"
-        android:paddingBottom="20dp">
+        android:paddingTop="@dimen/dialog_top_padding"
+        android:paddingBottom="@dimen/dialog_bottom_padding">
 
         <TextView
             android:id="@+id/channel_name"
@@ -99,9 +99,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:enabled="@{viewmodel.channel.nameValid}"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="20dp"
+            android:enabled="@{viewmodel.channel.nameValid}"
             android:text="@string/save"
             android:textAllCaps="false"
             app:layout_constraintEnd_toEndOf="parent"

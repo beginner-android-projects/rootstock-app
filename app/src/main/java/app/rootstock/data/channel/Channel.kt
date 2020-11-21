@@ -4,6 +4,7 @@ import androidx.room.*
 import app.rootstock.data.db.DateConverter
 import app.rootstock.data.workspace.Workspace
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 import java.util.*
 
 interface ChannelI {
@@ -49,7 +50,7 @@ data class Channel(
     @ColumnInfo(name = "workspace_id")
     @SerializedName("workspace_id")
     override var workspaceId: String
-) : ChannelI
+) : ChannelI, Serializable
 
 
 object ChannelConstants {

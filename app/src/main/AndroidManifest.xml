@@ -24,6 +24,7 @@
         <activity android:name=".ui.signup.RegisterActivity" />
         <activity android:name=".ui.main.WorkspaceActivity" />
         <activity android:name=".ui.settings.SettingsActivity" />
+        <activity android:name=".ui.channels.ChannelActivity" />
 
         <meta-data
             android:name="preloaded_fonts"

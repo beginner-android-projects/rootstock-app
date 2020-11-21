@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.Log
 import android.view.ViewGroup
 import androidx.activity.viewModels
 import androidx.annotation.NonNull
@@ -101,6 +102,7 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
     }
 
     private fun navigateToSettings() {
+        // todo change to nav
         val intent = Intent(this, SettingsActivity::class.java)
         startActivity(intent)
     }
@@ -114,8 +116,10 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
                 ResourcesCompat.getDrawable(resources, R.drawable.ic_arrow_down, null)
         }
         viewModel.pagerPosition.observe(this) {
-            if (it == null) return@observe
-            animateFab(it)
+            if (it == null || it > 1) return@observe
+            if (viewModel.hasSwiped)
+                animateFab(it)
+            else changeFabBackground(it)
         }
 
         viewModel.eventEdit.observe(this) {
@@ -143,7 +147,17 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
         }
     }
 
-    private fun applyDim(@NonNull parent: ViewGroup, dimAmount: Float) {
+    private fun changeFabBackground(position: Int) {
+        val fab = findViewById<FloatingActionButton>(R.id.fab)
+        val toCircle = position == 1
+        val value = if (toCircle) BUTTON_ROUND_SIZE else BUTTON_ROUNDED_SQUARE_SIZE
+        fab.apply {
+            shapeAppearanceModel =
+                shapeAppearanceModel.withCornerSize { (convertDpToPx(value)) }
+        }
+    }
+
+    private fun applyDim(parent: ViewGroup, dimAmount: Float) {
         val dim: Drawable = ColorDrawable(Color.BLACK)
         dim.setBounds(0, 0, parent.width, parent.height)
         dim.alpha = (255 * dimAmount).toInt()
@@ -157,11 +171,10 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
     }
 
     private fun animateFab(position: Int) {
-        if (position > 1) return
+        // if is currently on channels fragment, animate to circle
         val toCircle = position == 1
-        // 10f - round dps for square button
-        // 30f - for circle button
-        val startEnd = if (toCircle) 10f to 30f else 30f to 10f
+        val startEnd =
+            if (toCircle) BUTTON_ROUNDED_SQUARE_SIZE to BUTTON_ROUND_SIZE else BUTTON_ROUND_SIZE to BUTTON_ROUNDED_SQUARE_SIZE
         val fab = findViewById<FloatingActionButton>(R.id.fab)
         lifecycleScope.launch {
             ObjectAnimator.ofFloat(fab, "interpolation", startEnd.first, startEnd.second).apply {
@@ -195,6 +208,11 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
     companion object {
         const val ANIMATION_DURATION_FAB = 200L
         const val DIM_AMOUNT = 0.3f
+
+        // 10f - round dps for square button
+        // 30f - for circle button
+        const val BUTTON_ROUNDED_SQUARE_SIZE = 10f
+        const val BUTTON_ROUND_SIZE = 30f
         const val DIALOG_CHANNEL_CREATE = "DIALOG_CHANNEL_CREATE"
     }
 

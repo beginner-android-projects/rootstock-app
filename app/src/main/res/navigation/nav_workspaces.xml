@@ -17,7 +17,23 @@
             android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
+
+        <action
+            android:id="@+id/action_workspace_fragment_to_channel_activity"
+            app:destination="@id/channel_activity">
+        </action>
+
     </fragment>
+
+    <activity
+        android:id="@+id/channel_activity"
+        android:name="app.rootstock.ui.channels.ChannelActivity">
+        <argument
+            android:name="channel"
+            android:defaultValue="@null"
+            app:argType="app.rootstock.data.channel.Channel"
+            app:nullable="true" />
+    </activity>
 
 
 </navigation>

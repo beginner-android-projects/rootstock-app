@@ -17,7 +17,7 @@
     <string name="signup_title">Start by\ncreating account</string>
     <string name="login_title">Log in\nto existing account</string>
     <string name="privacy_policy">privacy policy</string>
-    <string name="settings_sign_out">sign out</string>
+    <string name="settings_log_out">log out</string>
     <string name="settings_delete_account">delete account</string>
     <string name="edit_channel">edit channel</string>
     <string name="delete_channel">delete channel</string>
@@ -32,4 +32,6 @@
     <string name="channels_no_last_message">No memo yet</string>
     <string name="edit_workspace">edit workspace</string>
     <string name="delete_workspace">delete workspace</string>
+    <string name="error_workspace_no_user">Please relogin to see workspaces</string>
+    <string name="delete_workspace_body">Are you sure you want to delete %1$s?\n\nAll content inside, including channels and messages, will be also deleted.</string>
 </resources>

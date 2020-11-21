@@ -1,5 +1,6 @@
 package app.rootstock.ui.main
 
+import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import app.rootstock.adapters.WorkspaceEventHandler
@@ -43,6 +44,8 @@ class WorkspaceViewModel @ViewModelInject constructor(
     private val _workspace = MutableLiveData<WorkspaceWithChildren>()
 
     var isAtRoot: Boolean? = null
+
+    var hasSwiped: Boolean = false
 
     val workspace: LiveData<WorkspaceWithChildren>
         get() = _workspace
@@ -120,7 +123,8 @@ class WorkspaceViewModel @ViewModelInject constructor(
         _eventWorkspace.value = Event(WorkspaceEvent.OpenWorkspace(workspaceId))
     }
 
-    fun animateFab(position: Int) {
+    fun changeFab(position: Int) {
+        hasSwiped = true
         _pagerPosition.value = position
     }
 
@@ -215,6 +219,11 @@ class WorkspaceViewModel @ViewModelInject constructor(
                 }
             }
         }
+    }
+
+    fun resetPager() {
+        hasSwiped = false
+        _pagerPosition.value = 0
     }
 
 

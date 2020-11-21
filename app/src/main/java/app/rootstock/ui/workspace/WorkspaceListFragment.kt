@@ -19,6 +19,7 @@ import app.rootstock.ui.main.WorkspaceViewModel
 import app.rootstock.utils.autoFitColumns
 import app.rootstock.utils.convertDpToPx
 import app.rootstock.views.DeleteDialogFragment
+import app.rootstock.views.DeleteObj
 import app.rootstock.views.ItemType
 import app.rootstock.views.GridSpacingItemDecoratorWithCustomCenter
 import dagger.hilt.android.AndroidEntryPoint
@@ -55,22 +56,31 @@ class WorkspaceListFragment : Fragment() {
             workspaceEventHandler = viewModel,
             ::openEditDialog
         )
-        binding.recyclerView.adapter = adapter
-        binding.recyclerView.autoFitColumns(WORKSPACE_COLUMN_WIDTH_DP, WORKSPACE_SPAN_COUNT)
-        binding.recyclerView.addItemDecoration(
-            GridSpacingItemDecoratorWithCustomCenter(
-                spanCount = WORKSPACE_SPAN_COUNT,
-                spacing = requireContext().convertDpToPx(20f).toInt(),
-                centerSpacing = requireContext().convertDpToPx(10f).toInt(),
-                bottomSpacing = requireContext().convertDpToPx(30f).toInt()
+        binding.recyclerView.apply {
+            adapter = this@WorkspaceListFragment.adapter
+            autoFitColumns(WORKSPACE_COLUMN_WIDTH_DP, WORKSPACE_SPAN_COUNT)
+            // inner and bottom-element padding are same
+            addItemDecoration(
+                GridSpacingItemDecoratorWithCustomCenter(
+                    spanCount = WORKSPACE_SPAN_COUNT,
+                    spacing = requireContext().convertDpToPx(20f).toInt(),
+                    centerSpacing = requireContext().convertDpToPx(10f).toInt(),
+                    bottomSpacing = requireContext().convertDpToPx(30f).toInt()
+                )
             )
-        )
-        binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                viewModel.pageScrolled()
-            }
-        })
+            setPadding(
+                paddingLeft,
+                paddingTop,
+                paddingRight,
+                requireContext().convertDpToPx(50f).toInt()
+            )
+            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+                    viewModel.pageScrolled()
+                }
+            })
+        }
         setObservers()
     }
 
@@ -120,12 +130,17 @@ class WorkspaceListFragment : Fragment() {
         }
         popUpView.findViewById<View>(R.id.delete)?.setOnClickListener {
             popupWindow.dismiss()
-            val dialog = DeleteDialogFragment(
-                name = workspace.name,
+            val content = getString(
+                R.string.delete_workspace_body, workspace.name
+            )
+            val deleteObj = DeleteObj(
+                content = content,
                 id = workspace.workspaceId,
                 delete = ::delete,
-                deleteType = ItemType.WORKSPACE
+                deleteType = ItemType.WORKSPACE,
+                bold = Pair(32, content.length)
             )
+            val dialog = DeleteDialogFragment(deleteObj)
             dialog.show(
                 requireActivity().supportFragmentManager,
                 DIALOG_WORKSPACE_DELETE

@@ -15,6 +15,7 @@ import app.rootstock.databinding.ItemChannelBinding
 class ChannelListAdapter(
     private val lifecycleOwner: LifecycleOwner,
     private val editDialog: (v: View, c: Channel) -> Unit,
+    private val openChannel: (channel: Channel) -> Unit
 ) : ListAdapter<Channel, ChannelListAdapter.ChannelViewHolder>(
     object :
         DiffUtil.ItemCallback<Channel>() {
@@ -39,6 +40,7 @@ class ChannelListAdapter(
             binding.executePendingBindings()
             binding.channelColor.setColorFilter(Color.parseColor(item.backgroundColor))
             binding.channelEdit.setOnClickListener { editDialog(it, item) }
+            binding.card.setOnClickListener { openChannel(item) }
         }
     }
 

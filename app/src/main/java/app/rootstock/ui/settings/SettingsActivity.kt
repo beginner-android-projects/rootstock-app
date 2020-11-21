@@ -43,7 +43,7 @@ class SettingsActivity : AppCompatActivity() {
             ),
             SettingsItem(
                 drawable = R.drawable.ic_baseline_work_24,
-                title = getString(R.string.settings_sign_out),
+                title = getString(R.string.settings_log_out),
                 actionHandler = signOutItemClick
             ),
             SettingsItem(
@@ -89,7 +89,7 @@ class SettingsActivity : AppCompatActivity() {
     private fun setToolbar() {
         val toolbar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
         toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
-        toolbar.navigationIcon?.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
+        toolbar.navigationIcon?.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP)
         toolbar.setNavigationOnClickListener { onBackPressed() }
     }
 
