@@ -6,6 +6,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import app.rootstock.data.channel.Channel
 import app.rootstock.data.channel.ChannelDao
+import app.rootstock.data.messages.Message
+import app.rootstock.data.messages.MessageDao
 import app.rootstock.data.token.Token
 import app.rootstock.data.token.TokenDao
 import app.rootstock.data.user.User
@@ -18,11 +20,19 @@ import app.rootstock.utils.DATABASE_NAME
 /**
  * The Room database for this app
  */
-@Database(entities = [User::class, Token::class, Workspace::class, Channel::class, WorkspaceTree::class], version = 2)
+@Database(
+    entities = [
+        User::class, Token::class, Workspace::class, Channel::class, WorkspaceTree::class,
+        Message::class,
+        RemoteKeys::class
+    ], version = 2
+)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun tokenDao(): TokenDao
     abstract fun workspaceDao(): WorkspaceDao
+    abstract fun messageDao(): MessageDao
+    abstract fun remoteKeysDao(): RemoteKeysDao
     abstract fun channelDao(): ChannelDao
 
     companion object {

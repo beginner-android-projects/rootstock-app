@@ -1,8 +1,10 @@
 package app.rootstock.ui.workspace
 
 import android.util.Log
+import androidx.room.withTransaction
 import app.rootstock.api.WorkspaceService
 import app.rootstock.data.channel.ChannelDao
+import app.rootstock.data.db.AppDatabase
 import app.rootstock.data.network.CacheCleaner
 import app.rootstock.data.network.NetworkBoundRepository
 import app.rootstock.data.network.ResponseResult
@@ -32,7 +34,8 @@ class WorkspaceRepositoryImpl @Inject constructor(
     private val workspaceRemoteSource: WorkspaceService,
     private val workspaceLocal: WorkspaceDao,
     private val channelLocal: ChannelDao,
-    private val cacheCleaner: CacheCleaner
+    private val cacheCleaner: CacheCleaner,
+    private val database: AppDatabase,
 ) : WorkspaceRepository {
 
 
@@ -42,33 +45,35 @@ class WorkspaceRepositoryImpl @Inject constructor(
             override suspend fun persistData(response: WorkspaceWithChildren) {
                 response
                     .let {
-                        // insert workspace
-                        workspaceLocal.insert(
-                            Workspace(
-                                name = it.name,
-                                workspaceId = it.workspaceId,
-                                backgroundColor = it.backgroundColor,
-                                imageUrl = it.imageUrl,
-                                createdAt = it.createdAt,
-                            )
-                        )
-                        // insert children workspaces
-                        workspaceLocal.upsertAll(it.children)
-
-                        // insert channels
-                        channelLocal.upsertAll(it.channels)
-
-                        // create hierarchy
-                        val list = mutableListOf<WorkspaceTree>()
-                        it.children.forEach { child ->
-                            list.add(
-                                WorkspaceTree(
-                                    parent = it.workspaceId,
-                                    child = child.workspaceId
+                        database.withTransaction {
+                            // insert workspace
+                            workspaceLocal.upsert(
+                                Workspace(
+                                    name = it.name,
+                                    workspaceId = it.workspaceId,
+                                    backgroundColor = it.backgroundColor,
+                                    imageUrl = it.imageUrl,
+                                    createdAt = it.createdAt,
                                 )
                             )
+                            // insert children workspaces
+                            workspaceLocal.upsertAll(it.children)
+
+                            // insert channels
+                            channelLocal.upsertAll(it.channels)
+
+                            // create hierarchy
+                            val list = mutableListOf<WorkspaceTree>()
+                            it.children.forEach { child ->
+                                list.add(
+                                    WorkspaceTree(
+                                        parent = it.workspaceId,
+                                        child = child.workspaceId
+                                    )
+                                )
+                            }
+                            workspaceLocal.insertHierarchy(list)
                         }
-                        workspaceLocal.insertHierarchy(list)
                     }
             }
 

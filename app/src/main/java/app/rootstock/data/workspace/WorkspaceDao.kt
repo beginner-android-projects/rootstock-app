@@ -6,8 +6,19 @@ import androidx.room.*
 @Dao
 interface WorkspaceDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(workspace: Workspace)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insert(workspace: Workspace?): Long
+
+    @Update(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun update(workspace: Workspace?)
+
+    @Transaction
+    suspend fun upsert(workspace: Workspace?) {
+        val id = insert(workspace)
+        if (id == -1L) {
+            update(workspace)
+        }
+    }
 
     @Transaction
     @Query("select * from workspaces where ws_id = :id limit 1")

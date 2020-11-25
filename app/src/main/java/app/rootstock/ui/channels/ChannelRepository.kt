@@ -1,5 +1,6 @@
 package app.rootstock.ui.channels
 
+import android.util.Log
 import app.rootstock.api.ChannelService
 import app.rootstock.data.channel.Channel
 import app.rootstock.data.channel.ChannelDao

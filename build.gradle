@@ -2,10 +2,10 @@
 buildscript {
     ext.kotlin_version = "1.4.10"
     ext.lifecycleVersion = "2.2.0"
-    ext.roomVersion = "2.2.5"
+    ext.roomVersion = "2.3.0-alpha03"
     ext.glideVersion = "4.10.0"
     ext.glideHttpIntegration = "4.5.0"
-    ext.coroutinesVersion = "1.3.7"
+    ext.coroutinesVersion = "1.3.9"
     ext.daggerVersion = "2.28.3"
     ext.daggerComipleVersion = "2.17"
     ext.retrofitVersion = "2.9.0"
@@ -20,6 +20,7 @@ buildscript {
     ext.testExtJunit = '1.1.2'
     ext.uiAutomatorVersion = '2.2.0'
     ext.junitVersion = '4.13.1'
+    ext.pagingVersion = '3.0.0-alpha09'
 
     repositories {
         google()
