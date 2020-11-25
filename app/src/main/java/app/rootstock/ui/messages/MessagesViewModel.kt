@@ -18,6 +18,9 @@ class MessagesViewModel @ViewModelInject constructor(private val repository: Mes
 
     val _channel = MutableLiveData<ChannelI>()
 
+    val channel: LiveData<ChannelI>
+        get() = _channel
+
     fun setChannel(channel: ChannelI) {
         _channel.value = channel
     }

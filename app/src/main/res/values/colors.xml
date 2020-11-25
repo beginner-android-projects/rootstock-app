@@ -9,10 +9,13 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="primary">#7800D7</color>
-    <color name="text_grey">#B2B2B2</color>
+    <color name="text_additional">#B2B2B2</color>
     <color name="layout_overlay">#000000</color>
     <color name="colorButtonDisabled">#B2B2B2</color>
     <color name="colorButtonEnabled">@color/primary</color>
     <color name="favourites_start_color">#EC77AB</color>
     <color name="login_gradient_start">#00046D</color>
+    <color name="icon_favourites">#FFD600</color>
+    <color name="cardview_message_background">#F6F6F6</color>
+    <color name="cardview_message_date">@color/text_additional</color>
 </resources>

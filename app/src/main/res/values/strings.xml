@@ -34,4 +34,5 @@
     <string name="delete_workspace">delete workspace</string>
     <string name="error_workspace_no_user">Please relogin to see workspaces</string>
     <string name="delete_workspace_body">Are you sure you want to delete %1$s?\n\nAll content inside, including channels and messages, will be also deleted.</string>
+    <string name="hint_message_send">take a note</string>
 </resources>

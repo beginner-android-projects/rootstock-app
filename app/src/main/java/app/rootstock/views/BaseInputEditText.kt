@@ -8,7 +8,7 @@ import com.google.android.material.textfield.TextInputEditText
 /**
  * Base class for TextInputEditText
  */
-class BaseInputEditText : TextInputEditText {
+open class BaseInputEditText : TextInputEditText {
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
     constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(

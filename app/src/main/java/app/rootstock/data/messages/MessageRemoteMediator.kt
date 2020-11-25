@@ -1,7 +1,6 @@
 package app.rootstock.data.messages
 
 
-import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
@@ -11,15 +10,10 @@ import app.rootstock.api.MessageService
 import app.rootstock.data.db.AppDatabase
 import app.rootstock.data.db.RemoteKeys
 import app.rootstock.data.db.RemoteKeysDao
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 import java.io.InvalidObjectException
-import kotlin.math.log
 
-// GitHub page API is 1 based: https://developer.github.com/v3/#pagination
 private const val STARTING_PAGE_INDEX = 0
 private const val MESSAGES_OFFSET = 100
 
@@ -27,7 +21,6 @@ private const val MESSAGES_OFFSET = 100
 class MessageRemoteMediator(
     private val channelId: Long,
     private val service: MessageService,
-//    private val repoDatabase: RepoDatabase2
     private val remoteKeysDao: RemoteKeysDao,
     private val messageDao: MessageDao,
     private val database: AppDatabase
@@ -66,28 +59,22 @@ class MessageRemoteMediator(
             }
         }
 
-        Log.d("123", "Loading: $loadType, $page")
-
         try {
             val apiResponse = service.getMessages(channelId = channelId, offset = page)
-            val repos = apiResponse.map {
+            val messages = apiResponse.map {
                 it.channelId = channelId
                 it
             }
-            val endOfPaginationReached = repos.isEmpty()
+            val endOfPaginationReached = messages.isEmpty()
             database.withTransaction {
-                // clear all tables in the database
-//                if (loadType == LoadType.REFRESH) {
-//                    database.remoteKeysDao().clearRemoteKeys()
-//                    database.messageDao().clearRepos()
-//                }
                 val prevKey = if (page == STARTING_PAGE_INDEX) null else page - MESSAGES_OFFSET
                 val nextKey = if (endOfPaginationReached) null else page + MESSAGES_OFFSET
-                val keys = repos.map {
-                    RemoteKeys(repoId = it.messageId, prevKey = prevKey, nextKey = nextKey, channelId = channelId)
+                val keys = messages.map {
+                    RemoteKeys(messageId = it.messageId, prevKey = prevKey, nextKey = nextKey, channelId = channelId)
                 }
                 remoteKeysDao.upsertAll(keys)
-                messageDao.insertAll(repos)
+                // todo upsert
+                messageDao.insertAll(messages)
             }
             return MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)
         } catch (exception: IOException) {
@@ -101,9 +88,9 @@ class MessageRemoteMediator(
         // Get the last page that was retrieved, that contained items.
         // From that last page, get the last item
         return state.pages.lastOrNull() { it.data.isNotEmpty() }?.data?.lastOrNull()
-            ?.let { repo ->
+            ?.let { message ->
                 // Get the remote keys of the last item retrieved
-                remoteKeysDao.remoteKeysRepoId(repo.messageId, channelId)
+                remoteKeysDao.remoteKeysMessageId(message.messageId, channelId)
             }
     }
 
@@ -111,9 +98,9 @@ class MessageRemoteMediator(
         // Get the first page that was retrieved, that contained items.
         // From that first page, get the first item
         return state.pages.firstOrNull { it.data.isNotEmpty() }?.data?.firstOrNull()
-            ?.let { repo ->
+            ?.let { message ->
                 // Get the remote keys of the first items retrieved
-                remoteKeysDao.remoteKeysRepoId(repo.messageId, channelId)
+                remoteKeysDao.remoteKeysMessageId(message.messageId, channelId)
             }
     }
 
@@ -123,8 +110,8 @@ class MessageRemoteMediator(
         // The paging library is trying to load data after the anchor position
         // Get the item closest to the anchor position
         return state.anchorPosition?.let { position ->
-            state.closestItemToPosition(position)?.messageId?.let { repoId ->
-                remoteKeysDao.remoteKeysRepoId(repoId, channelId)
+            state.closestItemToPosition(position)?.messageId?.let { id ->
+                remoteKeysDao.remoteKeysMessageId(id, channelId)
             }
         }
     }

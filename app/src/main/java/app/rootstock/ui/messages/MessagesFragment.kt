@@ -1,7 +1,6 @@
 package app.rootstock.ui.messages
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,14 +11,11 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
-import androidx.paging.LoadStateAdapter
-import androidx.recyclerview.widget.RecyclerView
-import app.rootstock.R
 import app.rootstock.adapters.MessageAdapter
 import app.rootstock.databinding.MessagesFragmentBinding
-import app.rootstock.databinding.MessagesLoadStateBinding
 import app.rootstock.utils.convertDpToPx
-import app.rootstock.views.SpacingItemDecoration
+import app.rootstock.views.MessagesLoadStateAdapter
+import app.rootstock.views.SpacingItemDecorationReversed
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
@@ -36,10 +32,9 @@ class MessagesFragment : Fragment() {
 
     private lateinit var binding: MessagesFragmentBinding
 
-//    lateinit var adapter: ChannelListAdapter
-
     private var searchJob: Job? = null
-    private val adapter = MessageAdapter()
+
+    private lateinit var adapter: MessageAdapter
 
     private fun search(channelId: Long) {
         // Make sure we cancel the previous job before creating a new one
@@ -55,7 +50,7 @@ class MessagesFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = MessagesFragmentBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
         }
@@ -67,39 +62,30 @@ class MessagesFragment : Fragment() {
 
         initAdapter()
         viewModel._channel.observe(viewLifecycleOwner) {
-            Log.d("123", "asdad")
             search(channelId = it.channelId)
             initSearch()
         }
-//        binding.retryButton.setOnClickListener { adapter.retry() }
-//
+
         val itemDecorator =
-            SpacingItemDecoration(
-                endSpacing = requireContext().convertDpToPx(dp = 25f).toInt(),
-                startSpacing = requireContext().convertDpToPx(dp = 30f).toInt(),
-            )
+            SpacingItemDecorationReversed(requireContext().convertDpToPx(20f).toInt())
         binding.list.apply {
             addItemDecoration(itemDecorator)
-//            addOnScrollListener(object : RecyclerView.OnScrollListener() {
-//                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-//                    super.onScrolled(recyclerView, dx, dy)
-//                    viewModel.pageScrolled()
-//                }
-//            })
         }
-//
+
+        binding.send.setOnClickListener { }
     }
 
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        viewModel._channel.value?.channelId?.let { outState.putLong(LAST_SEARCH_QUERY, it) }
+        viewModel.channel.value?.channelId?.let { outState.putLong(LAST_SEARCH_QUERY, it) }
     }
 
     private fun initAdapter() {
+        adapter = MessageAdapter(viewLifecycleOwner)
         binding.list.adapter = adapter.withLoadStateHeaderAndFooter(
-            header = ReposLoadStateAdapter { adapter.retry() },
-            footer = ReposLoadStateAdapter { adapter.retry() }
+            header = MessagesLoadStateAdapter { adapter.retry() },
+            footer = MessagesLoadStateAdapter { adapter.retry() }
         )
         adapter.addLoadStateListener { loadState ->
             // Only show the list if refresh succeeds.
@@ -117,8 +103,8 @@ class MessagesFragment : Fragment() {
             errorState?.let {
                 Toast.makeText(
                     requireContext(),
-                    "\uD83D\uDE28 Wooops ${it.error}",
-                    Toast.LENGTH_LONG
+                    "\uD83D\uDE28 Wooops",
+                    Toast.LENGTH_SHORT
                 ).show()
             }
         }
@@ -142,47 +128,3 @@ class MessagesFragment : Fragment() {
     }
 }
 
-
-class ReposLoadStateAdapter(
-    private val retry: () -> Unit
-) : LoadStateAdapter<ReposLoadStateViewHolder>() {
-    override fun onBindViewHolder(holder: ReposLoadStateViewHolder, loadState: LoadState) {
-        holder.bind(loadState)
-    }
-
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        loadState: LoadState
-    ): ReposLoadStateViewHolder {
-        return ReposLoadStateViewHolder.create(parent, retry)
-    }
-}
-
-
-class ReposLoadStateViewHolder(
-    private val binding: MessagesLoadStateBinding,
-    retry: () -> Unit
-) : RecyclerView.ViewHolder(binding.root) {
-
-    init {
-        binding.retryButton.setOnClickListener { retry.invoke() }
-    }
-
-    fun bind(loadState: LoadState) {
-        if (loadState is LoadState.Error) {
-            binding.errorMsg.text = loadState.error.localizedMessage
-        }
-        binding.progressBar.isVisible = loadState is LoadState.Loading
-        binding.retryButton.isVisible = loadState !is LoadState.Loading
-        binding.errorMsg.isVisible = loadState !is LoadState.Loading
-    }
-
-    companion object {
-        fun create(parent: ViewGroup, retry: () -> Unit): ReposLoadStateViewHolder {
-            val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.messages_load_state, parent, false)
-            val binding = MessagesLoadStateBinding.bind(view)
-            return ReposLoadStateViewHolder(binding, retry)
-        }
-    }
-}

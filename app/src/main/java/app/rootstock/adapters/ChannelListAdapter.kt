@@ -53,7 +53,6 @@ class ChannelListAdapter(
 
     override fun onBindViewHolder(holder: ChannelViewHolder, position: Int) {
         holder.bind(getItem(position))
-
     }
 }
 

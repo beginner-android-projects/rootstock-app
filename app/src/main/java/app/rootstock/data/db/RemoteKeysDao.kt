@@ -19,8 +19,8 @@ interface RemoteKeysDao {
         update(entities)
     }
 
-    @Query("SELECT * FROM remote_keys WHERE channel_id = :channelId and repo_id = :repoId")
-    suspend fun remoteKeysRepoId(repoId: Long, channelId: Long): RemoteKeys?
+    @Query("SELECT * FROM remote_keys WHERE channel_id = :channelId and message_id = :repoId")
+    suspend fun remoteKeysMessageId(repoId: Long, channelId: Long): RemoteKeys?
 
 }
 

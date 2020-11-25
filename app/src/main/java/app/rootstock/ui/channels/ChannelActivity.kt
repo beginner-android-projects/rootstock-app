@@ -33,7 +33,6 @@ class ChannelActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = DataBindingUtil.setContentView(this, R.layout.activity_channel)
         binding.channel = channel
         binding.lifecycleOwner = this
@@ -49,16 +48,10 @@ class ChannelActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
         toolbar.setNavigationOnClickListener { onBackPressed() }
-        toolbar.navigationIcon?.setTint(Color.WHITE)
+        toolbar.navigationIcon?.setTint(Color.BLACK)
     }
 
     private fun setObservers() {
 
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        val inflater: MenuInflater = menuInflater
-        inflater.inflate(R.menu.channel_menu, menu)
-        return true
     }
 }

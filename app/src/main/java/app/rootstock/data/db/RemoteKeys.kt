@@ -15,12 +15,12 @@ import app.rootstock.data.channel.Channel
         )
     ],
     indices = [
-        Index("repo_id"),
+        Index("message_id"),
         Index("channel_id"),
     ]
 )
 data class RemoteKeys(
-    @PrimaryKey @ColumnInfo(name = "repo_id") val repoId: Long,
+    @PrimaryKey @ColumnInfo(name = "message_id") val messageId: Long,
     @ColumnInfo(name = "prev_key") val prevKey: Int?,
     @ColumnInfo(name = "next_key") val nextKey: Int?,
     @ColumnInfo(name = "channel_id") val channelId: Long,

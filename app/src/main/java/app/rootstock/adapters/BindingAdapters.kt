@@ -9,6 +9,8 @@ import androidx.databinding.BindingAdapter
 import app.rootstock.R
 import com.google.android.material.textfield.TextInputLayout
 import java.lang.Exception
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 @BindingAdapter("error")
@@ -67,6 +69,18 @@ fun bindColorFilter(view: View, color: String) {
     try {
         val c = Color.parseColor(color)
         view.setBackgroundColor(c)
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+}
+
+@BindingAdapter("bindDate")
+fun bindDate(text: TextView, date: Date?) {
+    date ?: return
+    try {
+        val month = SimpleDateFormat("MMM dd")
+        val dateText: String = month.format(date.time).toLowerCase(Locale.ROOT)
+        text.text = dateText
     } catch (e: Exception) {
         e.printStackTrace()
     }
