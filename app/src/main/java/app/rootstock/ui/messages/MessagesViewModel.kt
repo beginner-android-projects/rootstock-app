@@ -1,27 +1,38 @@
 package app.rootstock.ui.messages
 
-import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import androidx.paging.*
+import app.rootstock.api.SendMessage
+import app.rootstock.data.channel.Channel
 import app.rootstock.data.channel.ChannelI
 import app.rootstock.data.messages.Message
 import app.rootstock.data.messages.MessageRepository
+import app.rootstock.data.network.CreateOperation
+import app.rootstock.data.network.ResponseResult
+import app.rootstock.data.result.Event
 import dagger.hilt.android.scopes.ActivityScoped
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
+enum class MessageEvent {
+    SUCCESS, ERROR
+}
 
 @ActivityScoped
 class MessagesViewModel @ViewModelInject constructor(private val repository: MessageRepository) :
     ViewModel() {
 
-    val _channel = MutableLiveData<ChannelI>()
+    private val _messageEvent = MutableLiveData<Event<MessageEvent>>()
+    val messageEvent: LiveData<Event<MessageEvent>> get() = _messageEvent
 
-    val channel: LiveData<ChannelI>
+    private val _channel = MutableLiveData<Channel>()
+
+    val channel: LiveData<Channel>
         get() = _channel
 
-    fun setChannel(channel: ChannelI) {
+    fun setChannel(channel: Channel) {
         _channel.value = channel
     }
 
@@ -40,5 +51,21 @@ class MessagesViewModel @ViewModelInject constructor(private val repository: Mes
             .cachedIn(viewModelScope)
         currentSearchResult = newResult
         return newResult
+    }
+
+    fun sendMessage(content: String?) {
+        content ?: return
+        val id = _channel.value?.channelId ?: return
+        val sendMessage = SendMessage(content = content, channelId = id)
+        viewModelScope.launch {
+            when (val message = repository.sendMessage(message = sendMessage).first()) {
+                is ResponseResult.Success -> {
+                    _messageEvent.postValue(Event(MessageEvent.SUCCESS))
+                }
+                is ResponseResult.Error -> {
+                    _messageEvent.postValue(Event(MessageEvent.ERROR))
+                }
+            }
+        }
     }
 }

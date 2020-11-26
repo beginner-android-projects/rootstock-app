@@ -11,12 +11,12 @@ import androidx.room.Query
 interface MessageDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(repos: List<Message>)
+    suspend fun insertAll(messages: List<Message>)
 
     @Query("SELECT * FROM messages where channel_id = :channelId order by created_at desc")
     fun messagesInChannel(channelId: Long): PagingSource<Int, Message>
 
-    @Query("DELETE FROM messages")
-    suspend fun clearRepos()
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(message: Message)
 
 }

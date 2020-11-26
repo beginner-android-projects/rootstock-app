@@ -1,6 +1,7 @@
 package app.rootstock.data.messages
 
 
+import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
@@ -53,11 +54,14 @@ class MessageRemoteMediator(
             LoadType.APPEND -> {
                 val remoteKeys = getRemoteKeyForLastItem(state)
                 if (remoteKeys == null || remoteKeys.nextKey == null) {
+                    // todo handle exception
                     throw InvalidObjectException("Remote key should not be null for $loadType")
                 }
                 remoteKeys.nextKey
             }
         }
+
+        Log.d("123xxx", "$loadType $page ...")
 
         try {
             val apiResponse = service.getMessages(channelId = channelId, offset = page)

@@ -2,7 +2,6 @@ package app.rootstock.api
 
 import app.rootstock.data.channel.Channel
 import app.rootstock.data.channel.CreateChannelRequest
-import app.rootstock.data.workspace.WorkspaceWithChildren
 import retrofit2.Response
 import retrofit2.http.*
 

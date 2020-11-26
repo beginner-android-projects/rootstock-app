@@ -21,6 +21,7 @@ import app.rootstock.ui.messages.MessageViewHolder
 class MessageAdapter(private val lifecycleOwner: LifecycleOwner) :
     PagingDataAdapter<Message, MessageViewHolder>(MESSAGE_COMPARATOR) {
 
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageViewHolder {
         val binding = ItemMessageBinding.inflate(
             LayoutInflater.from(parent.context), parent, false
@@ -43,7 +44,7 @@ class MessageAdapter(private val lifecycleOwner: LifecycleOwner) :
             }
 
             override fun areContentsTheSame(oldItem: Message, newItem: Message): Boolean =
-                oldItem.content == newItem.content
+                oldItem == newItem
         }
     }
 }

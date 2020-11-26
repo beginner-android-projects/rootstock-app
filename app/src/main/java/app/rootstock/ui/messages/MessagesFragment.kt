@@ -1,6 +1,7 @@
 package app.rootstock.ui.messages
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SimpleItemAnimator
 import app.rootstock.adapters.MessageAdapter
 import app.rootstock.databinding.MessagesFragmentBinding
 import app.rootstock.utils.convertDpToPx
@@ -59,9 +62,9 @@ class MessagesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         initAdapter()
-        viewModel._channel.observe(viewLifecycleOwner) {
+        viewModel.channel.observe(viewLifecycleOwner) {
+            it ?: return@observe
             search(channelId = it.channelId)
             initSearch()
         }
@@ -70,9 +73,30 @@ class MessagesFragment : Fragment() {
             SpacingItemDecorationReversed(requireContext().convertDpToPx(20f).toInt())
         binding.list.apply {
             addItemDecoration(itemDecorator)
+
         }
 
-        binding.send.setOnClickListener { }
+        // editText.text can return null
+        binding.send.setOnClickListener {
+            sendMessage()
+        }
+//        viewModel.messageEvent.observe(viewLifecycleOwner){
+//            when(it.getContentIfNotHandled()){
+//                MessageEvent.SUCCESS -> {
+//                }
+//                MessageEvent.ERROR -> TODO()
+//                null -> TODO()
+//            }
+//        }
+    }
+
+    private fun sendMessage() {
+        val message = binding.content.text.toString()
+        // todo set in a variable so in case of an error saved copy will be displayed
+        binding.content.text?.clear()
+//        binding.content.clearFocus()
+        if (message.isBlank()) return
+        viewModel.sendMessage(message)
     }
 
 
@@ -120,6 +144,7 @@ class MessagesFragment : Fragment() {
                 // Only react to cases where Remote REFRESH completes i.e., NotLoading.
                 .filter { it.refresh is LoadState.NotLoading }
                 .collect { binding.list.scrollToPosition(0) }
+
         }
     }
 
