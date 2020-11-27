@@ -21,6 +21,7 @@ import app.rootstock.views.MessagesLoadStateAdapter
 import app.rootstock.views.SpacingItemDecorationReversed
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChangedBy
@@ -28,7 +29,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-@ExperimentalPagingApi
+@OptIn(ExperimentalPagingApi::class)
 class MessagesFragment : Fragment() {
 
     private val viewModel: MessagesViewModel by activityViewModels()
@@ -39,12 +40,15 @@ class MessagesFragment : Fragment() {
 
     private lateinit var adapter: MessageAdapter
 
+    private var created = false
+
     private fun search(channelId: Long) {
         // Make sure we cancel the previous job before creating a new one
         searchJob?.cancel()
         searchJob = lifecycleScope.launch {
             viewModel.searchRepo(channelId).collectLatest {
                 adapter.submitData(it)
+                binding.list.scrollToPosition(0)
             }
         }
     }
@@ -75,6 +79,7 @@ class MessagesFragment : Fragment() {
             addItemDecoration(itemDecorator)
 
         }
+//        (binding.list.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
 
         // editText.text can return null
         binding.send.setOnClickListener {
@@ -91,10 +96,11 @@ class MessagesFragment : Fragment() {
     }
 
     private fun sendMessage() {
+        created = true
         val message = binding.content.text.toString()
         // todo set in a variable so in case of an error saved copy will be displayed
         binding.content.text?.clear()
-//        binding.content.clearFocus()
+        binding.content.clearFocus()
         if (message.isBlank()) return
         viewModel.sendMessage(message)
     }

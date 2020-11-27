@@ -1,10 +1,15 @@
 package app.rootstock.data.messages
 
+import android.database.Cursor
+import androidx.paging.DataSource
 import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.paging.LimitOffsetDataSource
+import androidx.room.util.CursorUtil
+import java.util.*
 
 
 @Dao
@@ -20,3 +25,11 @@ interface MessageDao {
     suspend fun insert(message: Message)
 
 }
+
+//class PS<K : Any, V : Any> : PagingSource<K, V>() {
+//    override val jumpingSupported: Boolean
+//        get() = false
+//    override suspend fun load(params: LoadParams<K>): LoadResult<K, V> {
+//    }
+//
+//}

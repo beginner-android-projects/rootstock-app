@@ -21,6 +21,7 @@ enum class MessageEvent {
 }
 
 @ActivityScoped
+@OptIn(ExperimentalPagingApi::class)
 class MessagesViewModel @ViewModelInject constructor(private val repository: MessageRepository) :
     ViewModel() {
 
@@ -40,7 +41,6 @@ class MessagesViewModel @ViewModelInject constructor(private val repository: Mes
 
     private var currentSearchResult: Flow<PagingData<Message>>? = null
 
-    @ExperimentalPagingApi
     fun searchRepo(channelId: Long): Flow<PagingData<Message>> {
         val lastResult = currentSearchResult
         if (channelId == currentQueryValue && lastResult != null) {

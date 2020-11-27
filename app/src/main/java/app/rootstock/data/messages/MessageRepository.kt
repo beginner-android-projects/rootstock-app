@@ -28,16 +28,14 @@ class MessageRepository @Inject constructor(
     /**
      * Search messages for specified channel
      */
-    @ExperimentalPagingApi
     fun getSearchResultStream(channelId: Long): Flow<PagingData<Message>> {
         val pagingSourceFactory = { messageDao.messagesInChannel(channelId) }
 
         return Pager(
             config = PagingConfig(
                 pageSize = NETWORK_PAGE_SIZE,
-                enablePlaceholders = true,
+                enablePlaceholders = false,
                 prefetchDistance = 30,
-                initialLoadSize = INITIAL_LOAD_SIZE,
                 maxSize = MAX_SIZE,
             ),
             remoteMediator = MessageRemoteMediator(
@@ -103,7 +101,7 @@ class MessageRepository @Inject constructor(
         private const val NETWORK_PAGE_SIZE = 100
 
         // Use custom initial load size, because default is pageSize * 3
-        private const val INITIAL_LOAD_SIZE = 150
+        private const val INITIAL_LOAD_SIZE = 0
 
         // todo: define based on android version due to performance?
         private const val MAX_SIZE = 450

@@ -18,7 +18,7 @@ import java.io.InvalidObjectException
 private const val STARTING_PAGE_INDEX = 0
 private const val MESSAGES_OFFSET = 100
 
-@ExperimentalPagingApi
+@OptIn(ExperimentalPagingApi::class)
 class MessageRemoteMediator(
     private val channelId: Long,
     private val service: MessageService,
@@ -33,7 +33,7 @@ class MessageRemoteMediator(
     ): MediatorResult {
 
         val page = when (loadType) {
-            LoadType.REFRESH -> {
+            LoadType.REFRESH -> { 
                 val remoteKeys = getRemoteKeyClosestToCurrentPosition(state)
                 remoteKeys?.nextKey?.minus(MESSAGES_OFFSET) ?: STARTING_PAGE_INDEX
             }
