@@ -1,32 +1,28 @@
 package app.rootstock.ui.messages
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.SimpleItemAnimator
+import androidx.paging.PagingData
 import app.rootstock.adapters.MessageAdapter
+import app.rootstock.data.messages.MessageRepository.Companion.NETWORK_PAGE_SIZE
 import app.rootstock.databinding.MessagesFragmentBinding
 import app.rootstock.utils.convertDpToPx
 import app.rootstock.views.MessagesLoadStateAdapter
 import app.rootstock.views.SpacingItemDecorationReversed
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.fragment_account_start.*
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.distinctUntilChangedBy
-import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.util.*
 
 @AndroidEntryPoint
 @OptIn(ExperimentalPagingApi::class)
@@ -42,16 +38,20 @@ class MessagesFragment : Fragment() {
 
     private var created = false
 
-    private fun search(channelId: Long) {
+    private fun search(channelId: Long, refresh: Boolean = false) {
         // Make sure we cancel the previous job before creating a new one
         searchJob?.cancel()
         searchJob = lifecycleScope.launch {
-            viewModel.searchRepo(channelId).collectLatest {
-                adapter.submitData(it)
-                binding.list.scrollToPosition(0)
+            viewModel.searchRepo(channelId, refresh).collectLatest {
+                try {
+                    adapter.submitData(it)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
         }
     }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -74,25 +74,40 @@ class MessagesFragment : Fragment() {
         }
 
         val itemDecorator =
-            SpacingItemDecorationReversed(requireContext().convertDpToPx(20f).toInt())
+            SpacingItemDecorationReversed(requireContext().convertDpToPx(SPACING).toInt())
         binding.list.apply {
             addItemDecoration(itemDecorator)
-
         }
-//        (binding.list.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
 
-        // editText.text can return null
         binding.send.setOnClickListener {
             sendMessage()
         }
-//        viewModel.messageEvent.observe(viewLifecycleOwner){
-//            when(it.getContentIfNotHandled()){
-//                MessageEvent.SUCCESS -> {
-//                }
-//                MessageEvent.ERROR -> TODO()
-//                null -> TODO()
-//            }
-//        }
+        viewModel.messageEvent.observe(viewLifecycleOwner) { event ->
+            when (event.getContentIfNotHandled()) {
+                MessageEvent.SUCCESS -> {
+                }
+                MessageEvent.ERROR -> TODO()
+                MessageEvent.CREATED -> {
+                }
+                else -> {
+                }
+            }
+        }
+
+
+    }
+
+    private fun refreshList() {
+        adapter.lastItemPosition = 1
+        if (adapter.lastItemPosition < NETWORK_PAGE_SIZE) {
+            binding.list.scrollToPosition(0); return
+        }
+        viewModel.channel.value?.let {
+            lifecycleScope.launch {
+                adapter.submitData(PagingData.empty())
+                search(channelId = it.channelId, refresh = true)
+            }
+        }
     }
 
     private fun sendMessage() {
@@ -119,7 +134,7 @@ class MessagesFragment : Fragment() {
         )
         adapter.addLoadStateListener { loadState ->
             // Only show the list if refresh succeeds.
-            binding.list.isVisible = loadState.source.refresh is LoadState.NotLoading
+//            binding.list.isVisible = loadState.source.refresh is LoadState.NotLoading
             // Show loading spinner during initial load or refresh.
 //            binding.progressBar.isVisible = loadState.source.refresh is LoadState.Loading
             // Show the retry state if initial load or refresh fails.
@@ -142,20 +157,22 @@ class MessagesFragment : Fragment() {
     }
 
     private fun initSearch() {
-        // Scroll to top when the list is refreshed from network.
         lifecycleScope.launch {
-            adapter.loadStateFlow
-                // Only emit when REFRESH LoadState for RemoteMediator changes.
-                .distinctUntilChangedBy { it.refresh }
-                // Only react to cases where Remote REFRESH completes i.e., NotLoading.
-                .filter { it.refresh is LoadState.NotLoading }
-                .collect { binding.list.scrollToPosition(0) }
-
+            adapter.dataRefreshFlow.collect {
+                // if message has been created, scroll to the bottom
+                if (created) {
+                    created = false
+                    refreshList()
+                }
+            }
         }
     }
 
+
     companion object {
         private const val LAST_SEARCH_QUERY: String = "last_search_query"
+        private const val SPACING: Float = 20f
+
     }
 }
 

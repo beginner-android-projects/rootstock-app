@@ -33,7 +33,7 @@ class MessageRemoteMediator(
     ): MediatorResult {
 
         val page = when (loadType) {
-            LoadType.REFRESH -> { 
+            LoadType.REFRESH -> {
                 val remoteKeys = getRemoteKeyClosestToCurrentPosition(state)
                 remoteKeys?.nextKey?.minus(MESSAGES_OFFSET) ?: STARTING_PAGE_INDEX
             }
@@ -60,7 +60,6 @@ class MessageRemoteMediator(
                 remoteKeys.nextKey
             }
         }
-
         Log.d("123xxx", "$loadType $page ...")
 
         try {

@@ -1,17 +1,11 @@
 package app.rootstock.adapters
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.lifecycle.LifecycleOwner
 import androidx.paging.PagingDataAdapter
-import androidx.paging.PagingDataDiffer
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.RecyclerView
-import app.rootstock.R
 import app.rootstock.data.messages.Message
-import app.rootstock.databinding.ItemChannelBinding
 import app.rootstock.databinding.ItemMessageBinding
 import app.rootstock.ui.messages.MessageViewHolder
 
@@ -22,6 +16,7 @@ import app.rootstock.ui.messages.MessageViewHolder
 class MessageAdapter(private val lifecycleOwner: LifecycleOwner) :
     PagingDataAdapter<Message, MessageViewHolder>(MESSAGE_COMPARATOR) {
 
+    var lastItemPosition: Int = 0
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageViewHolder {
         val binding = ItemMessageBinding.inflate(
@@ -31,6 +26,7 @@ class MessageAdapter(private val lifecycleOwner: LifecycleOwner) :
     }
 
     override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {
+        lastItemPosition = position
         val repoItem = getItem(position)
         if (repoItem != null) {
             holder.bind(repoItem)

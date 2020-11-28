@@ -1,5 +1,7 @@
 package app.rootstock.ui.messages
 
+import android.annotation.SuppressLint
+import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import androidx.paging.*
@@ -13,11 +15,13 @@ import app.rootstock.data.network.ResponseResult
 import app.rootstock.data.result.Event
 import dagger.hilt.android.scopes.ActivityScoped
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import java.util.*
 
 enum class MessageEvent {
-    SUCCESS, ERROR
+    SUCCESS, ERROR, CREATED
 }
 
 @ActivityScoped
@@ -41,9 +45,9 @@ class MessagesViewModel @ViewModelInject constructor(private val repository: Mes
 
     private var currentSearchResult: Flow<PagingData<Message>>? = null
 
-    fun searchRepo(channelId: Long): Flow<PagingData<Message>> {
+    fun searchRepo(channelId: Long, refresh: Boolean = false): Flow<PagingData<Message>> {
         val lastResult = currentSearchResult
-        if (channelId == currentQueryValue && lastResult != null) {
+        if (channelId == currentQueryValue && lastResult != null && !refresh) {
             return lastResult
         }
         currentQueryValue = channelId
@@ -56,10 +60,15 @@ class MessagesViewModel @ViewModelInject constructor(private val repository: Mes
     fun sendMessage(content: String?) {
         content ?: return
         val id = _channel.value?.channelId ?: return
+
         val sendMessage = SendMessage(content = content, channelId = id)
+
+        _messageEvent.value = (Event(MessageEvent.CREATED))
         viewModelScope.launch {
+
             when (val message = repository.sendMessage(message = sendMessage).first()) {
                 is ResponseResult.Success -> {
+                    _messageEvent.value = Event(MessageEvent.CREATED)
                     _messageEvent.postValue(Event(MessageEvent.SUCCESS))
                 }
                 is ResponseResult.Error -> {

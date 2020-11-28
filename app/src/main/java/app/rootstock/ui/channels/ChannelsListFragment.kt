@@ -33,12 +33,14 @@ class ChannelsListFragment : Fragment() {
 
     lateinit var adapter: ChannelListAdapter
 
+    private var channelOpened = false
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentChannelsListBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
         }
@@ -51,8 +53,12 @@ class ChannelsListFragment : Fragment() {
     }
 
     private fun openChannel(channel: Channel) {
-        val action = WorkspaceFragmentDirections.actionWorkspaceFragmentToChannelActivity(channel)
-        findNavController().navigate(action)
+//        if (!channelOpened) {
+//            channelOpened = true
+            val action =
+                WorkspaceFragmentDirections.actionWorkspaceFragmentToChannelActivity(channel)
+            findNavController().navigate(action)
+//        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -67,7 +73,7 @@ class ChannelsListFragment : Fragment() {
 
         val itemDecorator =
             SpacingItemDecoration(
-                endSpacing = requireContext().convertDpToPx(dp = 25f).toInt(),
+                endSpacing = requireContext().convertDpToPx(dp = CHANNEL_END_SPACING).toInt(),
                 startSpacing = requireContext().convertDpToPx(dp = CHANNEL_START_SPACING).toInt(),
             )
         binding.recyclerView.apply {
@@ -81,6 +87,11 @@ class ChannelsListFragment : Fragment() {
         }
 
     }
+
+//    override fun onStart() {
+//        super.onStart()
+//        channelOpened = false
+//    }
 
     private fun setObservers() {
         viewModel.channels.observe(viewLifecycleOwner) {
@@ -139,6 +150,7 @@ class ChannelsListFragment : Fragment() {
         private const val DIALOG_CHANNEL_EDIT = "dialog_channel_edit"
         private const val DIALOG_CHANNEL_DELETE = "dialog_channel_delete"
         private const val CHANNEL_START_SPACING = 15f
+        private const val CHANNEL_END_SPACING = 25f
 
     }
 

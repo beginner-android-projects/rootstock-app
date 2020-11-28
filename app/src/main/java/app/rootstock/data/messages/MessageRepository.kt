@@ -34,7 +34,7 @@ class MessageRepository @Inject constructor(
         return Pager(
             config = PagingConfig(
                 pageSize = NETWORK_PAGE_SIZE,
-                enablePlaceholders = false,
+                enablePlaceholders = true,
                 prefetchDistance = 30,
                 maxSize = MAX_SIZE,
             ),
@@ -98,7 +98,7 @@ class MessageRepository @Inject constructor(
 
 
     companion object {
-        private const val NETWORK_PAGE_SIZE = 100
+        const val NETWORK_PAGE_SIZE = 100
 
         // Use custom initial load size, because default is pageSize * 3
         private const val INITIAL_LOAD_SIZE = 0
