@@ -1,6 +1,7 @@
 package app.rootstock.adapters
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.LifecycleOwner
 import androidx.paging.PagingDataAdapter
@@ -13,7 +14,11 @@ import app.rootstock.ui.messages.MessageViewHolder
 /**
  * Adapter for the list of repositories.
  */
-class MessageAdapter(private val lifecycleOwner: LifecycleOwner) :
+class MessageAdapter(
+    private val lifecycleOwner: LifecycleOwner,
+    private val delete: (messageId: Long, anchor: View) -> Unit,
+    private val edit: (message: Message) -> Unit
+) :
     PagingDataAdapter<Message, MessageViewHolder>(MESSAGE_COMPARATOR) {
 
     var lastItemPosition: Int = 0
@@ -22,7 +27,7 @@ class MessageAdapter(private val lifecycleOwner: LifecycleOwner) :
         val binding = ItemMessageBinding.inflate(
             LayoutInflater.from(parent.context), parent, false
         )
-        return MessageViewHolder(binding, lifecycleOwner)
+        return MessageViewHolder(binding, lifecycleOwner, delete, edit)
     }
 
     override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {

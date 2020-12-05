@@ -1,17 +1,16 @@
 package app.rootstock.data.messages
 
-import android.util.Log
-import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import androidx.paging.PagingSource.LoadResult.Page.Companion.COUNT_UNDEFINED
 import androidx.room.withTransaction
+import app.rootstock.api.EditMessage
 import app.rootstock.api.MessageService
 import app.rootstock.api.SendMessage
 import app.rootstock.data.db.AppDatabase
 import app.rootstock.data.db.RemoteKeys
 import app.rootstock.data.db.RemoteKeysDao
+import app.rootstock.data.network.CacheCleaner
 import app.rootstock.data.network.ResponseResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -22,7 +21,8 @@ class MessageRepository @Inject constructor(
     private val messageDao: MessageDao,
     private val messageService: MessageService,
     private val remoteKeysDao: RemoteKeysDao,
-    private val database: AppDatabase
+    private val database: AppDatabase,
+    private val cacheCleaner: CacheCleaner
 ) {
 
     /**
@@ -47,7 +47,7 @@ class MessageRepository @Inject constructor(
             ),
             pagingSourceFactory = pagingSourceFactory,
 
-        ).flow
+            ).flow
     }
 
     suspend fun sendMessage(message: SendMessage): Flow<ResponseResult<Message?>> = flow {
@@ -96,6 +96,43 @@ class MessageRepository @Inject constructor(
         emit(ResponseResult.error("Something went wrong!"))
     }
 
+    suspend fun deleteMessage(id: Long): Flow<ResponseResult<Void?>> = flow {
+        val response = messageService.deleteMessage(id)
+        val state = when (response.isSuccessful) {
+            true -> {
+                ResponseResult.success(response.body())
+            }
+            else -> ResponseResult.error(response.message())
+        }
+        if (response.isSuccessful) {
+            messageDao.delete(id)
+            cacheCleaner.cleanCache()
+        }
+        emit(state)
+
+    }.catch {
+        emit(ResponseResult.error("Something went wrong!"))
+    }
+
+    suspend fun editMessage(message: EditMessage, id: Long): Flow<ResponseResult<Message?>> = flow {
+        val response = messageService.editMessage(editMessage = message, id)
+        val state = when (response.isSuccessful) {
+            true -> {
+                ResponseResult.success(response.body())
+            }
+            else -> ResponseResult.error(response.message())
+        }
+        if (response.isSuccessful) {
+            response.body()?.let {
+                messageDao.update(id, content = it.content)
+                cacheCleaner.cleanCache()
+            }
+        }
+        emit(state)
+
+    }.catch {
+        emit(ResponseResult.error("Something went wrong!"))
+    }
 
     companion object {
         const val NETWORK_PAGE_SIZE = 100

@@ -1,20 +1,24 @@
 package app.rootstock.ui.messages
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import androidx.paging.PagingData
 import app.rootstock.adapters.MessageAdapter
+import app.rootstock.data.messages.Message
 import app.rootstock.data.messages.MessageRepository.Companion.NETWORK_PAGE_SIZE
 import app.rootstock.databinding.MessagesFragmentBinding
 import app.rootstock.utils.convertDpToPx
+import app.rootstock.utils.showKeyboard
 import app.rootstock.views.MessagesLoadStateAdapter
 import app.rootstock.views.SpacingItemDecorationReversed
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,6 +27,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.*
+
 
 @AndroidEntryPoint
 @OptIn(ExperimentalPagingApi::class)
@@ -37,6 +42,8 @@ class MessagesFragment : Fragment() {
     private lateinit var adapter: MessageAdapter
 
     private var created = false
+
+    private var isEditing = false
 
     private fun search(channelId: Long, refresh: Boolean = false) {
         // Make sure we cancel the previous job before creating a new one
@@ -84,9 +91,8 @@ class MessagesFragment : Fragment() {
         }
         viewModel.messageEvent.observe(viewLifecycleOwner) { event ->
             when (event.getContentIfNotHandled()) {
-                MessageEvent.SUCCESS -> {
+                MessageEvent.ERROR -> {
                 }
-                MessageEvent.ERROR -> TODO()
                 MessageEvent.CREATED -> {
                 }
                 else -> {
@@ -111,23 +117,48 @@ class MessagesFragment : Fragment() {
     }
 
     private fun sendMessage() {
-        created = true
         val message = binding.content.text.toString()
-        // todo set in a variable so in case of an error saved copy will be displayed
+        if (message.isBlank()) return
         binding.content.text?.clear()
         binding.content.clearFocus()
-        if (message.isBlank()) return
-        viewModel.sendMessage(message)
+        if (isEditing) {
+            isEditing = false
+            Log.d("123", "send mess $message")
+            messageEditingId?.let {
+                Log.d("123", "send mess $it")
+                viewModel.editMessage(it, message)
+            }
+            messageEditingId = null
+        } else {
+            created = true
+            // todo set in a variable so in case of an error saved copy will be displayed
+            viewModel.sendMessage(message)
+        }
     }
 
+    private var messageEditingId: Long? = null
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         viewModel.channel.value?.channelId?.let { outState.putLong(LAST_SEARCH_QUERY, it) }
     }
 
+    private fun deleteMessage(id: Long, anchor: View) {
+        viewModel.deleteMessage(id)
+    }
+
+
+    private fun editMessage(message: Message) {
+        isEditing = true
+        messageEditingId = message.messageId
+        binding.content.setText(message.content)
+        binding.content.requestFocus()
+        requireContext().showKeyboard()
+        binding.content.setSelection(binding.content.length())
+    }
+
     private fun initAdapter() {
-        adapter = MessageAdapter(viewLifecycleOwner)
+        adapter = MessageAdapter(viewLifecycleOwner, ::deleteMessage, ::editMessage)
         binding.list.adapter = adapter.withLoadStateHeaderAndFooter(
             header = MessagesLoadStateAdapter { adapter.retry() },
             footer = MessagesLoadStateAdapter { adapter.retry() }

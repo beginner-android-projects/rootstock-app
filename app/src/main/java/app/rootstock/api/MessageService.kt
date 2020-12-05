@@ -17,9 +17,24 @@ interface MessageService {
     suspend fun sendMessages(
         @Body sendMessage: SendMessage,
     ): Response<Message>
+
+    @DELETE("/messages/{messageId}")
+    suspend fun deleteMessage(
+        @Path("messageId") messageId: Long,
+    ): Response<Void>
+
+    @PATCH("/messages/{messageId}")
+    suspend fun editMessage(
+        @Body editMessage: EditMessage,
+        @Path("messageId") messageId: Long,
+    ): Response<Message>
 }
 
 data class SendMessage(
     val content: String,
     @SerializedName("channel_id_to_add_to") val channelId: Long
+)
+
+data class EditMessage(
+    val content: String
 )

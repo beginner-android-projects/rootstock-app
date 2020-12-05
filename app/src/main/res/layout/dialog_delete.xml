@@ -68,6 +68,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
+            android:textColor="@color/red"
             android:layout_marginEnd="20dp"
             android:text="@string/delete"
             android:textAllCaps="false"

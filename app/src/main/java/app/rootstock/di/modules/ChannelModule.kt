@@ -5,6 +5,7 @@ import app.rootstock.data.db.AppDatabase
 import app.rootstock.data.db.RemoteKeysDao
 import app.rootstock.data.messages.MessageDao
 import app.rootstock.data.messages.MessageRepository
+import app.rootstock.data.network.CacheCleaner
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -44,9 +45,10 @@ object ChannelModule {
         messageDao: MessageDao,
         messageService: MessageService,
         remoteKeysDao: RemoteKeysDao,
-        database: AppDatabase
+        database: AppDatabase,
+        cacheCleaner: CacheCleaner
     ): MessageRepository {
-        return MessageRepository(messageDao, messageService, remoteKeysDao, database)
+        return MessageRepository(messageDao, messageService, remoteKeysDao, database, cacheCleaner)
     }
 
 }

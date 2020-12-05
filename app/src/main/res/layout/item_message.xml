@@ -15,12 +15,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/message_container"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="8dp"
             android:background="@drawable/message_background"
+            android:clickable="true"
+            android:focusable="true"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
             app:layout_constraintEnd_toStartOf="@id/edit"
@@ -54,6 +58,7 @@
                 tools:text="25 nov" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
 
         <ImageView
             android:id="@+id/edit"
