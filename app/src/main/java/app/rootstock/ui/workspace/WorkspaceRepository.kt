@@ -1,20 +1,18 @@
 package app.rootstock.ui.workspace
 
-import android.util.Log
 import androidx.room.withTransaction
 import app.rootstock.api.WorkspaceService
 import app.rootstock.data.channel.ChannelDao
 import app.rootstock.data.db.AppDatabase
-import app.rootstock.data.network.CacheCleaner
 import app.rootstock.data.network.NetworkBoundRepository
 import app.rootstock.data.network.ResponseResult
+import app.rootstock.data.prefs.CacheClass
+import app.rootstock.data.prefs.SharedPrefsController
 import app.rootstock.data.workspace.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
-import okhttp3.ResponseBody
-import java.lang.Exception
 import javax.inject.Inject
 
 interface WorkspaceRepository {
@@ -22,7 +20,10 @@ interface WorkspaceRepository {
     /**
      * returns workspace by id either from local storage or network
      */
-    suspend fun getWorkspace(workspaceId: String): Flow<ResponseResult<WorkspaceWithChildren?>>
+    suspend fun getWorkspace(
+        workspaceId: String,
+        update: Boolean
+    ): Flow<ResponseResult<WorkspaceWithChildren?>>
 
     /**
      * sends a DELETE request for @param workspaceId
@@ -34,13 +35,13 @@ class WorkspaceRepositoryImpl @Inject constructor(
     private val workspaceRemoteSource: WorkspaceService,
     private val workspaceLocal: WorkspaceDao,
     private val channelLocal: ChannelDao,
-    private val cacheCleaner: CacheCleaner,
+    private val spController: SharedPrefsController,
     private val database: AppDatabase,
 ) : WorkspaceRepository {
 
 
     @ExperimentalCoroutinesApi
-    override suspend fun getWorkspace(workspaceId: String) =
+    override suspend fun getWorkspace(workspaceId: String, update: Boolean) =
         object : NetworkBoundRepository<WorkspaceWithChildren?, WorkspaceWithChildren>() {
             override suspend fun persistData(response: WorkspaceWithChildren) {
                 response
@@ -63,16 +64,16 @@ class WorkspaceRepositoryImpl @Inject constructor(
                             channelLocal.upsertAll(it.channels)
 
                             // create hierarchy
-                            val list = mutableListOf<WorkspaceTree>()
+                            val tree = mutableListOf<WorkspaceTree>()
                             it.children.forEach { child ->
-                                list.add(
+                                tree.add(
                                     WorkspaceTree(
                                         parent = it.workspaceId,
                                         child = child.workspaceId
                                     )
                                 )
                             }
-                            workspaceLocal.insertHierarchy(list)
+                            workspaceLocal.insertHierarchy(tree)
                         }
                     }
             }
@@ -100,7 +101,9 @@ class WorkspaceRepositoryImpl @Inject constructor(
             }
 
             override suspend fun fetchFromRemote(): WorkspaceWithChildren? {
-                val workspaceResponse = workspaceRemoteSource.getWorkspace(workspaceId)
+                val cacheControl = if (update) "no-cache" else null
+                val workspaceResponse =
+                    workspaceRemoteSource.getWorkspace(workspaceId, cacheControl)
                 return workspaceResponse.body()
             }
         }.asFlow()
@@ -119,7 +122,7 @@ class WorkspaceRepositoryImpl @Inject constructor(
         }
         if (success) {
             workspaceLocal.delete(workspaceId)
-            cacheCleaner.cleanCache()
+            spController.updateCacheSettings(CacheClass.Workspace(workspaceId), true)
         }
         emit(state)
 

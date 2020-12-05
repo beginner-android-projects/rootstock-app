@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
 import app.rootstock.data.channel.Channel
 import app.rootstock.data.channel.ChannelDao
 import app.rootstock.data.messages.Message
@@ -52,7 +53,15 @@ abstract class AppDatabase : RoomDatabase() {
         private fun buildDatabase(context: Context): AppDatabase {
             return Room.databaseBuilder(context, AppDatabase::class.java, DATABASE_NAME)
                 .fallbackToDestructiveMigration()
+                .addCallback(CALLBACK_UPDATE_LAST_MESSAGE)
                 .build()
+        }
+
+        private val CALLBACK_UPDATE_LAST_MESSAGE = object : RoomDatabase.Callback() {
+            override fun onCreate(db: SupportSQLiteDatabase) {
+                super.onCreate(db)
+                db.execSQL("create trigger update_last_message after insert on messages begin update channels set last_message = new.content where channel_id = new.channel_id; end;")
+            }
         }
     }
 }

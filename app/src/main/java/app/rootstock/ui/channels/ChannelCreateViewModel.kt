@@ -36,7 +36,7 @@ class ChannelCreateViewModel @ViewModelInject constructor(
             imageUrl = null
         )
         viewModelScope.launch {
-            when (val channelResp = channelRepository.createChannel(channel = newChannel).first()) {
+            when (val channelResp = channelRepository.createChannel(channel = newChannel, workspaceId).first()) {
                 is ResponseResult.Success -> {
                     _eventChannel.postValue(Event(CreateOperation.Success(channelResp.data)))
                 }

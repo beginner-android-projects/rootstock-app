@@ -5,6 +5,7 @@ import app.rootstock.api.WorkspaceService
 import app.rootstock.data.channel.ChannelDao
 import app.rootstock.data.db.AppDatabase
 import app.rootstock.data.network.CacheCleaner
+import app.rootstock.data.prefs.SharedPrefsController
 import app.rootstock.data.workspace.WorkspaceDao
 import app.rootstock.ui.channels.ChannelRepository
 import app.rootstock.ui.channels.ChannelRepositoryImpl
@@ -44,24 +45,25 @@ object WorkspaceModule {
         return retrofit.create(WorkspaceService::class.java)
     }
 
-
     @Provides
     fun provideWorkspaceRepository(
         workspaceDataSource: WorkspaceService,
         workspaceDao: WorkspaceDao,
         channelDao: ChannelDao,
         cacheCleaner: CacheCleaner,
+        spController: SharedPrefsController,
         appDatabase: AppDatabase
     ): WorkspaceRepository {
-        return WorkspaceRepositoryImpl(workspaceDataSource, workspaceDao, channelDao, cacheCleaner, appDatabase)
+        return WorkspaceRepositoryImpl(workspaceDataSource, workspaceDao, channelDao, spController, appDatabase)
     }
 
     @Provides
     fun provideChannelRepository(
         channelService: ChannelService,
         channelDao: ChannelDao,
-        cacheCleaner: CacheCleaner
-    ): ChannelRepository {
-        return ChannelRepositoryImpl(channelService, channelDao, cacheCleaner)
+        cacheCleaner: CacheCleaner,
+        spController: SharedPrefsController,
+        ): ChannelRepository {
+        return ChannelRepositoryImpl(channelService, channelDao, spController)
     }
 }

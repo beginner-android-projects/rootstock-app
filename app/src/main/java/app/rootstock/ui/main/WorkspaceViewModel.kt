@@ -1,11 +1,12 @@
 package app.rootstock.ui.main
 
-import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import app.rootstock.adapters.WorkspaceEventHandler
 import app.rootstock.data.channel.Channel
 import app.rootstock.data.network.ResponseResult
+import app.rootstock.data.prefs.CacheClass
+import app.rootstock.data.prefs.SharedPrefsController
 import app.rootstock.data.result.Event
 import app.rootstock.data.user.UserRepository
 import app.rootstock.data.workspace.Workspace
@@ -33,11 +34,13 @@ enum class PagerEvent {
     PAGER_SCROLLED
 }
 
+
 @ExperimentalCoroutinesApi
 class WorkspaceViewModel @ViewModelInject constructor(
     private val userRepository: UserRepository,
     private val workspaceRepository: WorkspaceRepository,
     private val channelRepository: ChannelRepository,
+    private val spController: SharedPrefsController,
 ) :
     ViewModel(), WorkspaceEventHandler {
 
@@ -95,7 +98,8 @@ class WorkspaceViewModel @ViewModelInject constructor(
 
             }
             id?.let { wsId ->
-                workspaceRepository.getWorkspace(wsId)
+                val update = spController.shouldUpdateCache(CacheClass.Workspace(wsId))
+                workspaceRepository.getWorkspace(wsId, update)
                     .collect {
                         when (it) {
                             is ResponseResult.Success -> {
@@ -104,7 +108,8 @@ class WorkspaceViewModel @ViewModelInject constructor(
                                     it.data.apply { children.sortedBy { child -> child.createdAt } }
                                 _channels.value = it.data.channels.toMutableList().apply {
                                     sortBy { channel -> channel.lastUpdate }
-                                }
+                                }.asReversed()
+                                spController.updateCacheSettings(CacheClass.Workspace(wsId), false)
                             }
                             is ResponseResult.Error -> {
                                 _eventWorkspace.postValue(Event(WorkspaceEvent.Error()))
@@ -114,7 +119,6 @@ class WorkspaceViewModel @ViewModelInject constructor(
             }
         }
     }
-
 
     override fun workspaceClicked(workspaceId: String) {
         pageScrolled()
@@ -179,7 +183,8 @@ class WorkspaceViewModel @ViewModelInject constructor(
             remove(c)
         }
         viewModelScope.launch {
-            when (channelRepository.deleteChannel(channelId).first()) {
+            val wsId = workspace.value?.workspaceId ?: return@launch
+            when (channelRepository.deleteChannel(channelId,  wsId).first()) {
                 is ResponseResult.Success -> {
                 }
                 is ResponseResult.Error -> {
@@ -198,7 +203,7 @@ class WorkspaceViewModel @ViewModelInject constructor(
 
     fun addChannel(channel: Channel) {
         _channels.value = _channels.value?.apply {
-            add(channel)
+            add(0, channel)
         }
     }
 
@@ -212,10 +217,8 @@ class WorkspaceViewModel @ViewModelInject constructor(
         viewModelScope.launch {
             when (workspaceRepository.deleteWorkspace(wsId).first()) {
                 is ResponseResult.Success -> {
-//                    _eventChannel.value = Event(ChannelEvent.CHANNEL_DELETED)
                 }
                 is ResponseResult.Error -> {
-//                    _eventChannel.value = Event(ChannelEvent.ERROR)
                 }
             }
         }

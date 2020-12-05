@@ -11,7 +11,8 @@ interface MessageService {
     suspend fun getMessages(
         @Path("channelId") channelId: Long,
         @Query("offset") offset: Int = 0,
-    ): List<Message>
+        @Header("Cache-Control") cacheControl: String? = null,
+        ): List<Message>
 
     @POST("/messages/")
     suspend fun sendMessages(

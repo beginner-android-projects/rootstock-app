@@ -51,7 +51,7 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
             // make icon white
             setColorFilter(Color.WHITE)
             shapeAppearanceModel =
-                shapeAppearanceModel.withCornerSize { 30f }
+                shapeAppearanceModel.withCornerSize { BUTTON_ROUND_SIZE }
             // set listeners
             setOnClickListener { openAddItemDialog() }
         }
@@ -205,6 +205,7 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
         finishAfterTransition()
     }
 
+
     companion object {
         const val ANIMATION_DURATION_FAB = 200L
         const val DIM_AMOUNT = 0.3f
@@ -214,6 +215,9 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
         const val BUTTON_ROUNDED_SQUARE_SIZE = 10f
         const val BUTTON_ROUND_SIZE = 30f
         const val DIALOG_CHANNEL_CREATE = "DIALOG_CHANNEL_CREATE"
+        const val REQUEST_CODE_CHANNEL_ACTIVITY = 100
+        const val BUNDLE_WORKSPACE_EXTRA = "BUNDLE_WORKSPACE_EXTRA"
+        const val BUNDLE_CHANNEL_EXTRA = "BUNDLE_WORKSPACE_EXTRA"
     }
 
 

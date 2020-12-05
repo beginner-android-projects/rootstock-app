@@ -45,6 +45,9 @@ class MessagesViewModel @ViewModelInject constructor(private val repository: Mes
 
     private var currentSearchResult: Flow<PagingData<Message>>? = null
 
+    private val _modifiedChannel = MutableLiveData(false)
+    val modifiedChannel: LiveData<Boolean> get() = _modifiedChannel
+
     fun searchRepo(channelId: Long, refresh: Boolean = false): Flow<PagingData<Message>> {
         val lastResult = currentSearchResult
         if (channelId == currentQueryValue && lastResult != null && !refresh) {
@@ -64,10 +67,12 @@ class MessagesViewModel @ViewModelInject constructor(private val repository: Mes
         val sendMessage = SendMessage(content = content, channelId = id)
 
         viewModelScope.launch {
-
-            when (val message = repository.sendMessage(message = sendMessage).first()) {
+            val wsId = channel.value?.workspaceId ?: return@launch
+            when (val message =
+                repository.sendMessage(message = sendMessage, workspaceId = wsId).first()) {
                 is ResponseResult.Success -> {
                     _messageEvent.value = Event(MessageEvent.CREATED)
+                    _modifiedChannel.value = true
                 }
                 is ResponseResult.Error -> {
                     _messageEvent.postValue(Event(MessageEvent.ERROR))
@@ -79,9 +84,12 @@ class MessagesViewModel @ViewModelInject constructor(private val repository: Mes
     fun editMessage(id: Long, content: String) {
         val editMessage = EditMessage(content = content)
         viewModelScope.launch {
-            when (val response = repository.editMessage(editMessage, id).first()) {
+            val wsId = channel.value?.workspaceId ?: return@launch
+            val channelId = channel.value?.channelId ?: return@launch
+            when (val response = repository.editMessage(editMessage, id, wsId, channelId).first()) {
                 is ResponseResult.Success -> {
                     _messageEvent.value = Event(MessageEvent.CREATED)
+                    _modifiedChannel.value = true
                 }
                 is ResponseResult.Error -> {
                     _messageEvent.postValue(Event(MessageEvent.ERROR))
@@ -92,9 +100,13 @@ class MessagesViewModel @ViewModelInject constructor(private val repository: Mes
 
     fun deleteMessage(messageId: Long) {
         viewModelScope.launch {
-            when (val response = repository.deleteMessage(messageId).first()) {
+            val wsId = channel.value?.workspaceId ?: return@launch
+            val channelId = channel.value?.channelId ?: return@launch
+
+            when (val response = repository.deleteMessage(messageId, wsId, channelId).first()) {
                 is ResponseResult.Success -> {
                     _messageEvent.value = Event(MessageEvent.DELETED)
+                    _modifiedChannel.value = true
                 }
                 is ResponseResult.Error -> {
                     _messageEvent.postValue(Event(MessageEvent.ERROR))

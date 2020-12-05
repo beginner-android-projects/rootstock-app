@@ -1,6 +1,7 @@
 package app.rootstock.ui.workspace
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,7 +37,7 @@ class WorkspaceFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentWorkspaceBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
         }
@@ -79,7 +80,6 @@ class WorkspaceFragment : Fragment() {
         setObservers()
         viewModel.resetPager()
     }
-
 
     private fun setObservers() {
         viewModel.eventWorkspace.observe(viewLifecycleOwner) {

@@ -31,7 +31,7 @@ class SignUpFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentSignupBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
         }

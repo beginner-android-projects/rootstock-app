@@ -1,26 +1,35 @@
 package app.rootstock.ui.channels
 
+import android.content.Intent
 import android.content.res.Resources
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.PopupWindow
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import app.rootstock.R
 import app.rootstock.adapters.ChannelListAdapter
 import app.rootstock.data.channel.Channel
 import app.rootstock.databinding.FragmentChannelsListBinding
+import app.rootstock.ui.main.WorkspaceActivity
+import app.rootstock.ui.main.WorkspaceActivity.Companion.BUNDLE_CHANNEL_EXTRA
+import app.rootstock.ui.main.WorkspaceActivity.Companion.REQUEST_CODE_CHANNEL_ACTIVITY
 import app.rootstock.ui.main.WorkspaceViewModel
 import app.rootstock.ui.workspace.WorkspaceFragmentDirections
 import app.rootstock.utils.convertDpToPx
 import app.rootstock.views.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 @ExperimentalCoroutinesApi
@@ -32,9 +41,6 @@ class ChannelsListFragment : Fragment() {
     private lateinit var binding: FragmentChannelsListBinding
 
     lateinit var adapter: ChannelListAdapter
-
-    private var channelOpened = false
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,17 +59,13 @@ class ChannelsListFragment : Fragment() {
     }
 
     private fun openChannel(channel: Channel) {
-//        if (!channelOpened) {
-//            channelOpened = true
-            val action =
-                WorkspaceFragmentDirections.actionWorkspaceFragmentToChannelActivity(channel)
-            findNavController().navigate(action)
-//        }
+        val intent = Intent(requireActivity(), ChannelActivity::class.java)
+        intent.putExtra(BUNDLE_CHANNEL_EXTRA, channel)
+        startActivityForResult(intent, REQUEST_CODE_CHANNEL_ACTIVITY)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setObservers()
         adapter = ChannelListAdapter(
             lifecycleOwner = this,
             editDialog = ::openEditDialog,
@@ -85,21 +87,44 @@ class ChannelsListFragment : Fragment() {
                 }
             })
         }
-
+        setObservers()
     }
 
-//    override fun onStart() {
-//        super.onStart()
-//        channelOpened = false
-//    }
 
     private fun setObservers() {
         viewModel.channels.observe(viewLifecycleOwner) {
             if (it != null && ::adapter.isInitialized) {
                 adapter.submitList(it)
                 adapter.notifyDataSetChanged()
+
             }
         }
+
+        adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+            override fun onChanged() {
+                binding.recyclerView.scrollToPosition(0)
+            }
+
+            override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
+                binding.recyclerView.scrollToPosition(0)
+            }
+
+            override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) {
+                binding.recyclerView.scrollToPosition(0)
+            }
+
+            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                binding.recyclerView.scrollToPosition(0)
+            }
+
+            override fun onItemRangeChanged(positionStart: Int, itemCount: Int) {
+                binding.recyclerView.scrollToPosition(0)
+            }
+
+            override fun onItemRangeChanged(positionStart: Int, itemCount: Int, payload: Any?) {
+                binding.recyclerView.scrollToPosition(0)
+            }
+        })
     }
 
     private fun showEditPopup(anchor: View, channel: Channel) {
@@ -144,6 +169,17 @@ class ChannelsListFragment : Fragment() {
 
     private fun deleteChannel(channelId: Long) {
         viewModel.deleteChannel(channelId)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == AppCompatActivity.RESULT_OK) {
+            if (requestCode == REQUEST_CODE_CHANNEL_ACTIVITY) {
+                data?.getBooleanExtra(WorkspaceActivity.BUNDLE_WORKSPACE_EXTRA, false)?.let {
+                    if (it) viewModel.loadWorkspace(viewModel.workspace.value?.workspaceId)
+                }
+            }
+        }
     }
 
     companion object {

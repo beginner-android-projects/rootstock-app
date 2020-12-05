@@ -11,6 +11,8 @@ import app.rootstock.api.MessageService
 import app.rootstock.data.db.AppDatabase
 import app.rootstock.data.db.RemoteKeys
 import app.rootstock.data.db.RemoteKeysDao
+import app.rootstock.data.prefs.CacheClass
+import app.rootstock.data.prefs.SharedPrefsController
 import retrofit2.HttpException
 import java.io.IOException
 import java.io.InvalidObjectException
@@ -24,7 +26,8 @@ class MessageRemoteMediator(
     private val service: MessageService,
     private val remoteKeysDao: RemoteKeysDao,
     private val messageDao: MessageDao,
-    private val database: AppDatabase
+    private val database: AppDatabase,
+    private val spController: SharedPrefsController,
 ) : RemoteMediator<Int, Message>() {
 
     override suspend fun load(
@@ -63,7 +66,14 @@ class MessageRemoteMediator(
         Log.d("123xxx", "$loadType $page ...")
 
         try {
-            val apiResponse = service.getMessages(channelId = channelId, offset = page)
+            val cacheControl =
+                if (spController.shouldUpdateCache(CacheClass.Channel(channelId))) "no-cache" else null
+            val apiResponse =
+                service.getMessages(
+                    channelId = channelId,
+                    offset = page,
+                    cacheControl = cacheControl
+                )
             val messages = apiResponse.map {
                 it.channelId = channelId
                 it
@@ -73,12 +83,18 @@ class MessageRemoteMediator(
                 val prevKey = if (page == STARTING_PAGE_INDEX) null else page - MESSAGES_OFFSET
                 val nextKey = if (endOfPaginationReached) null else page + MESSAGES_OFFSET
                 val keys = messages.map {
-                    RemoteKeys(messageId = it.messageId, prevKey = prevKey, nextKey = nextKey, channelId = channelId)
+                    RemoteKeys(
+                        messageId = it.messageId,
+                        prevKey = prevKey,
+                        nextKey = nextKey,
+                        channelId = channelId
+                    )
                 }
                 remoteKeysDao.upsertAll(keys)
                 // todo upsert
                 messageDao.insertAll(messages)
             }
+            spController.updateCacheSettings(CacheClass.Channel(channelId), false)
             return MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)
         } catch (exception: IOException) {
             return MediatorResult.Error(exception)

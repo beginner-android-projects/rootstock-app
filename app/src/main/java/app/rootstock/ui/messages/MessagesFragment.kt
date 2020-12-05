@@ -123,9 +123,7 @@ class MessagesFragment : Fragment() {
         binding.content.clearFocus()
         if (isEditing) {
             isEditing = false
-            Log.d("123", "send mess $message")
             messageEditingId?.let {
-                Log.d("123", "send mess $it")
                 viewModel.editMessage(it, message)
             }
             messageEditingId = null

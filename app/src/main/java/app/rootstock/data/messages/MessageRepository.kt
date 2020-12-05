@@ -10,8 +10,9 @@ import app.rootstock.api.SendMessage
 import app.rootstock.data.db.AppDatabase
 import app.rootstock.data.db.RemoteKeys
 import app.rootstock.data.db.RemoteKeysDao
-import app.rootstock.data.network.CacheCleaner
 import app.rootstock.data.network.ResponseResult
+import app.rootstock.data.prefs.CacheClass
+import app.rootstock.data.prefs.SharedPrefsController
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
@@ -22,13 +23,14 @@ class MessageRepository @Inject constructor(
     private val messageService: MessageService,
     private val remoteKeysDao: RemoteKeysDao,
     private val database: AppDatabase,
-    private val cacheCleaner: CacheCleaner
+    private val spController: SharedPrefsController,
 ) {
 
     /**
      * Search messages for specified channel
      */
     fun getSearchResultStream(channelId: Long): Flow<PagingData<Message>> {
+
         val pagingSourceFactory = { messageDao.messagesInChannel(channelId) }
 
         return Pager(
@@ -43,14 +45,18 @@ class MessageRepository @Inject constructor(
                 messageService,
                 remoteKeysDao,
                 messageDao,
-                database
+                database,
+                spController
             ),
             pagingSourceFactory = pagingSourceFactory,
 
             ).flow
     }
 
-    suspend fun sendMessage(message: SendMessage): Flow<ResponseResult<Message?>> = flow {
+    suspend fun sendMessage(
+        message: SendMessage,
+        workspaceId: String
+    ): Flow<ResponseResult<Message?>> = flow {
         val response = messageService.sendMessages(message)
         val state = when (response.isSuccessful) {
             true -> {
@@ -62,6 +68,8 @@ class MessageRepository @Inject constructor(
         if (response.isSuccessful) {
             response.body()?.let {
                 database.withTransaction {
+                    spController.updateCacheSettings(CacheClass.Workspace(workspaceId), true)
+                    spController.updateCacheSettings(CacheClass.Channel(message.channelId), true)
                     messageDao.insert(it.apply { channelId = message.channelId })
                     val lastKey = remoteKeysDao.getLastRemoteKeys(message.channelId)
                     val prevKey: Int?
@@ -85,8 +93,6 @@ class MessageRepository @Inject constructor(
                             prevKey = prevKey,
                         )
                     )
-//                        channelLocal.insert(it)
-//                        cacheCleaner.cleanCache()
                 }
             }
         }
@@ -96,7 +102,11 @@ class MessageRepository @Inject constructor(
         emit(ResponseResult.error("Something went wrong!"))
     }
 
-    suspend fun deleteMessage(id: Long): Flow<ResponseResult<Void?>> = flow {
+    suspend fun deleteMessage(
+        id: Long,
+        workspaceId: String,
+        channelId: Long
+    ): Flow<ResponseResult<Void?>> = flow {
         val response = messageService.deleteMessage(id)
         val state = when (response.isSuccessful) {
             true -> {
@@ -106,7 +116,8 @@ class MessageRepository @Inject constructor(
         }
         if (response.isSuccessful) {
             messageDao.delete(id)
-            cacheCleaner.cleanCache()
+            spController.updateCacheSettings(CacheClass.Channel(channelId), true)
+            spController.updateCacheSettings(CacheClass.Workspace(workspaceId), true)
         }
         emit(state)
 
@@ -114,7 +125,12 @@ class MessageRepository @Inject constructor(
         emit(ResponseResult.error("Something went wrong!"))
     }
 
-    suspend fun editMessage(message: EditMessage, id: Long): Flow<ResponseResult<Message?>> = flow {
+    suspend fun editMessage(
+        message: EditMessage,
+        id: Long,
+        workspaceId: String,
+        channelId: Long
+    ): Flow<ResponseResult<Message?>> = flow {
         val response = messageService.editMessage(editMessage = message, id)
         val state = when (response.isSuccessful) {
             true -> {
@@ -125,7 +141,9 @@ class MessageRepository @Inject constructor(
         if (response.isSuccessful) {
             response.body()?.let {
                 messageDao.update(id, content = it.content)
-                cacheCleaner.cleanCache()
+
+                spController.updateCacheSettings(CacheClass.Channel(channelId), true)
+                spController.updateCacheSettings(CacheClass.Workspace(workspaceId), true)
             }
         }
         emit(state)

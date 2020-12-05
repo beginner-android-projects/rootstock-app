@@ -11,7 +11,8 @@ import retrofit2.http.Path
 interface WorkspaceService {
     @GET("/workspaces/{workspaceId}")
     suspend fun getWorkspace(
-        @Path("workspaceId") workspaceId: String
+        @Path("workspaceId") workspaceId: String,
+        @Header("Cache-Control") cacheControl: String? = null,
     ): Response<WorkspaceWithChildren>
 
     @DELETE("/workspaces/{workspaceId}")
