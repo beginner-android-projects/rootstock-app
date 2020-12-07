@@ -5,6 +5,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.room.withTransaction
+import app.rootstock.data.db.AppDatabase
+import app.rootstock.data.network.CacheCleaner
 import app.rootstock.data.network.ResponseResult
 import app.rootstock.data.result.Event
 import app.rootstock.data.token.TokenRepository
@@ -23,9 +26,10 @@ interface SettingsItemClick {
 
 @ActivityScoped
 class SettingsViewModel @ViewModelInject constructor(
-    private val userRepository: UserRepository,
     private val tokenRepository: TokenRepository,
-    private val workspaceRepository: WorkspaceRepository,
+    private val accountRepository: AccountRepository,
+    private val database: AppDatabase,
+    private val cacheCleaner: CacheCleaner,
 ) :
     ViewModel() {
 
@@ -37,25 +41,48 @@ class SettingsViewModel @ViewModelInject constructor(
         viewModelScope.launch {
             userData.value?.userId?.let {
                 val token = tokenRepository.getToken() ?: return@launch
-                workspaceRepository.deleteAllWorkspacesLocal()
-                tokenRepository.revokeToken(
-                    token = token.refreshToken,
-                    accessToken = token.accessToken
-                )
-                tokenRepository.removeToken()
-                userRepository.deleteAll()
-                _event.postValue(Event(SettingsEvent.LOG_OUT))
+                database.withTransaction {
+                    database.workspaceDao().deleteAll()
+                    tokenRepository.revokeToken(
+                        token = token.refreshToken,
+                        accessToken = token.accessToken
+                    )
+                    tokenRepository.removeToken()
+                    database.userDao().deleteAll()
+                    cacheCleaner.cleanCache()
+                    _event.postValue(Event(SettingsEvent.LOG_OUT))
+                }
             }
         }
     }
 
-    fun deleteAccount() {
+    fun deleteAccount(email: String) {
+        viewModelScope.launch {
+            userData.value?.userId?.let {
+                accountRepository.delete(email).collect {
+                    when (it) {
+                        is ResponseResult.Success -> {
+                            database.withTransaction {
+                                database.workspaceDao().deleteAll()
+                                tokenRepository.removeToken()
+                                database.userDao().deleteAll()
+                                cacheCleaner.cleanCache()
+                                _event.postValue(Event(SettingsEvent.DELETED))
+                            }
+                        }
+                        is ResponseResult.Error -> {
+                            _event.postValue(Event(SettingsEvent.FAILED))
+                        }
+                    }
+                }
+            }
+        }
     }
 
-    val userData = userRepository.getUser()
+    val userData = database.userDao().searchUser()
 
 }
 
 enum class SettingsEvent {
-    LOG_OUT
+    LOG_OUT, DELETED, FAILED
 }

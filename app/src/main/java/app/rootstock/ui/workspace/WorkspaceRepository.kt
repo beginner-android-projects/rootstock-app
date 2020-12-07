@@ -29,8 +29,6 @@ interface WorkspaceRepository {
      * sends a DELETE request for @param workspaceId
      */
     suspend fun deleteWorkspace(workspaceId: String): Flow<ResponseResult<Void?>>
-
-    suspend fun deleteAllWorkspacesLocal()
 }
 
 class WorkspaceRepositoryImpl @Inject constructor(
@@ -130,11 +128,6 @@ class WorkspaceRepositoryImpl @Inject constructor(
     }.catch {
         emit(ResponseResult.error("Something went wrong!"))
     }
-
-    override suspend fun deleteAllWorkspacesLocal() {
-        workspaceLocal.deleteAll()
-    }
-
 
 }
 

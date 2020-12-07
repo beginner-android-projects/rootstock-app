@@ -8,7 +8,6 @@ interface UserRepository {
     fun getUser(): LiveData<User?>
     suspend fun getUserId(): String?
     suspend fun insertUser(user: User)
-    suspend fun deleteAll()
 }
 
 @Singleton
@@ -21,7 +20,5 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun getUserId() = userDao.getUserId()
 
     override suspend fun insertUser(user: User) = userDao.deleteAndInsert(user)
-
-    override suspend fun deleteAll() = userDao.deleteAll()
 
 }

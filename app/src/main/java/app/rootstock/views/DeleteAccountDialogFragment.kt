@@ -7,12 +7,17 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDialogFragment
-import app.rootstock.databinding.DialogLogoutBinding
+import app.rootstock.databinding.DialogDeleteAccountBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
-class LogOutDialogFragment(private val logOut: (() -> Unit)) : AppCompatDialogFragment() {
 
-    private lateinit var binding: DialogLogoutBinding
+class DeleteAccountDialogFragment(
+    private val action: ((email: String) -> Unit),
+    private val email: String
+) :
+    AppCompatDialogFragment() {
+
+    private lateinit var binding: DialogDeleteAccountBinding
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return MaterialAlertDialogBuilder(requireContext()).create()
@@ -23,19 +28,26 @@ class LogOutDialogFragment(private val logOut: (() -> Unit)) : AppCompatDialogFr
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = DialogLogoutBinding.inflate(layoutInflater, container, true)
+        binding = DialogDeleteAccountBinding.inflate(layoutInflater, container, true)
         return binding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         binding.apply {
-
             lifecycleOwner = viewLifecycleOwner
             executePendingBindings()
-            logout.setOnClickListener { dismiss(); logOut.invoke() }
-            cancel.setOnClickListener { dismiss() }
         }
+
+        binding.deleteButton.setOnClickListener {
+            if (binding.email.editText?.text.toString() == email) {
+                dismiss(); action.invoke(binding.email.editText?.text.toString())
+            } else {
+                binding.email.error = "Invalid email"
+            }
+        }
+        binding.cancel.setOnClickListener { dismiss() }
+
         if (showsDialog) {
             (requireDialog() as AlertDialog).setView(binding.root)
         }
@@ -43,3 +55,4 @@ class LogOutDialogFragment(private val logOut: (() -> Unit)) : AppCompatDialogFr
 
 
 }
+

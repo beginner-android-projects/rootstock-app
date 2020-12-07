@@ -5,7 +5,7 @@ import android.graphics.Color
 import android.graphics.PorterDuff
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
@@ -14,7 +14,9 @@ import app.rootstock.R
 import app.rootstock.adapters.SettingsListAdapter
 import app.rootstock.databinding.ActivitySettingsBinding
 import app.rootstock.ui.signup.RegisterActivity
-import app.rootstock.views.LogOutDialogFragment
+import app.rootstock.views.DeleteAccountDialogFragment
+import app.rootstock.views.SimpleDialogFragment
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -50,7 +52,7 @@ class SettingsActivity : AppCompatActivity() {
             ),
             SettingsItem(
                 drawable = R.drawable.ic_delete_24,
-                title = getString(R.string.settings_delete_account),
+                title = getString(R.string.delete_account),
                 actionHandler = deleteItemClick
             ),
         )
@@ -75,7 +77,7 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun showSignOutDialog() {
-        val dialog = LogOutDialogFragment(::logOut)
+        val dialog = SimpleDialogFragment(::logOut)
         dialog.show(
             supportFragmentManager,
             DIALOG_LOG_OUT
@@ -92,8 +94,15 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
+    private fun deleteAccount(email: String) {
+        viewModel.deleteAccount(email)
+    }
+
     private fun showDeleteDialog() {
-        //
+        val email = viewModel.userData.value?.email ?: return
+        val dialog = DeleteAccountDialogFragment(::deleteAccount, email)
+        dialog.show(supportFragmentManager, DIALOG_DELETE_ACCOUNT)
+
     }
 
     private fun setToolbar() {
@@ -106,24 +115,33 @@ class SettingsActivity : AppCompatActivity() {
     private fun setObservers() {
         viewModel.event.observe(this) {
             when (it?.getContentIfNotHandled()) {
-                SettingsEvent.LOG_OUT -> {
-                    val i = Intent(applicationContext, RegisterActivity::class.java)
-                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    startActivity(i)
-                    finish()
+                SettingsEvent.LOG_OUT -> startRegisterActivity()
+                SettingsEvent.DELETED -> startRegisterActivity(true)
+                SettingsEvent.FAILED -> {
+                    Toast.makeText(this, R.string.delete_failed, Toast.LENGTH_SHORT).show()
                 }
-                null -> {
+                else -> {
                 }
             }
         }
+    }
+
+    private fun startRegisterActivity(deleted: Boolean? = null) {
+        val i = Intent(applicationContext, RegisterActivity::class.java)
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        deleted?.let { i.putExtra(ACCOUNT_DELETED, it) }
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(i)
+        finish()
     }
 
     companion object {
         // todo real site link
         const val URL_PRIVACY_POLICY = "https://google.com"
         const val DIALOG_LOG_OUT = "DIALOG_LOG_OUT"
+        const val DIALOG_DELETE_ACCOUNT = "DIALOG_DELETE_ACCOUNT"
+        const val ACCOUNT_DELETED = "ACCOUNT_DELETED"
     }
 
 }

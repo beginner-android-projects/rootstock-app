@@ -16,11 +16,11 @@
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
             android:maxLines="1"
-            android:text="@string/log_out"
+            android:text="@string/delete_account"
             android:textAlignment="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/message"
@@ -30,8 +30,8 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="20dp"
-            android:maxLines="6"
-            android:text="@string/dialog_log_out_message"
+            android:maxLines="9"
+            android:text="@string/dialog_delete_account_message"
             android:textAlignment="textStart"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -49,22 +49,48 @@
             android:textAllCaps="false"
             app:layout_constraintEnd_toStartOf="@+id/guideline_title"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/message" />
+            app:layout_constraintTop_toBottomOf="@id/email" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/logout"
+            android:id="@+id/delete_button"
             style="@style/AlertDialog.ButtonBar.Base"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="20dp"
-            android:text="@string/log_out"
+            android:text="@string/delete"
             android:textAllCaps="false"
             android:textColor="@color/red"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/guideline_title"
-            app:layout_constraintTop_toBottomOf="@id/message" />
+            app:layout_constraintTop_toBottomOf="@id/email" />
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/email"
+            style="@style/Text.TextInputLayout.Primary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginEnd="32dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/message">
+
+            <app.rootstock.views.BaseInputEditText
+                style="@style/Text.EditText.Base"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/form_edit_text_black"
+                android:hint="@string/enter_your_email"
+                android:inputType="textEmailAddress"
+                android:maxLength="40"
+                android:maxLines="1"
+                android:text="" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline_title"
