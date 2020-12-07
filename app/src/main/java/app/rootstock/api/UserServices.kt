@@ -18,7 +18,6 @@ interface UserLogInService {
         @Field("username") username: String,
         @Field("password") password: String
     ): Response<Token>
-
 }
 
 interface UserInfoService {

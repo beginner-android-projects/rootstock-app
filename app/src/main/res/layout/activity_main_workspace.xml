@@ -1,69 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <com.google.android.material.appbar.AppBarLayout
+    <data>
+
+    </data>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/primary"
-        android:elevation="0dp">
+        android:layout_height="match_parent">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/home_toolbar"
-            style="@style/AppToolbar"
+        <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:navigationIcon="@drawable/ic_arrow_down"
-            app:titleTextColor="@color/white" />
-    </com.google.android.material.appbar.AppBarLayout>
+            android:layout_height="wrap_content"
+            android:background="@color/primary"
+            android:elevation="0dp">
 
-    <app.rootstock.views.Backdrop
-        android:id="@+id/backdrop_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="56dp"
-        app:closeIcon="@drawable/ic_arrow_up"
-        app:openIcon="@drawable/ic_arrow_down"
-        app:toolbar="@id/home_toolbar">
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/home_toolbar"
+                style="@style/AppToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:navigationIcon="@drawable/ic_arrow_down"
+                app:titleTextColor="@color/white" />
+        </com.google.android.material.appbar.AppBarLayout>
 
-        <RelativeLayout
-            android:id="@+id/favourites_container"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_gravity="center_horizontal"
-            android:background="@drawable/favourites_background" />
-
-
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/nav_host"
-            android:name="androidx.navigation.fragment.NavHostFragment"
+        <app.rootstock.views.Backdrop
+            android:id="@+id/backdrop_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="?attr/actionBarSize"
-            app:defaultNavHost="true"
-            app:navGraph="@navigation/nav_workspaces" />
-    </app.rootstock.views.Backdrop>
+            android:layout_marginTop="56dp"
+            app:closeIcon="@drawable/ic_arrow_up"
+            app:openIcon="@drawable/ic_arrow_down"
+            app:toolbar="@id/home_toolbar">
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_app_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        app:menu="@menu/bottom_navigation_menu" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
-        style="@style/ShapeAppearence.RoundedRectangle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@null"
-        android:src="@drawable/ic_add_24_white"
-        app:backgroundTint="@color/primary"
-        app:elevation="10dp"
-        app:layout_anchor="@id/bottom_app_bar"
-        app:layout_anchorGravity="center_horizontal" />
+            <RelativeLayout
+                android:id="@+id/favourites_container"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/favourites_background" />
 
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/nav_host"
+                android:name="androidx.navigation.fragment.NavHostFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="?attr/actionBarSize"
+                app:defaultNavHost="true"
+                app:navGraph="@navigation/nav_workspaces" />
+        </app.rootstock.views.Backdrop>
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottom_app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            app:menu="@menu/bottom_navigation_menu" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab"
+            style="@style/ShapeAppearence.RoundedRectangle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_add_24_white"
+            app:backgroundTint="@color/primary"
+            app:elevation="10dp"
+            app:layout_anchor="@id/bottom_app_bar"
+            app:layout_anchorGravity="center_horizontal" />
+
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</layout>

@@ -182,7 +182,6 @@
             android:id="@+id/include"
             layout="@layout/dark_overlay"
             bind:isLoading="@{viewmodel.loading}">
-
         </include>
 
 

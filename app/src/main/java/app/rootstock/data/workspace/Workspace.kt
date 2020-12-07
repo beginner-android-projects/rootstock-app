@@ -3,6 +3,7 @@ package app.rootstock.data.workspace
 import androidx.room.*
 import app.rootstock.data.channel.Channel
 import app.rootstock.data.db.DateConverter
+import app.rootstock.data.user.User
 import com.google.gson.annotations.SerializedName
 import java.util.*
 

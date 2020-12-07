@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.activityViewModels
@@ -89,6 +90,7 @@ class MessagesFragment : Fragment() {
         binding.send.setOnClickListener {
             sendMessage()
         }
+        binding.retryButton.setOnClickListener { if (::adapter.isInitialized) adapter.retry() }
         viewModel.messageEvent.observe(viewLifecycleOwner) { event ->
             when (event.getContentIfNotHandled()) {
                 MessageEvent.ERROR -> {
@@ -167,7 +169,7 @@ class MessagesFragment : Fragment() {
             // Show loading spinner during initial load or refresh.
 //            binding.progressBar.isVisible = loadState.source.refresh is LoadState.Loading
             // Show the retry state if initial load or refresh fails.
-//            binding.retryButton.isVisible = loadState.source.refresh is LoadState.Error
+            binding.retryButton.isVisible = loadState.source.refresh is LoadState.Error
 
             // Toast on any error, regardless of whether it came from RemoteMediator or PagingSource
             val errorState = loadState.source.append as? LoadState.Error

@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.graphics.PorterDuff
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
@@ -12,6 +13,8 @@ import androidx.databinding.DataBindingUtil
 import app.rootstock.R
 import app.rootstock.adapters.SettingsListAdapter
 import app.rootstock.databinding.ActivitySettingsBinding
+import app.rootstock.ui.signup.RegisterActivity
+import app.rootstock.views.LogOutDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -19,7 +22,6 @@ import dagger.hilt.android.AndroidEntryPoint
 class SettingsActivity : AppCompatActivity() {
 
     private val viewModel: SettingsViewModel by viewModels()
-
     private lateinit var binding: ActivitySettingsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,7 +75,15 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun showSignOutDialog() {
-        //
+        val dialog = LogOutDialogFragment(::logOut)
+        dialog.show(
+            supportFragmentManager,
+            DIALOG_LOG_OUT
+        )
+    }
+
+    private fun logOut() {
+        viewModel.logOut()
     }
 
     private val deleteItemClick = object : SettingsItemClick {
@@ -94,13 +104,26 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun setObservers() {
-        viewModel.userData.observe(this) {
+        viewModel.event.observe(this) {
+            when (it?.getContentIfNotHandled()) {
+                SettingsEvent.LOG_OUT -> {
+                    val i = Intent(applicationContext, RegisterActivity::class.java)
+                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    startActivity(i)
+                    finish()
+                }
+                null -> {
+                }
+            }
         }
     }
 
     companion object {
         // todo real site link
         const val URL_PRIVACY_POLICY = "https://google.com"
+        const val DIALOG_LOG_OUT = "DIALOG_LOG_OUT"
     }
 
 }

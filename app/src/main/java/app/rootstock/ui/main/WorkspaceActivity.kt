@@ -6,19 +6,19 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.util.Log
 import android.view.ViewGroup
 import androidx.activity.viewModels
-import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.res.ResourcesCompat
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import app.rootstock.R
 import app.rootstock.data.channel.Channel
 import app.rootstock.data.network.CreateOperation
 import app.rootstock.data.network.ReLogInObservable
 import app.rootstock.data.network.ReLogInObserver
+import app.rootstock.databinding.ActivityMainWorkspaceBinding
 import app.rootstock.ui.settings.SettingsActivity
 import app.rootstock.ui.signup.RegisterActivity
 import app.rootstock.utils.convertDpToPx
@@ -41,11 +41,14 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
     @Inject
     lateinit var reLogInObservable: ReLogInObservable
 
+    private lateinit var binding: ActivityMainWorkspaceBinding
+
     lateinit var toolbar: Toolbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main_workspace)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main_workspace)
+
 
         findViewById<FloatingActionButton>(R.id.fab)?.apply {
             // make icon white
@@ -168,6 +171,7 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
     private fun clearDim(parent: ViewGroup) {
         val overlay = parent.overlay
         overlay.clear()
+
     }
 
     private fun animateFab(position: Int) {

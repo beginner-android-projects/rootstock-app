@@ -35,4 +35,8 @@
     <string name="error_workspace_no_user">Please relogin to see workspaces</string>
     <string name="delete_workspace_body">Are you sure you want to delete %1$s?\n\nAll content inside, including channels and messages, will be also deleted.</string>
     <string name="hint_message_send">take a note</string>
+    <string name="retry">retry</string>
+    <string name="log_out">log out</string>
+    <string name="dialog_log_out_message">Are you sure you want to log out?</string>
+    <string name="launch_too_much_users">Make sure you have only 1 account</string>
 </resources>

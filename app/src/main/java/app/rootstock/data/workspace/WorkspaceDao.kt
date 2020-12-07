@@ -68,4 +68,17 @@ interface WorkspaceDao {
 
     @Query("delete from workspaces_tree where parent = :workspaceId or child = :workspaceId")
     suspend fun deleteWorkspaceTree(workspaceId: String)
+
+    @Transaction
+    suspend fun deleteAll(){
+        deleteAllWorkspaceTrees()
+        deleteAllWorkspaces()
+    }
+
+    @Query("delete from workspaces")
+    suspend fun deleteAllWorkspaces()
+
+    @Query("delete from workspaces_tree")
+    suspend fun deleteAllWorkspaceTrees()
+
 }

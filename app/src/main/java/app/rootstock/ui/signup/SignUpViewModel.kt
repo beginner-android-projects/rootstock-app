@@ -64,12 +64,10 @@ class SignUpViewModel @ViewModelInject constructor(
                         // update local user
                         userRepository.insertUser(userResponse.data)
                         authenticate(user)
-                    } else {
-                        _signUpStatus.postValue(Event(EventUserSignUp.FAILED))
                     }
                 }
                 is ResponseResult.Error -> {
-                    _signUpStatus.postValue(Event(EventUserSignUp.FAILED))
+                    _signUpStatus.postValue(Event(EventUserSignUp.USER_EXISTS))
                 }
             }
         }
@@ -90,8 +88,6 @@ class SignUpViewModel @ViewModelInject constructor(
                     // clean all cache on relogin or login
                     cacheCleaner.cleanCache()
                     _signUpStatus.postValue(Event(EventUserSignUp.SUCCESS))
-                } else {
-                    _signUpStatus.postValue(Event(EventUserSignUp.FAILED))
                 }
             }
             is ResponseResult.Error -> {

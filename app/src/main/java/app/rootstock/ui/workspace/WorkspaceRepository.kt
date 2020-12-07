@@ -29,6 +29,8 @@ interface WorkspaceRepository {
      * sends a DELETE request for @param workspaceId
      */
     suspend fun deleteWorkspace(workspaceId: String): Flow<ResponseResult<Void?>>
+
+    suspend fun deleteAllWorkspacesLocal()
 }
 
 class WorkspaceRepositoryImpl @Inject constructor(
@@ -110,17 +112,16 @@ class WorkspaceRepositoryImpl @Inject constructor(
 
 
     override suspend fun deleteWorkspace(workspaceId: String): Flow<ResponseResult<Void?>> = flow {
-        var success = false
         val channelResponse =
             workspaceRemoteSource.deleteWorkspace(workspaceId)
 
         val state = when (channelResponse.isSuccessful) {
             true -> {
-                success = true; ResponseResult.success(channelResponse.body())
+                ResponseResult.success(channelResponse.body())
             }
             else -> ResponseResult.error(channelResponse.message())
         }
-        if (success) {
+        if (channelResponse.isSuccessful) {
             workspaceLocal.delete(workspaceId)
             spController.updateCacheSettings(CacheClass.Workspace(workspaceId), true)
         }
@@ -128,6 +129,10 @@ class WorkspaceRepositoryImpl @Inject constructor(
 
     }.catch {
         emit(ResponseResult.error("Something went wrong!"))
+    }
+
+    override suspend fun deleteAllWorkspacesLocal() {
+        workspaceLocal.deleteAll()
     }
 
 
