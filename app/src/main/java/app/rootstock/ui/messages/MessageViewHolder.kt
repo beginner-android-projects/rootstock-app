@@ -10,7 +10,7 @@ import app.rootstock.databinding.ItemMessageBinding
 class MessageViewHolder(
     private val binding: ItemMessageBinding,
     private val lifecycleOwner: LifecycleOwner,
-    private val delete: (messageId: Long, anchor: View) -> Unit,
+    private val openMenu: (message: Message, anchor: View) -> Unit,
     private val edit: (message: Message) -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
 
@@ -18,7 +18,7 @@ class MessageViewHolder(
         binding.lifecycleOwner = lifecycleOwner
         message?.let { m ->
             binding.message = m
-            binding.messageContainer.setOnClickListener { delete(m.messageId, binding.root) }
+            binding.messageContainer.setOnClickListener { openMenu(m, binding.root) }
             binding.edit.setOnClickListener { edit(m) }
         }
         binding.executePendingBindings()

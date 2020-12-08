@@ -44,4 +44,8 @@
     <string name="ok">ok</string>
     <string name="dialog_account_deleted_message">Your account has been successfully deleted. We hope you’ll come back soon to start with a blank list</string>
     <string name="account_deleted">account deleted</string>
+    <string name="copy_text">copy text</string>
+    <string name="delete_note">delete note</string>
+    <string name="share_note">share note</string>
+    <string name="text_copied">Text copied!</string>
 </resources>

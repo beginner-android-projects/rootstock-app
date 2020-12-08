@@ -33,14 +33,16 @@ class ChannelActivity : AppCompatActivity() {
     @ExperimentalCoroutinesApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        channel = intent?.getSerializableExtra(BUNDLE_CHANNEL_EXTRA) as? Channel
         binding = DataBindingUtil.setContentView(this, R.layout.activity_channel)
-        binding.channel = channel
+
+        channel = intent?.getSerializableExtra(BUNDLE_CHANNEL_EXTRA) as? Channel
+        channel?.let {
+            binding.channel = it
+            viewModel.setChannel(it)
+        }
         binding.lifecycleOwner = this
 
         setToolbar()
-        channel?.let { viewModel.setChannel(it) }
-
     }
 
     private fun setToolbar() {

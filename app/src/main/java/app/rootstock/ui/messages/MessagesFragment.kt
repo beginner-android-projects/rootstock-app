@@ -1,24 +1,33 @@
 package app.rootstock.ui.messages
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.Intent
+import android.content.res.Resources
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.PopupWindow
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import androidx.paging.PagingData
+import app.rootstock.R
 import app.rootstock.adapters.MessageAdapter
 import app.rootstock.data.messages.Message
 import app.rootstock.data.messages.MessageRepository.Companion.NETWORK_PAGE_SIZE
 import app.rootstock.databinding.MessagesFragmentBinding
 import app.rootstock.utils.convertDpToPx
+import app.rootstock.utils.makeToast
 import app.rootstock.utils.showKeyboard
 import app.rootstock.views.MessagesLoadStateAdapter
 import app.rootstock.views.SpacingItemDecorationReversed
@@ -45,6 +54,8 @@ class MessagesFragment : Fragment() {
     private var created = false
 
     private var isEditing = false
+
+    private var messageEditingId: Long? = null
 
     private fun search(channelId: Long, refresh: Boolean = false) {
         // Make sure we cancel the previous job before creating a new one
@@ -136,15 +147,60 @@ class MessagesFragment : Fragment() {
         }
     }
 
-    private var messageEditingId: Long? = null
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         viewModel.channel.value?.channelId?.let { outState.putLong(LAST_SEARCH_QUERY, it) }
     }
 
-    private fun deleteMessage(id: Long, anchor: View) {
-        viewModel.deleteMessage(id)
+    private fun openMenu(message: Message, anchor: View) {
+
+        lifecycleScope.launch {
+            val popUpView = layoutInflater.inflate(R.layout.popup_message_menu, null)
+            val width = LinearLayout.LayoutParams.WRAP_CONTENT
+            val height = LinearLayout.LayoutParams.WRAP_CONTENT
+            val popupWindow = PopupWindow(popUpView, width, height, true)
+            var yoff = anchor.height
+            val location = IntArray(2)
+            anchor.getLocationOnScreen(location)
+
+            // difference between screen size and anchor location on y axis
+            val ydiff = Resources.getSystem().displayMetrics.heightPixels - location[1]
+            // if popup is going to be close to bottom nav bar, force yoff in opposite direction
+            if ((ydiff.toFloat() + anchor.height) / Resources.getSystem().displayMetrics.heightPixels < 0.35f)
+                yoff = -requireActivity().convertDpToPx(50f).toInt()
+
+            popupWindow.showAtLocation(
+                anchor,
+                Gravity.NO_GRAVITY,
+                location[0] + anchor.width / 4,
+                location[1] + yoff
+            )
+            popUpView.findViewById<View>(R.id.copy)
+                ?.setOnClickListener { copyTextToClipboard(message.content); popupWindow.dismiss() }
+
+            popUpView.findViewById<View>(R.id.share_note)
+                ?.setOnClickListener { shareText(message.content); popupWindow.dismiss() }
+
+            popUpView.findViewById<View>(R.id.delete)
+                ?.setOnClickListener { viewModel.deleteMessage(message.messageId); popupWindow.dismiss() }
+        }
+    }
+
+    private fun shareText(text: String) {
+        val sendIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, text)
+            type = "text/plain"
+        }
+
+        val shareIntent = Intent.createChooser(sendIntent, null)
+        startActivity(shareIntent)
+    }
+
+    private fun copyTextToClipboard(text: String) {
+        requireContext().copyToClipboard(text)
+        makeToast(getString(R.string.text_copied))
     }
 
 
@@ -158,17 +214,13 @@ class MessagesFragment : Fragment() {
     }
 
     private fun initAdapter() {
-        adapter = MessageAdapter(viewLifecycleOwner, ::deleteMessage, ::editMessage)
+        adapter = MessageAdapter(viewLifecycleOwner, ::openMenu, ::editMessage)
         binding.list.adapter = adapter.withLoadStateHeaderAndFooter(
             header = MessagesLoadStateAdapter { adapter.retry() },
             footer = MessagesLoadStateAdapter { adapter.retry() }
         )
         adapter.addLoadStateListener { loadState ->
-            // Only show the list if refresh succeeds.
-//            binding.list.isVisible = loadState.source.refresh is LoadState.NotLoading
-            // Show loading spinner during initial load or refresh.
-//            binding.progressBar.isVisible = loadState.source.refresh is LoadState.Loading
-            // Show the retry state if initial load or refresh fails.
+
             binding.retryButton.isVisible = loadState.source.refresh is LoadState.Error
 
             // Toast on any error, regardless of whether it came from RemoteMediator or PagingSource
@@ -204,6 +256,12 @@ class MessagesFragment : Fragment() {
         private const val LAST_SEARCH_QUERY: String = "last_search_query"
         private const val SPACING: Float = 20f
 
+    }
+
+    private fun Context.copyToClipboard(text: CharSequence) {
+        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = ClipData.newPlainText("content", text)
+        clipboard.setPrimaryClip(clip)
     }
 }
 

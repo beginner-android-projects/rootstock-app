@@ -101,7 +101,7 @@ class WorkspaceListFragment : Fragment() {
     }
 
     private fun showEditPopup(anchor: View, workspace: WorkspaceI) {
-        val popUpView = layoutInflater.inflate(R.layout.popup_edit, null)
+        val popUpView = layoutInflater.inflate(R.layout.popup_channel_menu, null)
         val width = LinearLayout.LayoutParams.WRAP_CONTENT
         val height = LinearLayout.LayoutParams.WRAP_CONTENT
         val popupWindow = PopupWindow(popUpView, width, height, true)

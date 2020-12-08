@@ -2,23 +2,15 @@ package app.rootstock.ui.channels
 
 import android.content.Intent
 import android.content.res.Resources
-import android.graphics.Color
-import android.graphics.Outline
-import android.graphics.Rect
-import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import app.rootstock.R
 import app.rootstock.adapters.ChannelListAdapter
@@ -32,8 +24,6 @@ import app.rootstock.utils.convertDpToPx
 import app.rootstock.views.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 
 @ExperimentalCoroutinesApi
@@ -132,7 +122,7 @@ class ChannelsListFragment : Fragment() {
     }
 
     private fun showEditPopup(anchor: View, channel: Channel, card: View) {
-        val popUpView = layoutInflater.inflate(R.layout.popup_edit, null)
+        val popUpView = layoutInflater.inflate(R.layout.popup_channel_menu, null)
         val width = LinearLayout.LayoutParams.WRAP_CONTENT
         val height = LinearLayout.LayoutParams.WRAP_CONTENT
         val popupWindow = PopupWindow(popUpView, width, height, true)

@@ -16,7 +16,7 @@ import app.rootstock.ui.messages.MessageViewHolder
  */
 class MessageAdapter(
     private val lifecycleOwner: LifecycleOwner,
-    private val delete: (messageId: Long, anchor: View) -> Unit,
+    private val openMenu: (message: Message, anchor: View) -> Unit,
     private val edit: (message: Message) -> Unit
 ) :
     PagingDataAdapter<Message, MessageViewHolder>(MESSAGE_COMPARATOR) {
@@ -27,7 +27,7 @@ class MessageAdapter(
         val binding = ItemMessageBinding.inflate(
             LayoutInflater.from(parent.context), parent, false
         )
-        return MessageViewHolder(binding, lifecycleOwner, delete, edit)
+        return MessageViewHolder(binding, lifecycleOwner, openMenu, edit)
     }
 
     override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {
