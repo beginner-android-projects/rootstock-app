@@ -153,7 +153,7 @@ class MessagesFragment : Fragment() {
         viewModel.channel.value?.channelId?.let { outState.putLong(LAST_SEARCH_QUERY, it) }
     }
 
-    private fun openMenu(message: Message, anchor: View) {
+    private fun openMenu(message: Message, anchor: View, unSelect: () -> Unit) {
 
         lifecycleScope.launch {
             val popUpView = layoutInflater.inflate(R.layout.popup_message_menu, null)
@@ -184,6 +184,8 @@ class MessagesFragment : Fragment() {
 
             popUpView.findViewById<View>(R.id.delete)
                 ?.setOnClickListener { viewModel.deleteMessage(message.messageId); popupWindow.dismiss() }
+
+            popupWindow.setOnDismissListener(unSelect)
         }
     }
 

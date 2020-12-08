@@ -16,7 +16,7 @@ import app.rootstock.ui.messages.MessageViewHolder
  */
 class MessageAdapter(
     private val lifecycleOwner: LifecycleOwner,
-    private val openMenu: (message: Message, anchor: View) -> Unit,
+    private val openMenu: (message: Message, anchor: View, unSelect: () -> Unit) -> Unit,
     private val edit: (message: Message) -> Unit
 ) :
     PagingDataAdapter<Message, MessageViewHolder>(MESSAGE_COMPARATOR) {
