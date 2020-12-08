@@ -49,8 +49,10 @@
 
         <ImageView
             android:id="@+id/divider"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             android:src="@drawable/divider_channels"
             app:layout_constraintTop_toBottomOf="@id/copy" />
 
@@ -94,8 +96,10 @@
 
         <ImageView
             android:id="@+id/divider2"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             android:src="@drawable/divider_channels"
             app:layout_constraintTop_toBottomOf="@id/share_note" />
 

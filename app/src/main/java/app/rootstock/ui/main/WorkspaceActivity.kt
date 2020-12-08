@@ -70,7 +70,7 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
         }
         toolbar = findViewById(R.id.home_toolbar)
         setSupportActionBar(toolbar)
-        home_toolbar.navigationIcon?.setTint(Color.WHITE)
+        binding.homeToolbar.navigationIcon?.setTint(Color.WHITE)
         setObservers()
 
     }
@@ -114,7 +114,7 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
         viewModel.workspace.observe(this) {
             if (it == null) return@observe
             home_toolbar.title = it.name
-            if (viewModel.isAtRoot == false) toolbar.navigationIcon =
+            if (viewModel.isAtRoot.value == false) toolbar.navigationIcon =
                 null else toolbar.navigationIcon =
                 ResourcesCompat.getDrawable(resources, R.drawable.ic_arrow_down, null)
         }

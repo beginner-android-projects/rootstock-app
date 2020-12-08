@@ -46,7 +46,10 @@ class WorkspaceViewModel @ViewModelInject constructor(
 
     private val _workspace = MutableLiveData<WorkspaceWithChildren>()
 
-    var isAtRoot: Boolean? = null
+//    var isAtRoot: Boolean? = null
+
+    private val _isAtRoot = MutableLiveData<Boolean>()
+    val isAtRoot: LiveData<Boolean> get() = _isAtRoot
 
     var hasSwiped: Boolean = false
 
@@ -198,7 +201,7 @@ class WorkspaceViewModel @ViewModelInject constructor(
     }
 
     fun setRoot(atRoot: Boolean) {
-        isAtRoot = atRoot
+        _isAtRoot.value = atRoot
     }
 
     fun addChannel(channel: Channel) {
