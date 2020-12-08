@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <import type="kotlin.Unit"/>
+        <import type="kotlin.jvm.functions.Function0"/>
         <variable
             name="iconId"
             type="int" />
@@ -15,7 +16,7 @@
 
         <variable
             name="action"
-            type="app.rootstock.ui.settings.SettingsItemClick" />
+            type="Function0&lt; Unit>" />
 
     </data>
 

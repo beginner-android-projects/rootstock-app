@@ -43,17 +43,17 @@ class SettingsActivity : AppCompatActivity() {
             SettingsItem(
                 drawable = R.drawable.ic_baseline_work_24,
                 title = getString(R.string.privacy_policy),
-                actionHandler = privacyItemClick
+                actionHandler = ::privacyClicked
             ),
             SettingsItem(
                 drawable = R.drawable.ic_baseline_work_24,
                 title = getString(R.string.settings_log_out),
-                actionHandler = signOutItemClick
+                actionHandler = ::showSignOutDialog
             ),
             SettingsItem(
                 drawable = R.drawable.ic_delete_24,
                 title = getString(R.string.delete_account),
-                actionHandler = deleteItemClick
+                actionHandler = ::showDeleteDialog
             ),
         )
 
@@ -63,17 +63,9 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-    private val privacyItemClick = object : SettingsItemClick {
-        override fun invoke() {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(URL_PRIVACY_POLICY))
-            startActivity(intent)
-        }
-    }
-
-    private val signOutItemClick = object : SettingsItemClick {
-        override fun invoke() {
-            showSignOutDialog()
-        }
+    private fun privacyClicked() {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(URL_PRIVACY_POLICY))
+        startActivity(intent)
     }
 
     private fun showSignOutDialog() {
@@ -88,11 +80,6 @@ class SettingsActivity : AppCompatActivity() {
         viewModel.logOut()
     }
 
-    private val deleteItemClick = object : SettingsItemClick {
-        override fun invoke() {
-            showDeleteDialog()
-        }
-    }
 
     private fun deleteAccount(email: String) {
         viewModel.deleteAccount(email)
@@ -149,5 +136,5 @@ class SettingsActivity : AppCompatActivity() {
 class SettingsItem(
     @DrawableRes val drawable: Int,
     val title: String,
-    val actionHandler: SettingsItemClick
+    val actionHandler: () -> Unit
 )

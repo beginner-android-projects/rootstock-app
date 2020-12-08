@@ -18,12 +18,6 @@ import dagger.hilt.android.scopes.ActivityScoped
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-
-interface SettingsItemClick {
-    fun invoke()
-}
-
-
 @ActivityScoped
 class SettingsViewModel @ViewModelInject constructor(
     private val tokenRepository: TokenRepository,
