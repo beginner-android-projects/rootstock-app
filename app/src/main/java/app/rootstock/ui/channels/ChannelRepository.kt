@@ -90,7 +90,6 @@ class ChannelRepositoryImpl @Inject constructor(
             emit(ResponseResult.error("Something went wrong!"))
         }
 
-
     private suspend fun updateLocal(channel: Channel?) {
         channel ?: return
         channelLocal.update(channel)

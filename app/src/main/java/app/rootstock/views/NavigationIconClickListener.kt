@@ -10,6 +10,7 @@ import android.util.DisplayMetrics
 import android.view.View
 import android.view.animation.Interpolator
 import androidx.appcompat.widget.AppCompatImageButton
+import app.rootstock.R
 import app.rootstock.utils.convertDpToPx
 
 class NavigationIconClickListener @JvmOverloads internal constructor(
@@ -35,24 +36,24 @@ class NavigationIconClickListener @JvmOverloads internal constructor(
     }
 
     fun open() = if (!backdropShown) {
-        onClick(toolbarNavIcon!!)
+        toolbarNavIcon?.let { onClick(it) }
     } else {
     }
 
     fun close() = if (backdropShown) {
-        onClick(toolbarNavIcon!!)
+        toolbarNavIcon?.let { onClick(it) }
     } else {
     }
 
     override fun onClick(view: View) {
         // only bind once
         if (toolbarNavIcon == null) {
-            this.toolbarNavIcon = view as AppCompatImageButton
+            toolbarNavIcon = view as AppCompatImageButton
         }
 
         backdropShown = !backdropShown
 
-        val translateY = view.context.convertDpToPx(200f)
+        val translateY = backView.height - 56 // todo change
         // Cancel the existing animations
         animatorSet.removeAllListeners()
         animatorSet.end()

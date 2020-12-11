@@ -1,11 +1,12 @@
 package app.rootstock.utils
 
+import android.app.Activity
 import android.content.Context
 import android.util.DisplayMetrics
 import android.view.inputmethod.InputMethodManager
-import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+
 
 /**
  * Converts dp to pixels
@@ -30,4 +31,10 @@ fun Context.showKeyboard() {
     (getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager)?.apply {
         toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
     }
+}
+
+fun Activity.hideSoftKeyboard() {
+    val inputMethodManager =
+        getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+    inputMethodManager.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
 }

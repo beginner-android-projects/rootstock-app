@@ -7,6 +7,8 @@ import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import app.rootstock.data.channel.Channel
 import app.rootstock.data.channel.ChannelDao
+import app.rootstock.data.channel.ChannelFavourite
+import app.rootstock.data.channel.ChannelFavouriteDao
 import app.rootstock.data.messages.Message
 import app.rootstock.data.messages.MessageDao
 import app.rootstock.data.token.Token
@@ -25,8 +27,9 @@ import app.rootstock.utils.DATABASE_NAME
     entities = [
         User::class, Token::class, Workspace::class, Channel::class, WorkspaceTree::class,
         Message::class,
-        RemoteKeys::class
-    ], version = 2
+        RemoteKeys::class,
+        ChannelFavourite::class
+    ], version = 1
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
@@ -35,6 +38,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun messageDao(): MessageDao
     abstract fun remoteKeysDao(): RemoteKeysDao
     abstract fun channelDao(): ChannelDao
+    abstract fun favouritesDao(): ChannelFavouriteDao
 
     companion object {
 

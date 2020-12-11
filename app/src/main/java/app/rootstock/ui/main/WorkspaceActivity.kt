@@ -6,12 +6,15 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.Log
 import android.view.ViewGroup
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.res.ResourcesCompat
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.add
+import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import app.rootstock.R
 import app.rootstock.data.channel.Channel
@@ -19,6 +22,7 @@ import app.rootstock.data.network.CreateOperation
 import app.rootstock.data.network.ReLogInObservable
 import app.rootstock.data.network.ReLogInObserver
 import app.rootstock.databinding.ActivityMainWorkspaceBinding
+import app.rootstock.ui.channels.FavouriteChannelsFragment
 import app.rootstock.ui.settings.SettingsActivity
 import app.rootstock.ui.signup.RegisterActivity
 import app.rootstock.utils.convertDpToPx
@@ -28,6 +32,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main_workspace.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -43,14 +48,22 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
 
     private lateinit var binding: ActivityMainWorkspaceBinding
 
-    lateinit var toolbar: Toolbar
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main_workspace)
 
+        setClickListeners()
+        setToolbar()
+        setObservers()
+    }
 
-        findViewById<FloatingActionButton>(R.id.fab)?.apply {
+    private fun setToolbar() {
+        setSupportActionBar(binding.homeToolbar)
+        binding.homeToolbar.navigationIcon?.setTint(Color.WHITE)
+    }
+
+    private fun setClickListeners() {
+        binding.fab.apply {
             // make icon white
             setColorFilter(Color.WHITE)
             shapeAppearanceModel =
@@ -59,7 +72,7 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
             setOnClickListener { openAddItemDialog() }
         }
 
-        findViewById<BottomNavigationView>(R.id.bottom_app_bar)?.apply {
+        binding.bottomAppBar.apply {
             setOnNavigationItemSelectedListener { menuItem ->
                 when (menuItem.itemId) {
                     R.id.menu_home -> viewModel.navigateToRoot()
@@ -68,11 +81,6 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
                 true
             }
         }
-        toolbar = findViewById(R.id.home_toolbar)
-        setSupportActionBar(toolbar)
-        binding.homeToolbar.navigationIcon?.setTint(Color.WHITE)
-        setObservers()
-
     }
 
     private fun createChannelOperation(op: CreateOperation<Channel?>) {
@@ -114,8 +122,8 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
         viewModel.workspace.observe(this) {
             if (it == null) return@observe
             home_toolbar.title = it.name
-            if (viewModel.isAtRoot.value == false) toolbar.navigationIcon =
-                null else toolbar.navigationIcon =
+            if (viewModel.isAtRoot.value == false) binding.homeToolbar.navigationIcon =
+                null else binding.homeToolbar.navigationIcon =
                 ResourcesCompat.getDrawable(resources, R.drawable.ic_arrow_down, null)
         }
         viewModel.pagerPosition.observe(this) {
@@ -136,6 +144,15 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
                     clearDim(vg)
                 }
                 else -> {
+                }
+            }
+        }
+        viewModel.isAtRoot.observe(this) {
+            if (it == true) {
+                val fragment = FavouriteChannelsFragment(binding.backdropView)
+                supportFragmentManager.commit {
+                    setReorderingAllowed(true)
+                    add(R.id.favourites_container, fragment)
                 }
             }
         }

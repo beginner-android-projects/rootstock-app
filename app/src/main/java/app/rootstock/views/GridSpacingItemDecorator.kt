@@ -69,12 +69,5 @@ class GridSpacingItemDecoratorWithCustomCenter(
         if (position >= spanCount) {
             outRect.top = bottomSpacing // item top
         }
-//        // for last and pre last element
-//        parent.adapter?.let {
-//            if (position == it.itemCount - 1) {
-//                outRect.bottom = bottomSpacing
-//            }
-//        }
-
     }
 }
