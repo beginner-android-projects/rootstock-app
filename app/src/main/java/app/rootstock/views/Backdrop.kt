@@ -10,6 +10,10 @@ import android.widget.FrameLayout
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.res.ResourcesCompat
 import app.rootstock.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class Backdrop(
     context: Context,
@@ -74,11 +78,17 @@ class Backdrop(
             animDuration = animationDuration,
             interpolator = LinearInterpolator(),
             openIcon = openIcon,
-            closeIcon = closeIcon
+            closeIcon = closeIcon,
+            toolbar = toolbar,
         )
 
         // on toolbar navigation click, handle it
         toolbar.setNavigationOnClickListener(navIconClickListener)
+
+        CoroutineScope(Main).launch {
+            delay(300)
+            openBackdrop()
+        }
     }
 
 

@@ -5,12 +5,15 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AbsListView
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.Toast
@@ -21,12 +24,14 @@ import androidx.lifecycle.lifecycleScope
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import androidx.paging.PagingData
+import androidx.recyclerview.widget.RecyclerView
 import app.rootstock.R
 import app.rootstock.adapters.MessageAdapter
 import app.rootstock.data.messages.Message
 import app.rootstock.data.messages.MessageRepository.Companion.NETWORK_PAGE_SIZE
 import app.rootstock.databinding.MessagesFragmentBinding
 import app.rootstock.utils.convertDpToPx
+import app.rootstock.utils.hideSoftKeyboard
 import app.rootstock.utils.makeToast
 import app.rootstock.utils.showKeyboard
 import app.rootstock.views.MessagesLoadStateAdapter
@@ -113,7 +118,6 @@ class MessagesFragment : Fragment() {
             }
         }
 
-
     }
 
     private fun refreshList() {
@@ -133,7 +137,6 @@ class MessagesFragment : Fragment() {
         val message = binding.content.text.toString()
         if (message.isBlank()) return
         binding.content.text?.clear()
-        binding.content.clearFocus()
         if (isEditing) {
             isEditing = false
             messageEditingId?.let {
@@ -154,7 +157,6 @@ class MessagesFragment : Fragment() {
     }
 
     private fun openMenu(message: Message, anchor: View, unSelect: () -> Unit) {
-
         lifecycleScope.launch {
             val popUpView = layoutInflater.inflate(R.layout.popup_message_menu, null)
             val width = LinearLayout.LayoutParams.WRAP_CONTENT
@@ -170,6 +172,7 @@ class MessagesFragment : Fragment() {
             if ((ydiff.toFloat() + anchor.height) / Resources.getSystem().displayMetrics.heightPixels < 0.35f)
                 yoff = -requireActivity().convertDpToPx(50f).toInt()
 
+            popupWindow.elevation = requireContext().resources.getDimension(R.dimen.popup_elevation)
             popupWindow.showAtLocation(
                 anchor,
                 Gravity.NO_GRAVITY,

@@ -6,4 +6,6 @@
     <dimen name="dialog_top_padding">15dp</dimen>
     <dimen name="message_input_max_height">120dp</dimen>
     <dimen name="favourites_channel_padding">5dp</dimen>
+    <dimen name="basic_small_margin">8dp</dimen>
+    <dimen name="popup_elevation">10dp</dimen>
 </resources>

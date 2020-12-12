@@ -10,8 +10,15 @@ import android.util.DisplayMetrics
 import android.view.View
 import android.view.animation.Interpolator
 import androidx.appcompat.widget.AppCompatImageButton
+import androidx.appcompat.widget.Toolbar
+import androidx.core.view.get
 import app.rootstock.R
 import app.rootstock.utils.convertDpToPx
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class NavigationIconClickListener @JvmOverloads internal constructor(
     context: Context,
@@ -21,7 +28,8 @@ class NavigationIconClickListener @JvmOverloads internal constructor(
     private val animDuration: Long = 200L,
     private val interpolator: Interpolator? = null,
     private val openIcon: Drawable? = null,
-    private val closeIcon: Drawable? = null
+    private val closeIcon: Drawable? = null,
+    private val toolbar: Toolbar
 ) : View.OnClickListener {
 
     private val animatorSet = AnimatorSet()
@@ -33,6 +41,10 @@ class NavigationIconClickListener @JvmOverloads internal constructor(
         val displayMetrics = DisplayMetrics()
         (context as Activity).windowManager.defaultDisplay.getMetrics(displayMetrics)
         height = (displayMetrics.heightPixels)
+        try {
+            toolbarNavIcon = toolbar[0] as AppCompatImageButton
+        } catch (e: Exception) {
+        }
     }
 
     fun open() = if (!backdropShown) {
@@ -83,12 +95,12 @@ class NavigationIconClickListener @JvmOverloads internal constructor(
      * @param view the clicked view. This must be a ImageView.
      */
     private fun updateIcon() {
-        checkNotNull(toolbarNavIcon)
-
-        if (openIcon != null && closeIcon != null) {
-            when (backdropShown) {
-                true -> toolbarNavIcon!!.setImageDrawable(closeIcon)
-                false -> toolbarNavIcon!!.setImageDrawable(openIcon)
+        toolbarNavIcon?.let {
+            if (openIcon != null && closeIcon != null) {
+                when (backdropShown) {
+                    true -> it.setImageDrawable(closeIcon)
+                    false -> it.setImageDrawable(openIcon)
+                }
             }
         }
     }
