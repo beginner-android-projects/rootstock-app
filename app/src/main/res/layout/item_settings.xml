@@ -4,8 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="kotlin.Unit"/>
-        <import type="kotlin.jvm.functions.Function0"/>
+
+        <import type="kotlin.Unit" />
+
+        <import type="kotlin.jvm.functions.Function0" />
+
         <variable
             name="iconId"
             type="int" />
@@ -23,7 +26,11 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/workspaces"
         android:layout_width="match_parent"
-        android:layout_height="50dp">
+        android:layout_height="50dp"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:onClick="@{() -> action.invoke()}">
 
         <ImageView
             android:id="@+id/workspaces_icon"
@@ -41,10 +48,6 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginEnd="32dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
-            android:onClick="@{() -> action.invoke()}"
             android:src="@drawable/ic_arrow_right"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -63,14 +66,6 @@
             app:layout_constraintStart_toEndOf="@+id/workspaces_icon"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="sign out" />
-
-        <ImageView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:src="@drawable/divider_channels"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@id/workspaces_icon" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

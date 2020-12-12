@@ -38,11 +38,9 @@
             android:layout_below="@id/app_bar"
             android:overScrollMode="never">
 
-
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
-
 
                 <ImageView
                     android:id="@+id/imageView"
@@ -68,21 +66,29 @@
                     app:layout_constraintTop_toBottomOf="@id/imageView"
                     tools:text="asnasnasmdaodpadiaod@masd.ds" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv"
+                <androidx.cardview.widget.CardView
+                    style="@style/BaseCardView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/padding_16"
                     android:layout_marginTop="32dp"
-                    android:overScrollMode="never"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    android:layout_marginEnd="@dimen/padding_16"
+                    android:layout_marginBottom="@dimen/padding_16"
+                    app:cardElevation="10dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/email"
-                    tools:listitem="@layout/item_settings">
+                    app:layout_constraintTop_toBottomOf="@id/email">
 
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:overScrollMode="never"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        tools:listitem="@layout/item_settings" />
 
-                </androidx.recyclerview.widget.RecyclerView>
+                </androidx.cardview.widget.CardView>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -9,12 +9,14 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import app.rootstock.R
 import app.rootstock.adapters.SettingsListAdapter
 import app.rootstock.databinding.ActivitySettingsBinding
 import app.rootstock.ui.signup.RegisterActivity
 import app.rootstock.views.DeleteAccountDialogFragment
+import app.rootstock.views.DrawableItemDecorator
 import app.rootstock.views.SimpleDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
@@ -60,6 +62,11 @@ class SettingsActivity : AppCompatActivity() {
         val adapterToSet = SettingsListAdapter(items = items, lifecycleOwner = this)
         binding.rv.apply {
             adapter = adapterToSet
+            ContextCompat.getDrawable(this@SettingsActivity, R.drawable.divider_channels)
+                ?.let {
+                    addItemDecoration(DrawableItemDecorator(it))
+                }
+
         }
     }
 
@@ -95,7 +102,7 @@ class SettingsActivity : AppCompatActivity() {
     private fun setToolbar() {
         val toolbar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
         toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
-        toolbar.navigationIcon?.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP)
+        toolbar.navigationIcon?.setTint(Color.WHITE)
         toolbar.setNavigationOnClickListener { onBackPressed() }
     }
 
