@@ -19,19 +19,19 @@
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:clickable="true"
+        android:focusable="true"
         android:foreground="?android:attr/selectableItemBackground"
         app:cardCornerRadius="20dp"
-        app:cardElevation="7dp"
-        android:focusable="true">
+        app:cardElevation="7dp">
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp">
+            android:layout_marginStart="@dimen/padding_8"
+            android:layout_marginEnd="@dimen/padding_8"
+            android:paddingTop="@dimen/padding_8"
+            android:paddingBottom="@dimen/padding_8">
 
             <ImageView
                 android:id="@+id/channel_color"
@@ -60,8 +60,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:fontFamily="@font/montserrat"
-                android:maxLines="1"
+                android:ellipsize="marquee"
+                android:maxHeight="24sp"
                 android:text="@{channels.name}"
                 android:textAlignment="textStart"
                 android:textColor="@color/black"
@@ -69,7 +69,7 @@
                 app:layout_constraintBottom_toTopOf="@+id/guideline_title"
                 app:layout_constraintEnd_toStartOf="@id/channel_edit"
                 app:layout_constraintStart_toEndOf="@+id/channel_color"
-                tools:text="shablon text" />
+                tools:text="shablon text masdopsa dmpas md amsdmapso dmaops mdpao" />
 
             <TextView
                 android:id="@+id/last_message"
@@ -77,13 +77,15 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
+                android:layout_marginTop="3dp"
+                android:ellipsize="marquee"
                 android:maxLines="2"
                 android:textAlignment="textStart"
                 android:textColor="@color/black"
                 app:layout_constraintEnd_toStartOf="@id/channel_edit"
                 app:layout_constraintStart_toEndOf="@+id/channel_color"
                 app:layout_constraintTop_toTopOf="@+id/guideline_title"
-                tools:text="This is last message probably in three lines Here we are assan" />
+                tools:text="This is last message probably in three linas dmas dmopampoes Here we are assan" />
 
 
             <androidx.constraintlayout.widget.Guideline

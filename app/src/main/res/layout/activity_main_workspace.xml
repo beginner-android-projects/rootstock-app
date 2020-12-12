@@ -14,7 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/primary"
-            android:elevation="0dp">
+            app:elevation="0dp">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/home_toolbar"
@@ -39,8 +39,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:paddingBottom="20dp"
-                android:background="@drawable/favourites_background">
+                android:background="@drawable/favourites_background"
+                android:paddingBottom="20dp">
 
             </androidx.fragment.app.FragmentContainerView>
 

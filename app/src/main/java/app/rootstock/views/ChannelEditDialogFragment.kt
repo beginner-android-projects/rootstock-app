@@ -3,6 +3,7 @@ package app.rootstock.views
 import android.app.Dialog
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,7 @@ import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import app.rootstock.R
 import app.rootstock.adapters.ColorListAdapter
 import app.rootstock.data.channel.Channel
@@ -30,7 +32,10 @@ import java.lang.RuntimeException
  */
 @AndroidEntryPoint
 @ExperimentalCoroutinesApi
-class ChannelEditDialogFragment(private val channel: Channel) : AppCompatDialogFragment() {
+class ChannelEditDialogFragment(
+    private val channel: Channel,
+    private val changed: ((channel: Channel) -> Unit)? = null
+) : AppCompatDialogFragment() {
 
     companion object {
         private const val spanCount = 4
@@ -53,7 +58,7 @@ class ChannelEditDialogFragment(private val channel: Channel) : AppCompatDialogF
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = DialogChannelEditBinding.inflate(layoutInflater, container, true)
         return binding.root
     }
@@ -122,6 +127,7 @@ class ChannelEditDialogFragment(private val channel: Channel) : AppCompatDialogF
                     backgroundColor = it
                 }
             }
+            changed?.invoke(newChannel)
             viewModel.updateChannel(newChannel)
             dismiss()
         }

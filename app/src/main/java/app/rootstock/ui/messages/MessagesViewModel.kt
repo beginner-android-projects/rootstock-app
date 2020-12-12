@@ -33,7 +33,6 @@ class MessagesViewModel @ViewModelInject constructor(private val repository: Mes
     val messageEvent: LiveData<Event<MessageEvent>> get() = _messageEvent
 
     private val _channel = MutableLiveData<Channel>()
-
     val channel: LiveData<Channel>
         get() = _channel
 
@@ -72,7 +71,7 @@ class MessagesViewModel @ViewModelInject constructor(private val repository: Mes
                 repository.sendMessage(message = sendMessage, workspaceId = wsId).first()) {
                 is ResponseResult.Success -> {
                     _messageEvent.value = Event(MessageEvent.CREATED)
-                    _modifiedChannel.value = true
+                    modifyChannel()
                 }
                 is ResponseResult.Error -> {
                     _messageEvent.postValue(Event(MessageEvent.ERROR))
@@ -89,13 +88,17 @@ class MessagesViewModel @ViewModelInject constructor(private val repository: Mes
             when (val response = repository.editMessage(editMessage, id, wsId, channelId).first()) {
                 is ResponseResult.Success -> {
                     _messageEvent.value = Event(MessageEvent.CREATED)
-                    _modifiedChannel.value = true
+                    modifyChannel()
                 }
                 is ResponseResult.Error -> {
                     _messageEvent.postValue(Event(MessageEvent.ERROR))
                 }
             }
         }
+    }
+
+    fun modifyChannel() {
+        _modifiedChannel.value = true
     }
 
     fun deleteMessage(messageId: Long) {
@@ -106,7 +109,7 @@ class MessagesViewModel @ViewModelInject constructor(private val repository: Mes
             when (val response = repository.deleteMessage(messageId, wsId, channelId).first()) {
                 is ResponseResult.Success -> {
                     _messageEvent.value = Event(MessageEvent.DELETED)
-                    _modifiedChannel.value = true
+                    modifyChannel()
                 }
                 is ResponseResult.Error -> {
                     _messageEvent.postValue(Event(MessageEvent.ERROR))

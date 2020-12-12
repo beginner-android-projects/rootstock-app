@@ -1,5 +1,6 @@
 package app.rootstock.ui.main
 
+import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import app.rootstock.adapters.WorkspaceEventHandler
@@ -50,6 +51,9 @@ class WorkspaceViewModel @ViewModelInject constructor(
     val isAtRoot: LiveData<Boolean> get() = _isAtRoot
 
     var hasSwiped: Boolean = false
+
+    private val _favouriteShowed = MutableLiveData(false)
+    val favouriteShowed: LiveData<Boolean> get() = _favouriteShowed
 
     val workspace: LiveData<WorkspaceWithChildren>
         get() = _workspace
@@ -185,7 +189,7 @@ class WorkspaceViewModel @ViewModelInject constructor(
         }
         viewModelScope.launch {
             val wsId = workspace.value?.workspaceId ?: return@launch
-            when (channelRepository.deleteChannel(channelId,  wsId).first()) {
+            when (channelRepository.deleteChannel(channelId, wsId).first()) {
                 is ResponseResult.Success -> {
                 }
                 is ResponseResult.Error -> {
@@ -228,6 +232,10 @@ class WorkspaceViewModel @ViewModelInject constructor(
     fun resetPager() {
         hasSwiped = false
         _pagerPosition.value = 0
+    }
+
+    fun showFavourite(){
+        _favouriteShowed.value = true
     }
 
 

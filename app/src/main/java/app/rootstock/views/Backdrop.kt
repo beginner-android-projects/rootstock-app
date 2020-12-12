@@ -84,11 +84,6 @@ class Backdrop(
 
         // on toolbar navigation click, handle it
         toolbar.setNavigationOnClickListener(navIconClickListener)
-
-        CoroutineScope(Main).launch {
-            delay(300)
-            openBackdrop()
-        }
     }
 
 

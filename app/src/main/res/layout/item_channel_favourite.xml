@@ -38,19 +38,20 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
+            android:layout_marginEnd="@dimen/padding_8"
+            android:ellipsize="marquee"
             android:fontFamily="@font/montserrat"
+            android:marqueeRepeatLimit="marquee_forever"
             android:maxLines="2"
-            android:paddingEnd="@dimen/favourites_channel_padding"
             android:text="@{channel.name}"
             android:textAlignment="textStart"
             android:textColor="@color/black"
             android:textSize="15sp"
-            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@id/channel_color"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/channel_color"
             app:layout_constraintTop_toTopOf="@id/channel_color"
-            tools:text="shablon tamsd poasmd p masopdma sodmpasmaspdsap mdpasmaspo dmap ext" />
+            tools:text="shablon tamsd poasmd p masopdma sodmpasmaspdsap mdpasmaspo dmap ex msapdmasopt" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
-        <import type="app.rootstock.data.channel.Channel" />
-
         <variable
-            name="channel"
-            type="Channel" />
+            name="viewmodel"
+            type="app.rootstock.ui.messages.MessagesViewModel" />
 
     </data>
 
@@ -39,7 +38,7 @@
 
                     <ImageView
                         android:id="@+id/channel_icon"
-                        colorFilter="@{channel.backgroundColor}"
+                        colorFilter="@{viewmodel.channel.backgroundColor}"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -56,16 +55,18 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
                         android:layout_marginEnd="16dp"
-                        android:maxLines="1"
-                        android:text="@{channel.name}"
+                        android:maxHeight="24sp"
+                        android:ellipsize="marquee"
+                        android:scrollHorizontally="true"
+                        android:text="@{viewmodel.channel.name}"
                         android:textAlignment="textStart"
                         android:textColor="@color/black"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@id/favourites"
                         app:layout_constraintStart_toEndOf="@id/channel_icon"
-                        app:layout_constraintTop_toTopOf="parent" />
-
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="j G KO p qasdmopasmdop amspodmopam pdoams po amsdpasa" />
 
                     <ImageView
                         android:id="@+id/more"

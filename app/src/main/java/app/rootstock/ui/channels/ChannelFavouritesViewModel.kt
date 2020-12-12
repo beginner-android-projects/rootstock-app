@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import app.rootstock.data.channel.Channel
 import app.rootstock.data.result.Event
 import app.rootstock.ui.channels.favourites.ChannelFavouriteRepository
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -26,8 +27,10 @@ class ChannelFavouritesViewModel @ViewModelInject constructor(
     private val _event = MutableLiveData<Event<FavouritesEvent>>()
     val event: LiveData<Event<FavouritesEvent>> get() = _event
 
+    private var job: Job? = null
+
     init {
-        viewModelScope.launch {
+        job = viewModelScope.launch {
             channelRepository.getFavourites().collect {
                 _favourites.value = it
             }

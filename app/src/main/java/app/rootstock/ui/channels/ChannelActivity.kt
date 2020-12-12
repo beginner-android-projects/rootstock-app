@@ -3,7 +3,6 @@ package app.rootstock.ui.channels
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -18,17 +17,17 @@ import app.rootstock.ui.main.WorkspaceActivity.Companion.BUNDLE_CHANNEL_EXTRA
 import app.rootstock.ui.main.WorkspaceActivity.Companion.BUNDLE_WORKSPACE_EXTRA
 import app.rootstock.ui.messages.MessagesViewModel
 import app.rootstock.utils.hideSoftKeyboard
+import app.rootstock.views.ChannelEditDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
-import java.lang.Exception
 
 
 @AndroidEntryPoint
 @ExperimentalCoroutinesApi
 class ChannelActivity : AppCompatActivity() {
 
-    private val viewModel: MessagesViewModel by viewModels()
+    private val messagesViewModel: MessagesViewModel by viewModels()
 
     private val favouritesViewModel: ChannelFavouritesViewModel by viewModels()
 
@@ -41,31 +40,37 @@ class ChannelActivity : AppCompatActivity() {
     private val toggleListener = View.OnClickListener {
         channel?.channelId?.let { id ->
             favouritesViewModel.toggle(id).invokeOnCompletion {
-                lifecycleScope.launch {
-                    checkIcon()
-                }
+                checkIcon()
             }
         }
+    }
+
+    private val moreListener = View.OnClickListener {
+        messagesViewModel.channel.value?.let { c ->
+            val dialog = ChannelEditDialogFragment(c, ::updateChannel)
+            dialog.show(supportFragmentManager, DIALOG_CHANNEL_EDIT)
+        }
+    }
+
+    private fun updateChannel(channel: Channel) {
+        messagesViewModel.setChannel(channel)
+        messagesViewModel.modifyChannel()
     }
 
     @ExperimentalCoroutinesApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_channel)
-
-        channel = intent?.getSerializableExtra(BUNDLE_CHANNEL_EXTRA) as? Channel
-        channel?.let {
-            binding.channel = it
-            viewModel.setChannel(it)
-        }
+        binding.viewmodel = messagesViewModel
         binding.lifecycleOwner = this
 
-        binding.favourites.setOnClickListener(toggleListener)
-        setToolbar()
+        channel = intent?.getSerializableExtra(BUNDLE_CHANNEL_EXTRA) as? Channel
+        channel?.let { messagesViewModel.setChannel(it) }
 
-        lifecycleScope.launch {
-            checkIcon()
-        }
+        binding.favourites.setOnClickListener(toggleListener)
+        binding.more.setOnClickListener(moreListener)
+        setToolbar()
+        checkIcon()
 
         setObservers()
     }
@@ -87,13 +92,14 @@ class ChannelActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun checkIcon() {
-        channel?.channelId?.let {
-            val isFavourite = favouritesViewModel.isFavourite(it)
-            Log.d("123", "$isFavourite")
-            val resource = if (isFavourite) R.drawable.ic_arrow_down else
-                R.drawable.ic_favourite
-            binding.favourites.setImageResource(resource)
+    private fun checkIcon() {
+        lifecycleScope.launch {
+            channel?.channelId?.let {
+                val isFavourite = favouritesViewModel.isFavourite(it)
+                val resource = if (isFavourite) R.drawable.ic_arrow_down else
+                    R.drawable.ic_favourite
+                binding.favourites.setImageResource(resource)
+            }
         }
     }
 
@@ -117,10 +123,13 @@ class ChannelActivity : AppCompatActivity() {
         } catch (e: Exception) {
         }
         val data = Intent()
-        val modified = viewModel.modifiedChannel.value
+        val modified = messagesViewModel.modifiedChannel.value
         data.putExtra(BUNDLE_WORKSPACE_EXTRA, modified)
         setResult(RESULT_OK, data)
         finish()
     }
 
+    companion object {
+        const val DIALOG_CHANNEL_EDIT = "DIALOG_CHANNEL_EDIT"
+    }
 }

@@ -3,12 +3,17 @@ package app.rootstock.ui.channels
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.Html
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import androidx.core.view.isVisible
+import androidx.databinding.BindingAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.lifecycleScope
 import app.rootstock.R
 import app.rootstock.adapters.ChannelFavouritesAdapter
@@ -20,13 +25,15 @@ import app.rootstock.utils.convertDpToPx
 import app.rootstock.views.Backdrop
 import app.rootstock.views.GridSpacingItemDecoratorWithCustomCenter
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.util.*
 
 @AndroidEntryPoint
-class FavouriteChannelsFragment constructor(private val backdrop: Backdrop) : Fragment() {
+class FavouriteChannelsFragment constructor(
+    private val backdrop: Backdrop,
+    private val favouriteShowed: LiveData<Boolean>,
+    private val showed: () -> Unit,
+) : Fragment() {
 
     private val viewModel: ChannelFavouritesViewModel by viewModels()
 
@@ -52,7 +59,7 @@ class FavouriteChannelsFragment constructor(private val backdrop: Backdrop) : Fr
     private fun openChannel(channel: Channel) {
         val intent = Intent(requireActivity(), ChannelActivity::class.java)
         intent.putExtra(WorkspaceActivity.BUNDLE_CHANNEL_EXTRA, channel)
-        startActivityForResult(intent, WorkspaceActivity.REQUEST_CODE_CHANNEL_ACTIVITY)
+        requireActivity().startActivityForResult(intent, WorkspaceActivity.REQUEST_CODE_CHANNEL_ACTIVITY)
     }
 
     @ExperimentalCoroutinesApi
@@ -90,21 +97,27 @@ class FavouriteChannelsFragment constructor(private val backdrop: Backdrop) : Fr
                 backdrop.closeBackdrop()
             currentSize = it.size
             if (it.isNullOrEmpty()) {
-                binding.favouritesTitle.text = getString(R.string.no_favourite_channels)
-                binding.favouritesStar.visibility = View.GONE
+                binding.noChannels.isVisible = true
             } else {
-                if (binding.favouritesStar.visibility == View.GONE) binding.favouritesStar.visibility =
-                    View.VISIBLE
-                if (binding.favouritesTitle.text == getString(R.string.no_favourite_channels))
-                    binding.favouritesTitle.text = getString(R.string.favourite_channels)
+                if (binding.noChannels.isVisible) binding.noChannels.isVisible = false
             }
+            if (favouriteShowed.value == false && !it.isNullOrEmpty()) {
+                lifecycleScope.launch {
+                    delay(300)
+                    backdrop.openBackdrop()
+                }
+            }
+            if (it != null) showed()
         }
+
     }
 
     companion object {
         const val CHANNELS_SPAN_COUNT = 2
         const val CHANNELS_COLUMN_WIDTH_DP = 100
     }
+
+
 
 
 }

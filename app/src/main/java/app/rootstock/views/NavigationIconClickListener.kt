@@ -33,14 +33,10 @@ class NavigationIconClickListener @JvmOverloads internal constructor(
 ) : View.OnClickListener {
 
     private val animatorSet = AnimatorSet()
-    private var height: Int
     private var backdropShown = false
     private var toolbarNavIcon: AppCompatImageButton? = null
 
     init {
-        val displayMetrics = DisplayMetrics()
-        (context as Activity).windowManager.defaultDisplay.getMetrics(displayMetrics)
-        height = (displayMetrics.heightPixels)
         try {
             toolbarNavIcon = toolbar[0] as AppCompatImageButton
         } catch (e: Exception) {

@@ -34,6 +34,7 @@ import kotlinx.android.synthetic.main.activity_main_workspace.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.lang.Exception
 import javax.inject.Inject
 
 
@@ -149,10 +150,17 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
         }
         viewModel.isAtRoot.observe(this) {
             if (it == true) {
-                val fragment = FavouriteChannelsFragment(binding.backdropView)
-                supportFragmentManager.commit {
-                    setReorderingAllowed(true)
-                    add(R.id.favourites_container, fragment)
+                try {
+                    supportFragmentManager.commit {
+                        val fragment =
+                            FavouriteChannelsFragment(
+                                binding.backdropView,
+                                viewModel.favouriteShowed
+                            ) { viewModel.showFavourite() }
+                        setReorderingAllowed(true)
+                        add(R.id.favourites_container, fragment)
+                    }
+                } catch (e: Exception) {
                 }
             }
         }
@@ -241,5 +249,14 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
         const val BUNDLE_CHANNEL_EXTRA = "BUNDLE_WORKSPACE_EXTRA"
     }
 
-
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == RESULT_OK) {
+            if (requestCode == REQUEST_CODE_CHANNEL_ACTIVITY) {
+                data?.getBooleanExtra(BUNDLE_WORKSPACE_EXTRA, false)?.let {
+                    if (it) viewModel.loadWorkspace(viewModel.workspace.value?.workspaceId)
+                }
+            }
+        }
+    }
 }

@@ -3,6 +3,7 @@ package app.rootstock.ui.channels
 import android.content.Intent
 import android.content.res.Resources
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -49,13 +50,13 @@ class ChannelsListFragment : Fragment() {
 
     private fun openEditDialog(anchor: View, channel: Channel, card: View) {
         viewModel.editDialogOpened()
-            showEditPopup(anchor, channel, card)
+        showEditPopup(anchor, channel, card)
     }
 
     private fun openChannel(channel: Channel) {
         val intent = Intent(requireActivity(), ChannelActivity::class.java)
         intent.putExtra(BUNDLE_CHANNEL_EXTRA, channel)
-        startActivityForResult(intent, REQUEST_CODE_CHANNEL_ACTIVITY)
+        requireActivity().startActivityForResult(intent, REQUEST_CODE_CHANNEL_ACTIVITY)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -163,17 +164,6 @@ class ChannelsListFragment : Fragment() {
 
     private fun deleteChannel(channelId: Long) {
         viewModel.deleteChannel(channelId)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == AppCompatActivity.RESULT_OK) {
-            if (requestCode == REQUEST_CODE_CHANNEL_ACTIVITY) {
-                data?.getBooleanExtra(WorkspaceActivity.BUNDLE_WORKSPACE_EXTRA, false)?.let {
-                    if (it) viewModel.loadWorkspace(viewModel.workspace.value?.workspaceId)
-                }
-            }
-        }
     }
 
     companion object {
