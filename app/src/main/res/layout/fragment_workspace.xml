@@ -18,7 +18,10 @@
             android:background="@android:color/transparent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:tabTextAppearance="@style/TabLayout.Text"
+            app:tabGravity="center"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tabIndicator="@null"/>
 
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/pager"

@@ -197,4 +197,16 @@
         <item name="android:ellipsize">marquee</item>
     </style>
 
+    <style name="AppToolbar.Title.Text.Big" parent="">
+        <item name="android:textSize">22sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="TabLayout.Text" parent="">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+
 </resources>

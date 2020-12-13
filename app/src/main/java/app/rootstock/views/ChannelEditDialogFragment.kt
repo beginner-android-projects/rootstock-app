@@ -128,7 +128,11 @@ class ChannelEditDialogFragment(
             }
             val newChannel = channel.copy()
             newChannel.apply {
-                name = view?.findViewById<EditText>(R.id.channel_edit_name_text)?.text.toString()
+                val newName =
+                    view?.findViewById<EditText>(R.id.channel_edit_name_text)?.text?.toString()
+                if (!newName.isNullOrBlank()) {
+                    name = newName
+                }
                 currentColor?.let {
                     backgroundColor = it
                 }

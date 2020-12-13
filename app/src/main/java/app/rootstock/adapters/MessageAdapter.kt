@@ -12,7 +12,7 @@ import app.rootstock.ui.messages.MessageViewHolder
 
 
 /**
- * Adapter for the list of repositories.
+ * Adapter for the list of messages.
  */
 class MessageAdapter(
     private val lifecycleOwner: LifecycleOwner,

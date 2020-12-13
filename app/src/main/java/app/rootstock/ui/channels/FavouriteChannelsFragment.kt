@@ -132,7 +132,6 @@ class FavouriteChannelsFragment constructor(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         adapter = ChannelFavouritesAdapter(viewLifecycleOwner, ::openChannel)
-
         binding.recyclerView.apply {
             adapter = this@FavouriteChannelsFragment.adapter
             autoFitColumns(

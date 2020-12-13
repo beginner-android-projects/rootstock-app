@@ -61,6 +61,13 @@
             android:layout_gravity="bottom"
             app:menu="@menu/bottom_navigation_menu" />
 
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="?attr/actionBarSize"
+            android:src="@drawable/endless_overlay" />
+
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"
             style="@style/ShapeAppearence.RoundedRectangle"

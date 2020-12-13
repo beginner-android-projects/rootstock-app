@@ -56,6 +56,8 @@ class MessagesFragment : Fragment() {
 
     private var messageEditingId: Long? = null
 
+    private var messageBeforeEdit: String? = null
+
     private fun search(channelId: Long, refresh: Boolean = false) {
         // Make sure we cancel the previous job before creating a new one
         searchJob?.cancel()
@@ -141,6 +143,12 @@ class MessagesFragment : Fragment() {
         binding.content.text?.clear()
         if (isEditing) {
             isEditing = false
+            // if edited message is the same as the one to be sent, save bandwidth and dismiss
+            if (messageBeforeEdit != null && messageBeforeEdit == message) {
+                messageBeforeEdit = null
+                return
+            }
+            messageBeforeEdit = null
             messageEditingId?.let {
                 viewModel.editMessage(it, message)
             }
@@ -150,12 +158,6 @@ class MessagesFragment : Fragment() {
             // todo set in a variable so in case of an error saved copy will be displayed
             viewModel.sendMessage(message)
         }
-    }
-
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        viewModel.channel.value?.channelId?.let { outState.putLong(LAST_SEARCH_QUERY, it) }
     }
 
     private fun openMenu(message: Message, anchor: View, unSelect: () -> Unit) {
@@ -213,6 +215,7 @@ class MessagesFragment : Fragment() {
 
     private fun editMessage(message: Message) {
         isEditing = true
+        messageBeforeEdit = message.content
         messageEditingId = message.messageId
         binding.content.setText(message.content)
         binding.content.requestFocus()
@@ -260,8 +263,7 @@ class MessagesFragment : Fragment() {
 
 
     companion object {
-        private const val LAST_SEARCH_QUERY: String = "last_search_query"
-        private const val SPACING: Float = 20f
+        private const val SPACING: Float = 10f
         const val MAX_MESSAGE_LENGTH = 4000
 
     }

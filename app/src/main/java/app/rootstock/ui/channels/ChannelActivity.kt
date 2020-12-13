@@ -1,6 +1,7 @@
 package app.rootstock.ui.channels
 
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
@@ -8,8 +9,9 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
+import androidx.core.widget.ImageViewCompat
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import app.rootstock.R
 import app.rootstock.data.channel.Channel
@@ -100,9 +102,18 @@ class ChannelActivity : AppCompatActivity(), ReLogInObserver {
         lifecycleScope.launch {
             channel?.channelId?.let {
                 val isFavourite = favouritesViewModel.isFavourite(it)
-                val resource = if (isFavourite) R.drawable.ic_arrow_down else
-                    R.drawable.ic_favourite
-                binding.favourites.setImageResource(resource)
+
+                val color = if (isFavourite) ContextCompat.getColor(
+                    this@ChannelActivity,
+                    R.color.icon_favourites
+                ) else ContextCompat.getColor(
+                    this@ChannelActivity,
+                    R.color.icon_favourites_not
+                )
+                ImageViewCompat.setImageTintList(
+                    binding.favourites,
+                    ColorStateList.valueOf(color)
+                )
             }
         }
     }

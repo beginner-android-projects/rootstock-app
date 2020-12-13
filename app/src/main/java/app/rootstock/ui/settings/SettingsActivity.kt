@@ -102,7 +102,7 @@ class SettingsActivity : AppCompatActivity() {
     private fun setToolbar() {
         val toolbar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
         toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
-        toolbar.navigationIcon?.setTint(Color.WHITE)
+        toolbar.navigationIcon?.setTint(Color.BLACK)
         toolbar.setNavigationOnClickListener { onBackPressed() }
     }
 

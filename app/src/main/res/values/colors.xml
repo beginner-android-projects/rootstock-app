@@ -17,6 +17,7 @@
     <color name="favourites_start_color">#EC77AB</color>
     <color name="login_gradient_start">#00046D</color>
     <color name="icon_favourites">#FFD600</color>
+    <color name="icon_favourites_not">@color/text_additional</color>
     <color name="cardview_message_background">#F6F6F6</color>
     <color name="cardview_message_date">@color/text_additional</color>
     <color name="red">#FF0000</color>

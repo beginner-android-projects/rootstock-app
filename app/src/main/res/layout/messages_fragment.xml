@@ -40,13 +40,14 @@
                 style="@style/Text.EditText.Base"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/padding_16"
-                android:background="@drawable/form_edit_text_black"
-                android:imeOptions="actionSearch"
+                android:layout_marginTop="@dimen/padding_8"
+                android:background="@drawable/form_edit_text_input"
+                android:imeOptions="actionSend"
                 android:inputType="textMultiLine"
-                android:maxHeight="@dimen/message_input_max_height"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp"
+                android:paddingStart="@dimen/padding_16"
+                android:paddingTop="6dp"
+                android:paddingEnd="@dimen/padding_16"
+                android:paddingBottom="6dp"
                 android:selectAllOnFocus="true"
                 android:textSize="16sp" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -56,16 +57,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
+            android:layout_marginBottom="@dimen/padding_8"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:contentDescription="@null"
             android:focusable="true"
-            android:src="@drawable/ic_send_message"
+            android:src="@drawable/ic_send_24"
             android:theme="@style/WhiteHighLight"
             app:layout_constraintBottom_toBottomOf="@id/input"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/input" />
-
+            app:layout_constraintTop_toTopOf="@id/input"
+            app:tint="@color/primary" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/retryButton"
