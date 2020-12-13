@@ -1,20 +1,16 @@
 package app.rootstock.ui.channels
 
-import android.content.Context
 import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
-import android.text.Html
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.StyleSpan
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.view.isVisible
-import androidx.databinding.BindingAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
@@ -22,10 +18,10 @@ import androidx.lifecycle.lifecycleScope
 import app.rootstock.R
 import app.rootstock.adapters.ChannelFavouritesAdapter
 import app.rootstock.data.channel.Channel
-import app.rootstock.data.result.Event
 import app.rootstock.databinding.FragmentFavouritesBinding
 import app.rootstock.ui.main.WorkspaceActivity
-import app.rootstock.ui.messages.MessageEvent
+import app.rootstock.ui.messages.MessageEventS
+import app.rootstock.ui.messages.MessagesFragment
 import app.rootstock.ui.messages.MessagesViewModel
 import app.rootstock.utils.autoFitColumns
 import app.rootstock.utils.convertDpToPx
@@ -88,16 +84,21 @@ class FavouriteChannelsFragment constructor(
             dialog.dismiss()
         }
         view.findViewById<View>(R.id.send)?.setOnClickListener {
+            var messageSend = message
+            if (message.length > MessagesFragment.MAX_MESSAGE_LENGTH) messageSend =
+                message.slice(0 until MessagesFragment.MAX_MESSAGE_LENGTH)
             dialog.dismiss()
             val messageViewModel: MessagesViewModel by viewModels()
             messageViewModel.setChannel(channel)
-            messageViewModel.sendMessage(message)
+            messageViewModel.sendMessage(messageSend)
             messageViewModel.messageEvent.observe(this) {
-                when (it?.getContentIfNotHandled()) {
-                    MessageEvent.ERROR -> {
-                        makeToast(getString(R.string.error_message_not_send))
+                when (val m = it?.getContentIfNotHandled()) {
+                    is MessageEventS.Error -> {
+                        if (m.message.toLowerCase().contains("unprocessable"))
+                            makeToast(getString(R.string.too_long_message))
+                        else makeToast(getString(R.string.error_message_not_send))
                     }
-                    MessageEvent.CREATED -> {
+                    is MessageEventS.Created -> {
                         requireActivity().finish()
                     }
                     else -> {

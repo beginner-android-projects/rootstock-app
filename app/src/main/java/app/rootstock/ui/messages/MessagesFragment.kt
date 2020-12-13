@@ -108,10 +108,13 @@ class MessagesFragment : Fragment() {
         }
         binding.retryButton.setOnClickListener { if (::adapter.isInitialized) adapter.retry() }
         viewModel.messageEvent.observe(viewLifecycleOwner) { event ->
-            when (event.getContentIfNotHandled()) {
-                MessageEvent.ERROR -> {
+            when (val m = event.getContentIfNotHandled()) {
+                is MessageEventS.Error -> {
+                    if (m.message.toLowerCase().contains("unprocessable"))
+                        makeToast(getString(R.string.too_long_message))
+                    else makeToast(getString(R.string.error_message_not_send))
                 }
-                MessageEvent.CREATED -> {
+                is MessageEventS.Created -> {
                 }
                 else -> {
                 }
@@ -134,8 +137,9 @@ class MessagesFragment : Fragment() {
     }
 
     private fun sendMessage() {
-        val message = binding.content.text.toString()
+        var message = binding.content.text.toString()
         if (message.isBlank()) return
+        if (message.length > MAX_MESSAGE_LENGTH) message = message.slice(0 until MAX_MESSAGE_LENGTH)
         binding.content.text?.clear()
         if (isEditing) {
             isEditing = false
@@ -260,6 +264,7 @@ class MessagesFragment : Fragment() {
     companion object {
         private const val LAST_SEARCH_QUERY: String = "last_search_query"
         private const val SPACING: Float = 20f
+        const val MAX_MESSAGE_LENGTH = 4000
 
     }
 

@@ -12,20 +12,24 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import app.rootstock.R
 import app.rootstock.data.channel.Channel
+import app.rootstock.data.network.ReLogInObservable
+import app.rootstock.data.network.ReLogInObserver
 import app.rootstock.databinding.ActivityChannelBinding
 import app.rootstock.ui.main.WorkspaceActivity.Companion.BUNDLE_CHANNEL_EXTRA
 import app.rootstock.ui.main.WorkspaceActivity.Companion.BUNDLE_WORKSPACE_EXTRA
 import app.rootstock.ui.messages.MessagesViewModel
+import app.rootstock.ui.signup.RegisterActivity
 import app.rootstock.utils.hideSoftKeyboard
 import app.rootstock.views.ChannelEditDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
 @ExperimentalCoroutinesApi
-class ChannelActivity : AppCompatActivity() {
+class ChannelActivity : AppCompatActivity(), ReLogInObserver {
 
     private val messagesViewModel: MessagesViewModel by viewModels()
 
@@ -131,5 +135,25 @@ class ChannelActivity : AppCompatActivity() {
 
     companion object {
         const val DIALOG_CHANNEL_EDIT = "DIALOG_CHANNEL_EDIT"
+    }
+
+
+    @Inject
+    lateinit var reLogInObservable: ReLogInObservable
+
+    override fun onStart() {
+        super.onStart()
+        reLogInObservable.addObserver(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        reLogInObservable.removeObserver(this)
+    }
+
+    override fun submit() {
+        val intent = Intent(this, RegisterActivity::class.java)
+        startActivity(intent)
+        finishAfterTransition()
     }
 }

@@ -7,18 +7,15 @@ import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.StyleSpan
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import app.rootstock.R
@@ -26,11 +23,11 @@ import app.rootstock.adapters.ChannelListAdapter
 import app.rootstock.data.channel.Channel
 import app.rootstock.data.result.Event
 import app.rootstock.databinding.FragmentChannelsListBinding
-import app.rootstock.ui.main.WorkspaceActivity
 import app.rootstock.ui.main.WorkspaceActivity.Companion.BUNDLE_CHANNEL_EXTRA
 import app.rootstock.ui.main.WorkspaceActivity.Companion.REQUEST_CODE_CHANNEL_ACTIVITY
 import app.rootstock.ui.main.WorkspaceViewModel
-import app.rootstock.ui.messages.MessageEvent
+import app.rootstock.ui.messages.MessageEventS
+import app.rootstock.ui.messages.MessagesFragment
 import app.rootstock.ui.messages.MessagesViewModel
 import app.rootstock.utils.convertDpToPx
 import app.rootstock.utils.makeToast
@@ -101,16 +98,21 @@ class ChannelsListFragment : Fragment() {
             dialog.dismiss()
         }
         view.findViewById<View>(R.id.send)?.setOnClickListener {
+            var messageSend = message
+            if (message.length > MessagesFragment.MAX_MESSAGE_LENGTH) messageSend =
+                message.slice(0 until MessagesFragment.MAX_MESSAGE_LENGTH)
             dialog.dismiss()
             val messageViewModel: MessagesViewModel by viewModels()
             messageViewModel.setChannel(channel)
-            messageViewModel.sendMessage(message)
-            val observer = Observer<Event<MessageEvent>> {
-                when (it?.getContentIfNotHandled()) {
-                    MessageEvent.ERROR -> {
-                        makeToast(getString(R.string.error_message_not_send))
+            messageViewModel.sendMessage(messageSend)
+            val observer = Observer<Event<MessageEventS>> {
+                when (val response = it?.getContentIfNotHandled()) {
+                    is MessageEventS.Error -> {
+                        if (response.message.toLowerCase().contains("unprocessable"))
+                            makeToast(getString(R.string.too_long_message))
+                        else makeToast(getString(R.string.error_message_not_send))
                     }
-                    MessageEvent.CREATED -> {
+                    is MessageEventS.Created -> {
                         requireActivity().finish()
                     }
                     else -> {
