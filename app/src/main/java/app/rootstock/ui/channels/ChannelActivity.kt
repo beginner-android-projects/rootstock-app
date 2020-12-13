@@ -9,6 +9,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import app.rootstock.R
 import app.rootstock.data.channel.Channel
@@ -92,7 +93,6 @@ class ChannelActivity : AppCompatActivity(), ReLogInObserver {
                 null -> {
                 }
             }
-
         }
     }
 

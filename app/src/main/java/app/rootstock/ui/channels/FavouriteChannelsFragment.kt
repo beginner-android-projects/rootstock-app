@@ -20,7 +20,7 @@ import app.rootstock.adapters.ChannelFavouritesAdapter
 import app.rootstock.data.channel.Channel
 import app.rootstock.databinding.FragmentFavouritesBinding
 import app.rootstock.ui.main.WorkspaceActivity
-import app.rootstock.ui.messages.MessageEventS
+import app.rootstock.ui.messages.MessageEvent
 import app.rootstock.ui.messages.MessagesFragment
 import app.rootstock.ui.messages.MessagesViewModel
 import app.rootstock.utils.autoFitColumns
@@ -93,13 +93,16 @@ class FavouriteChannelsFragment constructor(
             messageViewModel.sendMessage(messageSend)
             messageViewModel.messageEvent.observe(this) {
                 when (val m = it?.getContentIfNotHandled()) {
-                    is MessageEventS.Error -> {
+                    is MessageEvent.Error -> {
                         if (m.message.toLowerCase().contains("unprocessable"))
                             makeToast(getString(R.string.too_long_message))
                         else makeToast(getString(R.string.error_message_not_send))
                     }
-                    is MessageEventS.Created -> {
+                    is MessageEvent.Created -> {
                         requireActivity().finish()
+                    }
+                    is MessageEvent.NoConnection -> {
+                        makeToast(getString(R.string.no_connection))
                     }
                     else -> {
                     }

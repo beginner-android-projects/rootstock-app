@@ -16,8 +16,10 @@ import app.rootstock.adapters.WorkspaceListAdapter
 import app.rootstock.data.workspace.WorkspaceI
 import app.rootstock.databinding.FragmentWorkspaceListBinding
 import app.rootstock.ui.main.WorkspaceViewModel
+import app.rootstock.utils.InternetUtil
 import app.rootstock.utils.autoFitColumns
 import app.rootstock.utils.convertDpToPx
+import app.rootstock.utils.makeToast
 import app.rootstock.views.DeleteDialogFragment
 import app.rootstock.views.DeleteObj
 import app.rootstock.views.ItemType
@@ -149,6 +151,10 @@ class WorkspaceListFragment : Fragment() {
     }
 
     private fun delete(wsId: String) {
+        if (!InternetUtil.isInternetOn()) {
+            makeToast(getString(R.string.no_connection))
+            return
+        }
         viewModel.deleteWorkspace(wsId)
     }
 

@@ -5,15 +5,11 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AbsListView
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.Toast
@@ -24,14 +20,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import androidx.paging.PagingData
-import androidx.recyclerview.widget.RecyclerView
 import app.rootstock.R
 import app.rootstock.adapters.MessageAdapter
 import app.rootstock.data.messages.Message
 import app.rootstock.data.messages.MessageRepository.Companion.NETWORK_PAGE_SIZE
 import app.rootstock.databinding.MessagesFragmentBinding
 import app.rootstock.utils.convertDpToPx
-import app.rootstock.utils.hideSoftKeyboard
 import app.rootstock.utils.makeToast
 import app.rootstock.utils.showKeyboard
 import app.rootstock.views.MessagesLoadStateAdapter
@@ -109,12 +103,16 @@ class MessagesFragment : Fragment() {
         binding.retryButton.setOnClickListener { if (::adapter.isInitialized) adapter.retry() }
         viewModel.messageEvent.observe(viewLifecycleOwner) { event ->
             when (val m = event.getContentIfNotHandled()) {
-                is MessageEventS.Error -> {
+                is MessageEvent.Error -> {
                     if (m.message.toLowerCase().contains("unprocessable"))
                         makeToast(getString(R.string.too_long_message))
                     else makeToast(getString(R.string.error_message_not_send))
                 }
-                is MessageEventS.Created -> {
+                is MessageEvent.Created -> {
+                }
+                is MessageEvent.NoConnection -> {
+                    if (!m.attempt.isNullOrBlank()) binding.input.editText?.setText(m.attempt)
+                    makeToast(getString(R.string.no_connection))
                 }
                 else -> {
                 }

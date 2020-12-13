@@ -26,9 +26,10 @@ import app.rootstock.databinding.FragmentChannelsListBinding
 import app.rootstock.ui.main.WorkspaceActivity.Companion.BUNDLE_CHANNEL_EXTRA
 import app.rootstock.ui.main.WorkspaceActivity.Companion.REQUEST_CODE_CHANNEL_ACTIVITY
 import app.rootstock.ui.main.WorkspaceViewModel
-import app.rootstock.ui.messages.MessageEventS
+import app.rootstock.ui.messages.MessageEvent
 import app.rootstock.ui.messages.MessagesFragment
 import app.rootstock.ui.messages.MessagesViewModel
+import app.rootstock.utils.InternetUtil
 import app.rootstock.utils.convertDpToPx
 import app.rootstock.utils.makeToast
 import app.rootstock.views.*
@@ -105,15 +106,18 @@ class ChannelsListFragment : Fragment() {
             val messageViewModel: MessagesViewModel by viewModels()
             messageViewModel.setChannel(channel)
             messageViewModel.sendMessage(messageSend)
-            val observer = Observer<Event<MessageEventS>> {
+            val observer = Observer<Event<MessageEvent>> {
                 when (val response = it?.getContentIfNotHandled()) {
-                    is MessageEventS.Error -> {
+                    is MessageEvent.Error -> {
                         if (response.message.toLowerCase().contains("unprocessable"))
                             makeToast(getString(R.string.too_long_message))
                         else makeToast(getString(R.string.error_message_not_send))
                     }
-                    is MessageEventS.Created -> {
+                    is MessageEvent.Created -> {
                         requireActivity().finish()
+                    }
+                    is MessageEvent.NoConnection -> {
+                        makeToast(getString(R.string.no_connection))
                     }
                     else -> {
                     }
@@ -229,6 +233,10 @@ class ChannelsListFragment : Fragment() {
     }
 
     private fun deleteChannel(channelId: Long) {
+        if (!InternetUtil.isInternetOn()) {
+            makeToast(getString(R.string.no_connection))
+            return
+        }
         viewModel.deleteChannel(channelId)
     }
 

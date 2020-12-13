@@ -19,8 +19,10 @@ import app.rootstock.data.channel.ChannelConstants.channelPossibleColors
 import app.rootstock.data.channel.ChannelConstants.defaultChannelColor
 import app.rootstock.databinding.DialogChannelEditBinding
 import app.rootstock.ui.main.WorkspaceViewModel
+import app.rootstock.utils.InternetUtil
 import app.rootstock.utils.autoFitColumns
 import app.rootstock.utils.convertDpToPx
+import app.rootstock.utils.makeToast
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -120,6 +122,10 @@ class ChannelEditDialogFragment(
             (requireDialog() as AlertDialog).setView(binding.root)
         }
         binding.save.setOnClickListener {
+            if (!InternetUtil.isInternetOn()) {
+                makeToast(getString(R.string.no_connection))
+                return@setOnClickListener
+            }
             val newChannel = channel.copy()
             newChannel.apply {
                 name = view?.findViewById<EditText>(R.id.channel_edit_name_text)?.text.toString()
