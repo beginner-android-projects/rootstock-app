@@ -52,4 +52,8 @@
     <string name="favourite_channels_limit_exceeded">You can have max. 4 favourite channels</string>
     <string name="no_favourite_channels">you have no favourite channels</string>
     <string name="favourites_no_channels">You don’t have favourite\nchannels yet</string>
+    <string name="send_message">send message</string>
+    <string name="send">send</string>
+    <string name="channel_message_send">Do you want to send this message to %1$s?</string>
+    <string name="error_message_not_send">Message has not been sent.</string>
 </resources>

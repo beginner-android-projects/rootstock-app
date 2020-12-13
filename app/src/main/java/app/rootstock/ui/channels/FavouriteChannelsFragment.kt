@@ -2,8 +2,12 @@ package app.rootstock.ui.channels
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Typeface
 import android.os.Bundle
 import android.text.Html
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.StyleSpan
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -18,12 +22,17 @@ import androidx.lifecycle.lifecycleScope
 import app.rootstock.R
 import app.rootstock.adapters.ChannelFavouritesAdapter
 import app.rootstock.data.channel.Channel
+import app.rootstock.data.result.Event
 import app.rootstock.databinding.FragmentFavouritesBinding
 import app.rootstock.ui.main.WorkspaceActivity
+import app.rootstock.ui.messages.MessageEvent
+import app.rootstock.ui.messages.MessagesViewModel
 import app.rootstock.utils.autoFitColumns
 import app.rootstock.utils.convertDpToPx
+import app.rootstock.utils.makeToast
 import app.rootstock.views.Backdrop
 import app.rootstock.views.GridSpacingItemDecoratorWithCustomCenter
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import java.util.*
@@ -55,11 +64,64 @@ class FavouriteChannelsFragment constructor(
         return binding.root
     }
 
+
+    private fun showSendSharedTextDialog(message: String, channel: Channel) {
+        val dialog = MaterialAlertDialogBuilder(requireContext()).create()
+        val body = getString(R.string.channel_message_send, channel.name)
+        val view = layoutInflater.inflate(R.layout.dialog_send_channel, null)
+        dialog.setView(view)
+        view.findViewById<TextView>(R.id.message)?.let {
+            try {
+                val spannable = SpannableString(body)
+                spannable.setSpan(
+                    StyleSpan(Typeface.BOLD),
+                    36,
+                    body.length - 1,
+                    Spannable.SPAN_EXCLUSIVE_INCLUSIVE
+                )
+                it.text = spannable
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+        view.findViewById<View>(R.id.cancel)?.setOnClickListener {
+            dialog.dismiss()
+        }
+        view.findViewById<View>(R.id.send)?.setOnClickListener {
+            dialog.dismiss()
+            val messageViewModel: MessagesViewModel by viewModels()
+            messageViewModel.setChannel(channel)
+            messageViewModel.sendMessage(message)
+            messageViewModel.messageEvent.observe(this) {
+                when (it?.getContentIfNotHandled()) {
+                    MessageEvent.ERROR -> {
+                        makeToast(getString(R.string.error_message_not_send))
+                    }
+                    MessageEvent.CREATED -> {
+                        requireActivity().finish()
+                    }
+                    else -> {
+                    }
+                }
+            }
+
+        }
+        dialog.show()
+    }
+
+
     @ExperimentalCoroutinesApi
     private fun openChannel(channel: Channel) {
+        requireActivity().intent.getStringExtra(Intent.EXTRA_TEXT)?.let { message ->
+            showSendSharedTextDialog(message, channel)
+            return
+        }
         val intent = Intent(requireActivity(), ChannelActivity::class.java)
         intent.putExtra(WorkspaceActivity.BUNDLE_CHANNEL_EXTRA, channel)
-        requireActivity().startActivityForResult(intent, WorkspaceActivity.REQUEST_CODE_CHANNEL_ACTIVITY)
+        requireActivity().startActivityForResult(
+            intent,
+            WorkspaceActivity.REQUEST_CODE_CHANNEL_ACTIVITY
+        )
     }
 
     @ExperimentalCoroutinesApi
@@ -116,8 +178,6 @@ class FavouriteChannelsFragment constructor(
         const val CHANNELS_SPAN_COUNT = 2
         const val CHANNELS_COLUMN_WIDTH_DP = 100
     }
-
-
 
 
 }

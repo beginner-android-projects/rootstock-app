@@ -9,6 +9,7 @@ import androidx.room.withTransaction
 import app.rootstock.data.db.AppDatabase
 import app.rootstock.data.network.CacheCleaner
 import app.rootstock.data.network.ResponseResult
+import app.rootstock.data.network.ServerAuthenticator
 import app.rootstock.data.result.Event
 import app.rootstock.data.token.TokenRepository
 import app.rootstock.data.user.UserRepository
@@ -24,6 +25,7 @@ class SettingsViewModel @ViewModelInject constructor(
     private val accountRepository: AccountRepository,
     private val database: AppDatabase,
     private val cacheCleaner: CacheCleaner,
+    private val serverAuthenticator: ServerAuthenticator,
 ) :
     ViewModel() {
 
@@ -44,6 +46,7 @@ class SettingsViewModel @ViewModelInject constructor(
                     tokenRepository.removeToken()
                     database.userDao().deleteAll()
                     cacheCleaner.cleanCache()
+                    serverAuthenticator.nullToken()
                     _event.postValue(Event(SettingsEvent.LOG_OUT))
                 }
             }
@@ -61,6 +64,7 @@ class SettingsViewModel @ViewModelInject constructor(
                                 tokenRepository.removeToken()
                                 database.userDao().deleteAll()
                                 cacheCleaner.cleanCache()
+                                serverAuthenticator.nullToken()
                                 _event.postValue(Event(SettingsEvent.DELETED))
                             }
                         }

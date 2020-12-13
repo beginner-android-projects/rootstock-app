@@ -82,5 +82,8 @@ class ServerAuthenticator @Inject constructor(
         reLogInObservable.notifyObservers()
     }
 
+    fun nullToken(){
+        tokenInterceptor.nullToken()
+    }
 
 }

@@ -127,7 +127,7 @@ class SettingsActivity : AppCompatActivity() {
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(i)
-        finish()
+        finishAfterTransition()
     }
 
     companion object {

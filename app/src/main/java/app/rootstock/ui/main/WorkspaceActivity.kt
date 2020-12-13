@@ -23,6 +23,7 @@ import app.rootstock.data.network.ReLogInObservable
 import app.rootstock.data.network.ReLogInObserver
 import app.rootstock.databinding.ActivityMainWorkspaceBinding
 import app.rootstock.ui.channels.FavouriteChannelsFragment
+import app.rootstock.ui.launch.LauncherActivity
 import app.rootstock.ui.settings.SettingsActivity
 import app.rootstock.ui.signup.RegisterActivity
 import app.rootstock.utils.convertDpToPx
@@ -49,6 +50,8 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
 
     private lateinit var binding: ActivityMainWorkspaceBinding
 
+    private var isInShareMessageMode = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main_workspace)
@@ -56,6 +59,20 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
         setClickListeners()
         setToolbar()
         setObservers()
+        checkSendData()
+    }
+
+    private fun checkSendData() {
+        when (intent?.action) {
+            Intent.ACTION_SEND -> {
+                if ("text/plain" == intent.type) {
+                    isInShareMessageMode = true
+                    binding.homeToolbar.title = "select channel"
+                }
+            }
+            else -> {
+            }
+        }
     }
 
     private fun setToolbar() {
@@ -122,7 +139,7 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
     private fun setObservers() {
         viewModel.workspace.observe(this) {
             if (it == null) return@observe
-            home_toolbar.title = it.name
+            if (!isInShareMessageMode) binding.homeToolbar.title = it.name
             if (viewModel.isAtRoot.value == false) binding.homeToolbar.navigationIcon =
                 null else binding.homeToolbar.navigationIcon =
                 ResourcesCompat.getDrawable(resources, R.drawable.ic_arrow_down, null)
@@ -168,6 +185,21 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
             when (it.getContentIfNotHandled()) {
                 PagerEvent.PAGER_SCROLLED -> {
                     backdrop_view.closeBackdrop()
+                }
+                else -> {
+                }
+            }
+        }
+        // set observer if no user
+        // intent filter used exactly for this activity to avoid blinking while
+        // switching from launcher activity to this
+        viewModel.eventWorkspace.observe(this) {
+            when (it.peekContent()) {
+                is WorkspaceEvent.NoUser -> {
+                    if (isInShareMessageMode) {
+                        startActivity(Intent(this, LauncherActivity::class.java))
+                        finishAfterTransition()
+                    }
                 }
                 else -> {
                 }
@@ -246,7 +278,7 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
         const val DIALOG_CHANNEL_CREATE = "DIALOG_CHANNEL_CREATE"
         const val REQUEST_CODE_CHANNEL_ACTIVITY = 100
         const val BUNDLE_WORKSPACE_EXTRA = "BUNDLE_WORKSPACE_EXTRA"
-        const val BUNDLE_CHANNEL_EXTRA = "BUNDLE_WORKSPACE_EXTRA"
+        const val BUNDLE_CHANNEL_EXTRA = "BUNDLE_CHANNEL_EXTRA"
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
