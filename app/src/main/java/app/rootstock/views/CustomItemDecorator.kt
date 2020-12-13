@@ -1,12 +1,11 @@
 package app.rootstock.views
 
-import android.graphics.Rect
-import androidx.recyclerview.widget.LinearLayoutManager
-
 
 import android.graphics.Canvas
+import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.view.View
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 
@@ -28,6 +27,23 @@ class DrawableItemDecorator(private val mDivider: Drawable) :
     }
 }
 
+/**
+ * Spacing decorator for [RecyclerView], where order is reversed
+ */
+class SpacingItemDecorationReversed(private val space: Int) : ItemDecoration() {
+    override fun getItemOffsets(
+        outRect: Rect,
+        view: View,
+        parent: RecyclerView,
+        state: RecyclerView.State
+    ) {
+        outRect.top = space
+
+        if (parent.getChildAdapterPosition(view) == 0) {
+            outRect.bottom = space
+        }
+    }
+}
 
 class SpacingItemDecoration @JvmOverloads constructor(
     private val startSpacing: Int = 0,

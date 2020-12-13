@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="channel"
             type="app.rootstock.data.channel.Channel" />
@@ -12,8 +13,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="10dp"
-        android:paddingBottom="20dp">
+        android:paddingTop="@dimen/dialog_top_padding"
+        android:paddingBottom="@dimen/dialog_bottom_padding">
 
         <TextView
             android:id="@+id/channel_name"
@@ -34,7 +35,7 @@
             android:id="@+id/color_line"
             colorFilter="@{channel.backgroundColor}"
             android:layout_width="match_parent"
-            android:layout_height="5dp"
+            android:layout_height="@dimen/dialog_channel_create_line_color_width"
             android:layout_marginTop="10dp"
             android:src="@color/primary"
             app:layout_constraintTop_toBottomOf="@id/channel_name" />
@@ -72,6 +73,7 @@
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
             android:overScrollMode="never"
+            tools:itemCount="1"
             app:layout_constraintTop_toBottomOf="@id/channel_edit_name"
             app:spanCount="4"
             tools:listitem="@layout/item_color_channel" />

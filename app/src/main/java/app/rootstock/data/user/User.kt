@@ -10,6 +10,8 @@ interface UserWithPassword {
     val password: String
 }
 
+data class DeleteUser constructor(val email: String)
+
 /**
  * User class
  */
@@ -20,3 +22,4 @@ class User(
     val userId: String,
     val email: String
 )
+

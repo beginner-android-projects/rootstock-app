@@ -1,0 +1,53 @@
+package app.rootstock.data.channel
+
+import androidx.databinding.BaseObservable
+import androidx.databinding.Bindable
+import app.rootstock.BR
+import app.rootstock.data.channel.ChannelConstants.channelNameMaxLength
+import app.rootstock.data.channel.ChannelConstants.defaultChannelColor
+import com.google.gson.annotations.SerializedName
+import java.io.Serializable
+
+data class CreateChannelRequest(
+    private val name: String,
+    @SerializedName("background_color")
+    private val color: String,
+    private val imageUrl: String?,
+    @SerializedName("ws_id_to_add_to")
+    private val workspaceId: String?,
+)
+
+class CreateChannel
+    : BaseObservable(), Serializable {
+
+    companion object {
+        fun build(): CreateChannel {
+            return CreateChannel()
+        }
+    }
+
+    @Bindable
+    var nameValid: Boolean = false
+        get() = field
+
+
+    @Bindable
+    var name: String = String()
+        set(value) {
+            field = value
+            checkName()
+            notifyPropertyChanged(BR.name)
+        }
+        get() = field
+
+    var color: String = defaultChannelColor
+
+
+    private fun checkName() {
+        nameValid = isNameValid()
+        notifyPropertyChanged(BR.nameValid)
+    }
+
+
+    private fun isNameValid() = name.length in (2..channelNameMaxLength)
+}

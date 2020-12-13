@@ -1,6 +1,8 @@
 package app.rootstock.ui.login
 
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.PorterDuff
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
@@ -40,6 +42,7 @@ class LogInFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val toolbar = view.findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
         toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
+        toolbar.navigationIcon?.setTint(Color.WHITE)
         toolbar.setNavigationOnClickListener { view.findNavController().navigateUp() }
     }
 

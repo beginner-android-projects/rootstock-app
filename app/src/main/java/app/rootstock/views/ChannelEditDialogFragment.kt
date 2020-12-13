@@ -11,13 +11,18 @@ import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import app.rootstock.R
 import app.rootstock.adapters.ColorListAdapter
 import app.rootstock.data.channel.Channel
+import app.rootstock.data.channel.ChannelConstants.channelPossibleColors
+import app.rootstock.data.channel.ChannelConstants.defaultChannelColor
 import app.rootstock.databinding.DialogChannelEditBinding
 import app.rootstock.ui.main.WorkspaceViewModel
+import app.rootstock.utils.InternetUtil
 import app.rootstock.utils.autoFitColumns
 import app.rootstock.utils.convertDpToPx
+import app.rootstock.utils.makeToast
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -29,19 +34,12 @@ import java.lang.RuntimeException
  */
 @AndroidEntryPoint
 @ExperimentalCoroutinesApi
-class ChannelEditDialogFragment(private val channel: Channel) : AppCompatDialogFragment() {
+class ChannelEditDialogFragment(
+    private val channel: Channel,
+    private val changed: ((channel: Channel) -> Unit)? = null
+) : AppCompatDialogFragment() {
 
     companion object {
-        private val channelPossibleColors = listOf(
-            "#f0ff0f",
-            "#f3fa0f",
-            "#b0ff0a",
-            "#c01f0a",
-            "#c01f0a",
-            "#c01f0a",
-            "#c01f0a",
-            "#c01f0a",
-        )
         private const val spanCount = 4
 
     }
@@ -62,20 +60,23 @@ class ChannelEditDialogFragment(private val channel: Channel) : AppCompatDialogF
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = DialogChannelEditBinding.inflate(layoutInflater, container, true)
         return binding.root
     }
 
-    private fun onColorClicked(view: View, position: Int?) {
+    private fun onColorClicked(position: Int?) {
         if (position == null) return
+
         val isPicked =
             binding.colorsRv.findViewHolderForAdapterPosition(position)?.itemView?.findViewById<ChannelPickImageView>(
                 R.id.color_item
             )?.isPicked
 
-        if (isPicked == false) changeColor(default = true, channel.backgroundColor)
-        else changeColor(default = false, channelPossibleColors[position])
+        // if color is picked by user, change line accordingly
+        // otherwise, return to the initial color
+        if (isPicked == false) changeColor(channel.backgroundColor)
+        else changeColor(channelPossibleColors[position])
 
         // unpick previously picked color
         if (adapterToSet.previousPickedPosition != null && position != adapterToSet.previousPickedPosition) {
@@ -87,15 +88,14 @@ class ChannelEditDialogFragment(private val channel: Channel) : AppCompatDialogF
         }
     }
 
-    private fun changeColor(default: Boolean = true, color: String) {
+    private fun changeColor(color: String) {
         val colorToSet: Int = try {
             Color.parseColor(color)
         } catch (e: RuntimeException) {
             e.printStackTrace()
-            Color.parseColor(channelPossibleColors[0])
+            Color.parseColor(defaultChannelColor)
         }
-        if (default) binding.colorLine.setColorFilter(colorToSet)
-        else binding.colorLine.setColorFilter(colorToSet)
+        binding.colorLine.setColorFilter(colorToSet)
         currentColor = color
     }
 
@@ -122,13 +122,22 @@ class ChannelEditDialogFragment(private val channel: Channel) : AppCompatDialogF
             (requireDialog() as AlertDialog).setView(binding.root)
         }
         binding.save.setOnClickListener {
+            if (!InternetUtil.isInternetOn()) {
+                makeToast(getString(R.string.no_connection))
+                return@setOnClickListener
+            }
             val newChannel = channel.copy()
             newChannel.apply {
-                name = view?.findViewById<EditText>(R.id.channel_edit_name_text)?.text.toString()
+                val newName =
+                    view?.findViewById<EditText>(R.id.channel_edit_name_text)?.text?.toString()
+                if (!newName.isNullOrBlank()) {
+                    name = newName
+                }
                 currentColor?.let {
                     backgroundColor = it
                 }
             }
+            changed?.invoke(newChannel)
             viewModel.updateChannel(newChannel)
             dismiss()
         }

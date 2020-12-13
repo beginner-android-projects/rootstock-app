@@ -6,29 +6,31 @@
     <data>
 
         <variable
-            name="channel"
-            type="app.rootstock.data.channel.Channel" />
+            name="type"
+            type="String" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="10dp"
-        android:paddingBottom="20dp">
+        android:paddingTop="@dimen/dialog_top_padding"
+        android:paddingBottom="@dimen/dialog_bottom_padding">
 
         <TextView
-            android:id="@+id/delete_channel"
+            android:id="@+id/delete_account"
             style="@style/AlertDialog.TitleText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
             android:maxLines="1"
-            android:text="@string/delete_channel"
+            android:text="@{`delete ` + type}"
             android:textAlignment="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="delete channel" />
 
         <TextView
             android:id="@+id/message"
@@ -38,11 +40,12 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="20dp"
-            android:maxLines="3"
+            android:maxLines="12"
             android:textAlignment="textStart"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/delete_channel" />
+            app:layout_constraintTop_toBottomOf="@id/delete_account"
+            tools:text="Are you sure you want to delete msa podma12321?" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/cancel"
@@ -50,7 +53,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-
             android:layout_marginTop="20dp"
             android:layout_marginEnd="20dp"
             android:text="@string/cancel"
@@ -66,6 +68,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
+            android:textColor="@color/red"
             android:layout_marginEnd="20dp"
             android:text="@string/delete"
             android:textAllCaps="false"

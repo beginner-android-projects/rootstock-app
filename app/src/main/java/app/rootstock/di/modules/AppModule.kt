@@ -2,8 +2,10 @@ package app.rootstock.di.modules
 
 
 import android.content.Context
+import android.content.SharedPreferences
 import app.rootstock.data.db.AppDatabase
 import app.rootstock.data.network.*
+import app.rootstock.data.prefs.SharedPrefsController
 import app.rootstock.data.token.TokenDao
 import app.rootstock.data.token.TokenRepository
 import app.rootstock.data.token.TokenRepositoryImpl
@@ -32,6 +34,7 @@ class AppModule {
 
     companion object {
         const val SERVER_DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS"
+        const val SHARED_PREFS = "Fraktus"
         const val API_BASE_URL = "http://192.168.43.116:8000"
     }
 
@@ -57,6 +60,15 @@ class AppModule {
         userDao: UserDao
     ): UserRepository {
         return UserRepositoryImpl(userDao = userDao)
+    }
+
+    @Singleton
+    @Provides
+    fun provideSpController(
+        @ApplicationContext context: Context
+    ): SharedPrefsController {
+        val sp = context.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE)
+        return SharedPrefsController(sp)
     }
 
     @Singleton

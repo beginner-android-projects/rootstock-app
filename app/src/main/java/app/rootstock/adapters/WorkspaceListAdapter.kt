@@ -1,12 +1,14 @@
 package app.rootstock.adapters
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import app.rootstock.data.channel.Channel
 import app.rootstock.data.workspace.Workspace
+import app.rootstock.data.workspace.WorkspaceI
 import app.rootstock.databinding.ItemWorkspaceBinding
 
 interface WorkspaceEventHandler {
@@ -15,10 +17,10 @@ interface WorkspaceEventHandler {
 
 class WorkspaceListAdapter constructor(
     private val lifecycleOwner: LifecycleOwner,
-    private val workspaces: LiveData<List<Workspace>>,
-    private val workspaceEventHandler: WorkspaceEventHandler
+    private val workspaceEventHandler: WorkspaceEventHandler,
+    private val editDialog: (v: View, w: WorkspaceI) -> Unit,
 
-) :
+    ) :
     androidx.recyclerview.widget.ListAdapter<Workspace, WorkspaceListAdapter.WorkspaceViewHolder>(
         object :
             DiffUtil.ItemCallback<Workspace>() {
@@ -36,13 +38,12 @@ class WorkspaceListAdapter constructor(
     inner class WorkspaceViewHolder constructor(
         private val binding: ItemWorkspaceBinding,
         private val lifecycleOwner: LifecycleOwner,
-        private val workspaces: LiveData<List<Workspace>>,
     ) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: Workspace, position: Int) {
-            binding.workspaces = workspaces
-            binding.positionIndex = position
+        fun bind(item: Workspace) {
+            binding.workspace = item
             binding.workspaceEventHandler = workspaceEventHandler
             binding.lifecycleOwner = lifecycleOwner
+            binding.editWorkspace.setOnClickListener { editDialog(it, item) }
             binding.executePendingBindings()
         }
     }
@@ -51,11 +52,11 @@ class WorkspaceListAdapter constructor(
         val binding = ItemWorkspaceBinding.inflate(
             LayoutInflater.from(parent.context), parent, false
         )
-        return WorkspaceViewHolder(binding, lifecycleOwner, workspaces)
+        return WorkspaceViewHolder(binding, lifecycleOwner)
     }
 
     override fun onBindViewHolder(holder: WorkspaceViewHolder, position: Int) {
-        holder.bind(getItem(position), position)
+        holder.bind(getItem(position))
 
     }
 }

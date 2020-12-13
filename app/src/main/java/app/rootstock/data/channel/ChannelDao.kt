@@ -13,10 +13,17 @@ interface ChannelDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(channel: Channel)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    @JvmSuppressWildcards
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertAll(entities: List<Channel?>?)
+
+    @Update(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun update(entities: List<Channel?>?)
+
     @Transaction
-    suspend fun insertAll(channels: List<Channel>)
+    suspend fun upsertAll(entities: List<Channel?>?) {
+        insertAll(entities)
+        update(entities)
+    }
 
     @Update
     suspend fun update(channel: Channel)

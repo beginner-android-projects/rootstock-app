@@ -1,11 +1,9 @@
 package app.rootstock.di.modules
 
-import app.rootstock.api.UserInfoService
-import app.rootstock.api.UserLogInService
+import app.rootstock.api.UserDeleteService
+import app.rootstock.api.UserServices
 import app.rootstock.api.UserSignUpService
 import app.rootstock.data.network.JsonInterceptor
-import app.rootstock.data.network.ServerAuthenticator
-import app.rootstock.data.network.TokenInterceptor
 import app.rootstock.ui.signup.AccountRepository
 import app.rootstock.ui.signup.AccountRepositoryImpl
 import dagger.Module
@@ -17,7 +15,6 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Named
-import javax.inject.Singleton
 
 /**
  * Module for AccountActivity
@@ -30,10 +27,11 @@ object AccountModule {
     @Provides
     fun provideAccountRepository(
         signUpLoader: UserSignUpService,
-        logInLoader: UserLogInService,
-        userInfoService: UserInfoService
+        logInLoader: UserServices,
+        userInfoService: UserServices,
+        userDelete: UserDeleteService
     ): AccountRepository {
-        return AccountRepositoryImpl(signUpLoader, logInLoader, userInfoService)
+        return AccountRepositoryImpl(signUpLoader, logInLoader, userInfoService, userDelete)
     }
 
 
@@ -65,13 +63,13 @@ object AccountModule {
     }
 
     @Provides
-    fun provideUserLogInService(@Named("retrofit_account") retrofit: Retrofit): UserLogInService {
-        return retrofit.create(UserLogInService::class.java)
+    fun provideUserLogInService(@Named("retrofit_account") retrofit: Retrofit): UserServices {
+        return retrofit.create(UserServices::class.java)
     }
 
     @Provides
-    fun provideUserInfoService(@Named("retrofit_account") retrofit: Retrofit): UserInfoService {
-        return retrofit.create(UserInfoService::class.java)
+    fun provideUserUserDeleteService(retrofit: Retrofit): UserDeleteService {
+        return retrofit.create(UserDeleteService::class.java)
     }
 
 

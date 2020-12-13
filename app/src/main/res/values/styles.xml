@@ -11,7 +11,7 @@
     </style>
 
     <style name="Text.TextInputLayout.Primary" parent="Text.TextInputLayout.Base">
-        <item name="android:textColorHint">@color/text_grey</item>
+        <item name="android:textColorHint">@color/text_additional</item>
     </style>
 
     <style name="Text.EditText.Base" parent="Widget.AppCompat.EditText">
@@ -50,7 +50,7 @@
     <style name="Text.Info.Bold" parent="TextBase">
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">15sp</item>
-        <item name="android:textColor">@color/text_grey</item>
+        <item name="android:textColor">@color/text_additional</item>
         <item name="android:textAllCaps">false</item>
     </style>
 
@@ -76,6 +76,22 @@
         <item name="android:textColor">@color/black</item>
     </style>
 
+    <style name="Text.Item.Workspace" parent="TextBase">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="Text.Item.Message.Content" parent="TextBase">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="Text.Item.Message.Date" parent="TextBase">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/cardview_message_date</item>
+    </style>
+
     <style name="ProgressBar.Base" parent="Widget.AppCompat.ProgressBar">
         <item name="android:indeterminateTint">@color/white</item>
         <item name="android:elevation">30dp</item>
@@ -90,6 +106,20 @@
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
         <item name="android:foreground">?attr/selectableItemBackground</item>
+        <item name="cardElevation">0dp</item>
+        <item name="android:backgroundTint">@color/cardview_message_background</item>
+    </style>
+
+    <style name="CardView.Message" parent="BaseCardView">
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:foreground">?attr/selectableItemBackground</item>
+        <item name="cardElevation">0dp</item>
+        <item name="android:backgroundTint">@color/cardview_message_background</item>
+    </style>
+
+    <style name="WhiteHighLight" parent="">
+        <item name="colorControlHighlight">@color/text_additional</item>
     </style>
 
     <style name="ShapeAppearence.RoundedRectangle" parent="ShapeAppearance.MaterialComponents.SmallComponent">
@@ -155,9 +185,28 @@
         <item name="titleTextAppearance">@style/AppToolbar.Title.Text</item>
     </style>
 
+    <style name="AppToolbar.Channel" parent="Widget.MaterialComponents.Toolbar.Primary">
+        <item name="titleTextAppearance">@style/AppToolbar.Title.Text</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
     <style name="AppToolbar.Title.Text" parent="">
         <item name="android:textSize">18sp</item>
         <item name="android:textStyle">bold</item>
+        <item name="android:ellipsize">marquee</item>
     </style>
+
+    <style name="AppToolbar.Title.Text.Big" parent="">
+        <item name="android:textSize">22sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="TabLayout.Text" parent="">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
 
 </resources>

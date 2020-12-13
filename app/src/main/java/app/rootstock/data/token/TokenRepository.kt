@@ -18,6 +18,8 @@ interface TokenRepository {
     suspend fun getTokenFromNetwork(refreshToken: String): Response<Token>
 
     suspend fun revokeToken(token: String, accessToken: String)
+
+    suspend fun removeToken()
 }
 
 
@@ -46,11 +48,19 @@ class TokenRepositoryImpl @Inject constructor(
     }
 
     override suspend fun revokeToken(token: String, accessToken: String) {
-        userId ?: throw NoUserException()
+        var id = userId
+        if (id == null) {
+            id = userRepository.getUserId()
+            if (id == null) throw NoUserException()
+        }
         tokenRemote.revokeToken(
-            tokenRevoke = TokenRevoke(token, userId),
+            tokenRevoke = TokenRevoke(token, id),
             accessToken = "Bearer $accessToken"
         )
+    }
+
+    override suspend fun removeToken() {
+        tokenLocalSource.deleteAll()
     }
 
 

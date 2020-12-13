@@ -1,13 +1,20 @@
 package app.rootstock.adapters
 
 import android.graphics.Color
+import android.text.Layout
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
+import app.rootstock.R
 import com.google.android.material.textfield.TextInputLayout
-import java.lang.Exception
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 @BindingAdapter("error")
@@ -41,7 +48,7 @@ fun bindingLoadingOverlay(view: View, loading: Boolean) {
 @BindingAdapter("lastMessage")
 fun bindingChannelLastMessage(textView: TextView, lastMessage: String?) {
     if (lastMessage == null) {
-        textView.text = "No memo yet"
+        textView.text = textView.context.getString(R.string.channels_no_last_message)
     } else textView.text = lastMessage
 }
 
@@ -52,7 +59,8 @@ fun bindDrawableInt(imageView: ImageView, id: Int) {
 
 
 @BindingAdapter("colorFilter")
-fun bindColorFilter(imageView: ImageView, color: String) {
+fun bindColorFilter(imageView: ImageView, color: String?) {
+    color ?: return
     try {
         val c = Color.parseColor(color)
         imageView.setColorFilter(c)
@@ -61,6 +69,28 @@ fun bindColorFilter(imageView: ImageView, color: String) {
     }
 }
 
+@BindingAdapter("backgroundColor")
+fun bindColorBackground(view: View, color: String?) {
+    color ?: return
+    try {
+        val c = Color.parseColor(color)
+        view.setBackgroundColor(c)
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+}
+
+@BindingAdapter("bindDate")
+fun bindDate(text: TextView, date: Date?) {
+    date ?: return
+    try {
+        val month = SimpleDateFormat("MMM dd")
+        val dateText: String = month.format(date.time).toLowerCase(Locale.ROOT)
+        text.text = dateText
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+}
 
 //
 //

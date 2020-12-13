@@ -10,13 +10,21 @@ import android.widget.FrameLayout
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.res.ResourcesCompat
 import app.rootstock.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
-class Backdrop(context: Context,
-               attributeSet: AttributeSet) : FrameLayout(context, attributeSet) {
+class Backdrop(
+    context: Context,
+    attributeSet: AttributeSet
+) : FrameLayout(context, attributeSet) {
 
     private lateinit var toolbar: Toolbar
-    private var openIcon: Drawable? = ResourcesCompat.getDrawable(resources, R.drawable.ic_arrow_down, null)
-    private var closeIcon: Drawable? = ResourcesCompat.getDrawable(resources, R.drawable.ic_arrow_up, null)
+    private var openIcon: Drawable? =
+        ResourcesCompat.getDrawable(resources, R.drawable.ic_arrow_down, null)
+    private var closeIcon: Drawable? =
+        ResourcesCompat.getDrawable(resources, R.drawable.ic_arrow_up, null)
     private var frontLayerBackground: Int = R.drawable.backdrop_background
     private var backdropSize: Int = 0
     private var animationDuration: Long = 200L
@@ -30,16 +38,24 @@ class Backdrop(context: Context,
         try {
             val moIcon: Drawable? = customProperties.getDrawable(R.styleable.Backdrop_openIcon)
             val mcIcon: Drawable? = customProperties.getDrawable(R.styleable.Backdrop_closeIcon)
-            val mAnimationDuration: Int? = customProperties.getInt(R.styleable.Backdrop_animationDuration, animationDuration.toInt())
-            val mBackdropSize: Int? = customProperties.getDimensionPixelSize(R.styleable.Backdrop_backViewSize, backdropSize)
-            val mTopRightRadius: Boolean? = customProperties.getBoolean(R.styleable.Backdrop_removeTopRightRadius, false)
+            val mAnimationDuration: Int = customProperties.getInt(
+                R.styleable.Backdrop_animationDuration,
+                animationDuration.toInt()
+            )
+            val mBackdropSize: Int = customProperties.getDimensionPixelSize(
+                R.styleable.Backdrop_backViewSize,
+                backdropSize
+            )
+            val mTopRightRadius: Boolean =
+                customProperties.getBoolean(R.styleable.Backdrop_removeTopRightRadius, false)
             mcToolbarId = customProperties.getResourceId(R.styleable.Backdrop_toolbar, -1)
             moIcon?.let { openIcon = moIcon }
             mcIcon?.let { closeIcon = mcIcon }
-            mAnimationDuration?.let { animationDuration = mAnimationDuration.toLong() }
-            mBackdropSize?.let { backdropSize = it }
-            mTopRightRadius?.let {
-                frontLayerBackground = if (mTopRightRadius) R.drawable.backdrop_background_round_left else R.drawable.backdrop_background
+            mAnimationDuration.let { animationDuration = mAnimationDuration.toLong() }
+            mBackdropSize.let { backdropSize = it }
+            mTopRightRadius.let {
+                frontLayerBackground =
+                    if (mTopRightRadius) R.drawable.backdrop_background_round_left else R.drawable.backdrop_background
             }
         } finally {
             customProperties.recycle()
@@ -54,19 +70,22 @@ class Backdrop(context: Context,
     private fun build() {
         setToolbarWithReference()
         // click listener to open/close the sheet
-        navIconClickListener = NavigationIconClickListener(context,
+        navIconClickListener = NavigationIconClickListener(
+            context,
             backView = getBackView(),
             sheet = getFrontView(),
             backdropSize = backdropSize,
             animDuration = animationDuration,
             interpolator = LinearInterpolator(),
             openIcon = openIcon,
-            closeIcon = closeIcon
+            closeIcon = closeIcon,
+            toolbar = toolbar,
         )
 
         // on toolbar navigation click, handle it
         toolbar.setNavigationOnClickListener(navIconClickListener)
     }
+
 
     private fun setToolbarWithReference() {
         if (mcToolbarId == -1) throw IllegalStateException("Set toolbar property on XML or use Backdrop#buildWithToolbar(Toolbar)")
@@ -77,46 +96,24 @@ class Backdrop(context: Context,
         }
     }
 
-    /**
-     * Build the backdrop view with Toolbar.
-     */
-    fun buildWithToolbar(toolbar: Toolbar) {
-        setToolbar(toolbar)
-
-        // click listener to open/close the sheet
-        navIconClickListener = NavigationIconClickListener(context,
-            backView = getBackView(),
-            sheet = getFrontView(),
-            backdropSize = backdropSize,
-            animDuration = animationDuration,
-            interpolator = LinearInterpolator(),
-            openIcon = openIcon,
-            closeIcon = closeIcon
-        )
-
-        // on toolbar navigation click, handle it
-        toolbar.setNavigationOnClickListener(navIconClickListener)
-    }
-
-    private fun setToolbar(toolbar: Toolbar) {
-        this.toolbar = toolbar
-        // update open icon
-        this.toolbar.navigationIcon = openIcon
-    }
 
     /**
      * Call this function will open the backdrop.
      *
      * NOTE: this will open, only if it is currently closed.
      */
-    fun openBackdrop() = navIconClickListener.open()
+    fun openBackdrop() {
+        if (::navIconClickListener.isInitialized) navIconClickListener.open()
+    }
 
     /**
      * Call this function will close the backdrop
      *
      * NOTE: this will close, nly if it is currently opened.
      */
-    fun closeBackdrop() = navIconClickListener.close()
+    fun closeBackdrop() {
+        if (::navIconClickListener.isInitialized) navIconClickListener.close()
+    }
 
     /**
      * Here whe check if there is more than two child views.
@@ -133,10 +130,11 @@ class Backdrop(context: Context,
             throw IllegalArgumentException(" ${this.javaClass.simpleName} must contain two child views!")
         }
 
-        getFrontView().background = ResourcesCompat.getDrawable(resources, frontLayerBackground, null)
+        getFrontView().background =
+            ResourcesCompat.getDrawable(resources, frontLayerBackground, null)
     }
 
-//    override fun onKeyPreIme(keyCode: Int, event: KeyEvent?): Boolean {
+    //    override fun onKeyPreIme(keyCode: Int, event: KeyEvent?): Boolean {
 //        // clear focus if back button pressed
 //        if (keyCode == KeyEvent.KEYCODE_BACK) {
 //            closeBackdrop()

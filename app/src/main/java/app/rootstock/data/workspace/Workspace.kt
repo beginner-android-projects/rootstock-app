@@ -3,6 +3,7 @@ package app.rootstock.data.workspace
 import androidx.room.*
 import app.rootstock.data.channel.Channel
 import app.rootstock.data.db.DateConverter
+import app.rootstock.data.user.User
 import com.google.gson.annotations.SerializedName
 import java.util.*
 
@@ -43,7 +44,7 @@ data class WorkspaceWithChannels(
     @Embedded val workspace: Workspace,
     @Relation(
         parentColumn = "ws_id",
-        entityColumn = "workspace_id"
+        entityColumn = "workspace_id",
     )
     val channels: List<Channel>,
 )
@@ -60,5 +61,5 @@ data class WorkspaceWithChildren(
     @SerializedName("created_at")
     override val createdAt: Date,
     var channels: List<Channel>,
-    var children: List<Workspace>,
+    var children: MutableList<Workspace>,
 ) : WorkspaceI

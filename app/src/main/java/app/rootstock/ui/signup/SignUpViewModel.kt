@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations.map
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.rootstock.data.network.CacheCleaner
 import app.rootstock.data.network.ResponseResult
 import app.rootstock.data.result.Event
 import app.rootstock.data.token.Token
@@ -22,7 +23,8 @@ enum class EventUserSignUp { SUCCESS, USER_EXISTS, INVALID_DATA, FAILED, LOADING
 class SignUpViewModel @ViewModelInject constructor(
     private val userRepository: UserRepository,
     private val accountRepository: AccountRepository,
-    private val tokenRepository: TokenRepository
+    private val tokenRepository: TokenRepository,
+    private val cacheCleaner: CacheCleaner,
 ) :
     ViewModel() {
 
@@ -62,12 +64,10 @@ class SignUpViewModel @ViewModelInject constructor(
                         // update local user
                         userRepository.insertUser(userResponse.data)
                         authenticate(user)
-                    } else {
-                        _signUpStatus.postValue(Event(EventUserSignUp.FAILED))
                     }
                 }
                 is ResponseResult.Error -> {
-                    _signUpStatus.postValue(Event(EventUserSignUp.FAILED))
+                    _signUpStatus.postValue(Event(EventUserSignUp.USER_EXISTS))
                 }
             }
         }
@@ -85,9 +85,9 @@ class SignUpViewModel @ViewModelInject constructor(
                             tokenType = token.data.tokenType
                         )
                     )
+                    // clean all cache on relogin or login
+                    cacheCleaner.cleanCache()
                     _signUpStatus.postValue(Event(EventUserSignUp.SUCCESS))
-                } else {
-                    _signUpStatus.postValue(Event(EventUserSignUp.FAILED))
                 }
             }
             is ResponseResult.Error -> {

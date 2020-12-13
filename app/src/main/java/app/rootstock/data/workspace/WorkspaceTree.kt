@@ -2,6 +2,7 @@ package app.rootstock.data.workspace
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.ForeignKey.CASCADE
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
@@ -14,12 +15,12 @@ import androidx.room.PrimaryKey
         ForeignKey(
             entity = Workspace::class,
             parentColumns = ["ws_id"],
-            childColumns = ["parent"]
+            childColumns = ["parent"],
         ),
         ForeignKey(
             entity = Workspace::class,
             parentColumns = ["ws_id"],
-            childColumns = ["child"]
+            childColumns = ["child"],
         )
     ],
     indices = [Index("parent"), Index("child")],

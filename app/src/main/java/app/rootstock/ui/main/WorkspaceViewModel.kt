@@ -1,15 +1,18 @@
 package app.rootstock.ui.main
 
+import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import app.rootstock.adapters.WorkspaceEventHandler
 import app.rootstock.data.channel.Channel
 import app.rootstock.data.network.ResponseResult
+import app.rootstock.data.prefs.CacheClass
+import app.rootstock.data.prefs.SharedPrefsController
 import app.rootstock.data.result.Event
 import app.rootstock.data.user.UserRepository
 import app.rootstock.data.workspace.Workspace
 import app.rootstock.data.workspace.WorkspaceWithChildren
-import app.rootstock.ui.channels.ChannelRepositoryImpl
+import app.rootstock.ui.channels.ChannelRepository
 import app.rootstock.ui.workspace.WorkspaceRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
@@ -24,25 +27,33 @@ sealed class WorkspaceEvent {
     class NavigateToRoot() : WorkspaceEvent()
 }
 
-enum class ChannelEvent {
-    CHANNEL_EDIT_OPEN, CHANNEL_EDIT_EXIT, CHANNEL_DELETED, ERROR
+enum class EditEvent {
+    EDIT_OPEN, EDIT_EXIT
 }
 
 enum class PagerEvent {
     PAGER_SCROLLED
 }
 
+
 @ExperimentalCoroutinesApi
 class WorkspaceViewModel @ViewModelInject constructor(
     private val userRepository: UserRepository,
     private val workspaceRepository: WorkspaceRepository,
-    private val channelRepository: ChannelRepositoryImpl,
+    private val channelRepository: ChannelRepository,
+    private val spController: SharedPrefsController,
 ) :
     ViewModel(), WorkspaceEventHandler {
 
     private val _workspace = MutableLiveData<WorkspaceWithChildren>()
 
-    var isAtRoot: Boolean? = null
+    private val _isAtRoot = MutableLiveData<Boolean>()
+    val isAtRoot: LiveData<Boolean> get() = _isAtRoot
+
+    var hasSwiped: Boolean = false
+
+    private val _favouriteShowed = MutableLiveData(false)
+    val favouriteShowed: LiveData<Boolean> get() = _favouriteShowed
 
     val workspace: LiveData<WorkspaceWithChildren>
         get() = _workspace
@@ -60,8 +71,8 @@ class WorkspaceViewModel @ViewModelInject constructor(
     private val _eventWorkspace = MutableLiveData<Event<WorkspaceEvent>>()
     val eventWorkspace: LiveData<Event<WorkspaceEvent>> get() = _eventWorkspace
 
-    private val _eventChannel = MutableLiveData<Event<ChannelEvent>>()
-    val eventChannel: LiveData<Event<ChannelEvent>> get() = _eventChannel
+    private val _eventChannel = MutableLiveData<Event<EditEvent>>()
+    val eventEdit: LiveData<Event<EditEvent>> get() = _eventChannel
 
     private val _pagerPosition = MutableLiveData<Int>()
     val pagerPosition: LiveData<Int> get() = _pagerPosition
@@ -69,12 +80,12 @@ class WorkspaceViewModel @ViewModelInject constructor(
     private val _pagerScrolled = MutableLiveData<Event<PagerEvent>>()
     val pagerScrolled: LiveData<Event<PagerEvent>> get() = _pagerScrolled
 
-    fun editChannelStart() {
-        _eventChannel.value = Event(ChannelEvent.CHANNEL_EDIT_OPEN)
+    fun editDialogOpened() {
+        _eventChannel.value = Event(EditEvent.EDIT_OPEN)
     }
 
     fun editChannelStop() {
-        _eventChannel.value = Event(ChannelEvent.CHANNEL_EDIT_EXIT)
+        _eventChannel.value = Event(EditEvent.EDIT_EXIT)
     }
 
 
@@ -92,7 +103,8 @@ class WorkspaceViewModel @ViewModelInject constructor(
 
             }
             id?.let { wsId ->
-                workspaceRepository.getWorkspace(wsId)
+                val update = spController.shouldUpdateCache(CacheClass.Workspace(wsId))
+                workspaceRepository.getWorkspace(wsId, update)
                     .collect {
                         when (it) {
                             is ResponseResult.Success -> {
@@ -101,7 +113,8 @@ class WorkspaceViewModel @ViewModelInject constructor(
                                     it.data.apply { children.sortedBy { child -> child.createdAt } }
                                 _channels.value = it.data.channels.toMutableList().apply {
                                     sortBy { channel -> channel.lastUpdate }
-                                }
+                                }.asReversed()
+                                spController.updateCacheSettings(CacheClass.Workspace(wsId), false)
                             }
                             is ResponseResult.Error -> {
                                 _eventWorkspace.postValue(Event(WorkspaceEvent.Error()))
@@ -112,7 +125,6 @@ class WorkspaceViewModel @ViewModelInject constructor(
         }
     }
 
-
     override fun workspaceClicked(workspaceId: String) {
         pageScrolled()
         // set to null to avoid blinking workspaces
@@ -120,7 +132,8 @@ class WorkspaceViewModel @ViewModelInject constructor(
         _eventWorkspace.value = Event(WorkspaceEvent.OpenWorkspace(workspaceId))
     }
 
-    fun animateFab(position: Int) {
+    fun changeFab(position: Int) {
+        hasSwiped = true
         _pagerPosition.value = position
     }
 
@@ -141,17 +154,16 @@ class WorkspaceViewModel @ViewModelInject constructor(
                 }
             }
             viewModelScope.launch {
-                updateChannelTwo(channel)
+                updateChannelRemote(channel)
             }
         } else {
             // todo
             // notify
         }
-//
     }
 
 
-    private suspend fun updateChannelTwo(channelToUpdate: Channel) {
+    private suspend fun updateChannelRemote(channelToUpdate: Channel) {
         // fetch user from network
         when (val channel = channelRepository.updateChannel(channelToUpdate).first()) {
             is ResponseResult.Success -> {
@@ -176,12 +188,11 @@ class WorkspaceViewModel @ViewModelInject constructor(
             remove(c)
         }
         viewModelScope.launch {
-            when (channelRepository.deleteChannel(channelId).first()) {
+            val wsId = workspace.value?.workspaceId ?: return@launch
+            when (channelRepository.deleteChannel(channelId, wsId).first()) {
                 is ResponseResult.Success -> {
-                    _eventChannel.value = Event(ChannelEvent.CHANNEL_DELETED)
                 }
                 is ResponseResult.Error -> {
-                    _eventChannel.value = Event(ChannelEvent.ERROR)
                 }
             }
         }
@@ -192,7 +203,39 @@ class WorkspaceViewModel @ViewModelInject constructor(
     }
 
     fun setRoot(atRoot: Boolean) {
-        isAtRoot = atRoot
+        _isAtRoot.value = atRoot
+    }
+
+    fun addChannel(channel: Channel) {
+        _channels.value = _channels.value?.apply {
+            add(0, channel)
+        }
+    }
+
+    fun deleteWorkspace(wsId: String) {
+        _workspace.value = _workspace.value?.apply {
+            children.apply {
+                val w = find { it.workspaceId == wsId }
+                remove(w)
+            }
+        }
+        viewModelScope.launch {
+            when (workspaceRepository.deleteWorkspace(wsId).first()) {
+                is ResponseResult.Success -> {
+                }
+                is ResponseResult.Error -> {
+                }
+            }
+        }
+    }
+
+    fun resetPager() {
+        hasSwiped = false
+        _pagerPosition.value = 0
+    }
+
+    fun showFavourite(){
+        _favouriteShowed.value = true
     }
 
 
