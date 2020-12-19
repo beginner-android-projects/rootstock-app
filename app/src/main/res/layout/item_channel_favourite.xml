@@ -23,10 +23,13 @@
 
         <ImageView
             android:id="@+id/channel_color"
-            colorFilter="@{channel.backgroundColor}"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            imageUrl="@{channel.imageUrl}"
+            placeholder="@{@drawable/circle_channel}"
+            android:layout_width="@dimen/basic_channel_size"
+            android:layout_height="@dimen/basic_channel_size"
             android:layout_marginStart="@dimen/favourites_channel_padding"
+            android:paddingTop="@dimen/padding_4"
+            android:paddingBottom="@dimen/padding_4"
             android:src="@drawable/circle_channel_favourite"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"

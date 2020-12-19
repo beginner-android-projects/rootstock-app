@@ -44,6 +44,7 @@
                 android:background="@drawable/form_edit_text_input"
                 android:imeOptions="actionSend"
                 android:inputType="textMultiLine"
+                android:maxHeight="@dimen/message_input_max_height"
                 android:paddingStart="@dimen/padding_16"
                 android:paddingTop="6dp"
                 android:paddingEnd="@dimen/padding_16"

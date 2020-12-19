@@ -3,11 +3,11 @@
     <item
         android:id="@+id/menu_home"
         android:enabled="true"
-        android:icon="@drawable/ic_launcher_foreground"
-        android:title="" />
+        android:icon="@drawable/ic_home_24"
+        android:title="home" />
     <item
         android:id="@+id/menu_settings"
         android:enabled="true"
-        android:icon="@drawable/ic_baseline_arrow_back_24"
-        android:title="" />
+        android:icon="@drawable/ic_settings_24"
+        android:title="settings" />
 </menu>

@@ -22,7 +22,7 @@
         android:focusable="true"
         android:foreground="?android:attr/selectableItemBackground"
         app:cardCornerRadius="20dp"
-        app:cardElevation="7dp">
+        app:cardElevation="0dp">
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -35,8 +35,8 @@
 
             <ImageView
                 android:id="@+id/channel_color"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/basic_channel_size"
+                android:layout_height="@dimen/basic_channel_size"
                 android:src="@drawable/circle_channel"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

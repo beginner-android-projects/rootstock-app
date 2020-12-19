@@ -3,6 +3,8 @@ package app.rootstock.di.modules
 
 import android.content.Context
 import android.content.SharedPreferences
+import app.rootstock.api.ColorService
+import app.rootstock.data.channel.ColorsDelegate
 import app.rootstock.data.db.AppDatabase
 import app.rootstock.data.network.*
 import app.rootstock.data.prefs.SharedPrefsController
@@ -36,6 +38,13 @@ class AppModule {
         const val SERVER_DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS"
         const val SHARED_PREFS = "Fraktus"
         const val API_BASE_URL = "http://192.168.43.116:8000"
+//        const val API_BASE_URL = "https://fraktus-ccmn54qy7q-nw.a.run.app"
+    }
+
+    @Singleton
+    @Provides
+    fun provideColorsDelegate(retrofit: Retrofit): ColorsDelegate {
+        return ColorsDelegate(retrofit.create(ColorService::class.java))
     }
 
     @Singleton

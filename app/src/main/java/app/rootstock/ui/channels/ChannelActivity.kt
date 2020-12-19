@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -134,6 +135,10 @@ class ChannelActivity : AppCompatActivity(), ReLogInObserver {
 
     private fun closeActivity() {
         try {
+            if (messagesViewModel.isEditing.value == true) {
+                messagesViewModel.cancelEdit()
+                return
+            }
             hideSoftKeyboard()
         } catch (e: Exception) {
         }

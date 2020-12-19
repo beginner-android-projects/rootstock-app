@@ -9,8 +9,11 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import app.rootstock.R
 import app.rootstock.data.channel.Channel
 import app.rootstock.databinding.ItemChannelBinding
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 
 class ChannelListAdapter(
     private val lifecycleOwner: LifecycleOwner,
@@ -38,7 +41,17 @@ class ChannelListAdapter(
             binding.channels = item
             binding.lifecycleOwner = lifecycleOwner
             binding.executePendingBindings()
-            binding.channelColor.setColorFilter(Color.parseColor(item.backgroundColor))
+//            binding.channelColor.setColorFilter(Color.parseColor(item.backgroundColor))
+            item.imageUrl?.let {
+                Glide.with(binding.channelColor.context)
+                    .applyDefaultRequestOptions(
+                        RequestOptions().circleCrop().placeholder(R.drawable.circle_channel)
+                            .error(R.drawable.circle_channel)
+                    )
+                    .load(it)
+                    .into(binding.channelColor)
+            }
+
             binding.channelEdit.setOnClickListener {
                 editDialog(it, item, binding.card)
             }

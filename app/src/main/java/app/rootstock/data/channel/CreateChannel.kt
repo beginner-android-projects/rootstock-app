@@ -11,7 +11,8 @@ import java.io.Serializable
 data class CreateChannelRequest(
     private val name: String,
     @SerializedName("background_color")
-    private val color: String,
+    private val color: String? = null,
+    @SerializedName("image_url")
     private val imageUrl: String?,
     @SerializedName("ws_id_to_add_to")
     private val workspaceId: String?,
@@ -40,7 +41,7 @@ class CreateChannel
         }
         get() = field
 
-    var color: String = defaultChannelColor
+    var imageUrl: String = ""
 
 
     private fun checkName() {

@@ -1,7 +1,6 @@
 package app.rootstock.views
 
 import android.app.Dialog
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,20 +8,21 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import app.rootstock.R
-import app.rootstock.adapters.ColorListAdapter
+import app.rootstock.adapters.PatternAdapter
 import app.rootstock.data.channel.Channel
 import app.rootstock.data.channel.ChannelConstants.channelPossibleColors
-import app.rootstock.data.channel.ChannelConstants.defaultChannelColor
 import app.rootstock.data.network.CreateOperation
 import app.rootstock.databinding.DialogChannelCreateBinding
 import app.rootstock.ui.channels.ChannelCreateViewModel
+import app.rootstock.ui.channels.ColorsViewModel
 import app.rootstock.utils.autoFitColumns
 import app.rootstock.utils.convertDpToPx
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import java.lang.RuntimeException
+import kotlinx.coroutines.delay
 
 
 @AndroidEntryPoint
@@ -36,11 +36,14 @@ class ChannelCreateDialogFragment(
         private const val spanCount = 4
     }
 
+    private val editViewModel: ColorsViewModel by viewModels()
+
     private lateinit var binding: DialogChannelCreateBinding
 
     private val viewModel: ChannelCreateViewModel by viewModels()
 
-    private val adapterToSet = ColorListAdapter(items = channelPossibleColors, ::onColorClicked)
+    private val adapterToSet =
+        PatternAdapter(items = channelPossibleColors.toMutableList(), ::patternClicked)
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return MaterialAlertDialogBuilder(requireContext()).create()
@@ -50,25 +53,23 @@ class ChannelCreateDialogFragment(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = DialogChannelCreateBinding.inflate(layoutInflater, container, true)
         return binding.root
     }
 
-    private fun onColorClicked(position: Int?) {
+    private fun patternClicked(position: Int?, image: String?) {
         if (position == null) return
+
         val isPicked =
             binding.colorsRv.findViewHolderForAdapterPosition(position)?.itemView?.findViewById<ChannelPickImageView>(
                 R.id.color_item
             )?.isPicked
 
-        // if not picked by user, change to default color because there is no channel yet created
-        if (isPicked == false) viewModel.channel.value?.color?.let {
-            changeColor(
-                defaultChannelColor
-            )
-        }
-        else changeColor(channelPossibleColors[position])
+        // if color is picked by user, change line accordingly
+        // otherwise, return to the initial color
+        if (isPicked == false) changeImage(image)
+        else changeImage(image)
 
         // unpick previously picked color
         if (adapterToSet.previousPickedPosition != null && position != adapterToSet.previousPickedPosition) {
@@ -80,15 +81,9 @@ class ChannelCreateDialogFragment(
         }
     }
 
-    private fun changeColor(color: String) {
-        val colorToSet: Int = try {
-            Color.parseColor(color)
-        } catch (e: RuntimeException) {
-            e.printStackTrace()
-            Color.parseColor(defaultChannelColor)
-        }
-        binding.colorLine.setColorFilter(colorToSet)
-        viewModel.channel.value?.color = color
+    private fun changeImage(image: String?) {
+        image ?: return
+        viewModel.channel.value?.imageUrl = image
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -108,6 +103,9 @@ class ChannelCreateDialogFragment(
                     false
                 )
             )
+        }
+        editViewModel.images.observe(this) {
+            adapterToSet.updateList(it.urls)
         }
 
         if (showsDialog) {

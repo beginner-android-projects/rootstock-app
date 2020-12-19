@@ -31,12 +31,12 @@ class ChannelCreateViewModel @ViewModelInject constructor(
         val channel = channel.value ?: return
         val newChannel = CreateChannelRequest(
             name = channel.name,
-            color = channel.color,
             workspaceId = workspaceId,
-            imageUrl = null
+            imageUrl = channel.imageUrl
         )
         viewModelScope.launch {
-            when (val channelResp = channelRepository.createChannel(channel = newChannel, workspaceId).first()) {
+            when (val channelResp =
+                channelRepository.createChannel(channel = newChannel, workspaceId).first()) {
                 is ResponseResult.Success -> {
                     _eventChannel.postValue(Event(CreateOperation.Success(channelResp.data)))
                 }

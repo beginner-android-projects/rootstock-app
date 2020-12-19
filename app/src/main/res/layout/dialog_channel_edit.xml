@@ -31,15 +31,6 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="channel name" />
 
-        <ImageView
-            android:id="@+id/color_line"
-            colorFilter="@{channel.backgroundColor}"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/dialog_channel_create_line_color_width"
-            android:layout_marginTop="10dp"
-            android:src="@color/primary"
-            app:layout_constraintTop_toBottomOf="@id/channel_name" />
-
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/channel_edit_name"
             style="@style/Text.TextInputLayout.Primary"
@@ -50,7 +41,7 @@
             android:layout_marginEnd="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/color_line">
+            app:layout_constraintTop_toBottomOf="@id/channel_name">
 
             <app.rootstock.views.BaseInputEditText
                 android:id="@+id/channel_edit_name_text"
@@ -73,9 +64,9 @@
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
             android:overScrollMode="never"
-            tools:itemCount="1"
             app:layout_constraintTop_toBottomOf="@id/channel_edit_name"
             app:spanCount="4"
+            tools:itemCount="1"
             tools:listitem="@layout/item_color_channel" />
 
         <com.google.android.material.button.MaterialButton
@@ -84,11 +75,11 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-
             android:layout_marginTop="20dp"
             android:layout_marginEnd="20dp"
             android:text="@string/cancel"
             android:textAllCaps="false"
+            android:textColor="@color/black"
             app:layout_constraintEnd_toStartOf="@+id/guideline_title"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/colorsRv" />

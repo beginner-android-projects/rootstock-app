@@ -1,6 +1,5 @@
 package app.rootstock.ui.main
 
-import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import app.rootstock.adapters.WorkspaceEventHandler
@@ -145,13 +144,11 @@ class WorkspaceViewModel @ViewModelInject constructor(
         if (isChannelValid(channel)) {
             // if new data is valid, update locally and send request to the server
             _channels.value = _channels.value?.apply {
-                val oldChannel = find { channel.channelId == it.channelId }
+                val oldChannel = find { channel.channelId == it.channelId } ?: return
                 // return if there were no changes
-                if (oldChannel?.equals(channel) == true) return
-                oldChannel?.apply {
-                    name = channel.name
-                    backgroundColor = channel.backgroundColor
-                }
+                if (oldChannel == channel) return
+                // otherwise replace old channel with new one
+                this[indexOf(oldChannel)] = channel
             }
             viewModelScope.launch {
                 updateChannelRemote(channel)
