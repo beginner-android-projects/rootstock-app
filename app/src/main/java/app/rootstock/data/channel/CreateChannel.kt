@@ -4,7 +4,6 @@ import androidx.databinding.BaseObservable
 import androidx.databinding.Bindable
 import app.rootstock.BR
 import app.rootstock.data.channel.ChannelConstants.channelNameMaxLength
-import app.rootstock.data.channel.ChannelConstants.defaultChannelColor
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 

@@ -1,5 +1,6 @@
 package app.rootstock.ui.main
 
+import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import app.rootstock.adapters.WorkspaceEventHandler
@@ -21,9 +22,10 @@ import kotlinx.coroutines.launch
 
 sealed class WorkspaceEvent {
     class OpenWorkspace(val workspaceId: String) : WorkspaceEvent()
-    class NoUser() : WorkspaceEvent()
-    class Error() : WorkspaceEvent()
-    class NavigateToRoot() : WorkspaceEvent()
+    object NoUser : WorkspaceEvent()
+    object Error : WorkspaceEvent()
+    object NavigateToRoot : WorkspaceEvent()
+    class Backdrop(val close: Boolean) : WorkspaceEvent()
 }
 
 enum class EditEvent {
@@ -96,7 +98,7 @@ class WorkspaceViewModel @ViewModelInject constructor(
                 id = userRepository.getUserId()
 
                 if (id == null) {
-                    _eventWorkspace.postValue(Event(WorkspaceEvent.NoUser()))
+                    _eventWorkspace.postValue(Event(WorkspaceEvent.NoUser))
                     return@launch
                 }
 
@@ -116,7 +118,7 @@ class WorkspaceViewModel @ViewModelInject constructor(
                                 spController.updateCacheSettings(CacheClass.Workspace(wsId), false)
                             }
                             is ResponseResult.Error -> {
-                                _eventWorkspace.postValue(Event(WorkspaceEvent.Error()))
+                                _eventWorkspace.postValue(Event(WorkspaceEvent.Error))
                             }
                         }
                     }
@@ -137,18 +139,20 @@ class WorkspaceViewModel @ViewModelInject constructor(
     }
 
     fun navigateToRoot() {
-        _eventWorkspace.value = Event(WorkspaceEvent.NavigateToRoot())
+        _eventWorkspace.value = Event(WorkspaceEvent.NavigateToRoot)
     }
 
     fun updateChannel(channel: Channel) {
         if (isChannelValid(channel)) {
             // if new data is valid, update locally and send request to the server
             _channels.value = _channels.value?.apply {
-                val oldChannel = find { channel.channelId == it.channelId } ?: return
+                val oldChannel = find { channel.channelId == it.channelId }
                 // return if there were no changes
                 if (oldChannel == channel) return
                 // otherwise replace old channel with new one
-                this[indexOf(oldChannel)] = channel
+                oldChannel?.let { c ->
+                    this[indexOf(c)] = channel
+                }
             }
             viewModelScope.launch {
                 updateChannelRemote(channel)
@@ -231,8 +235,12 @@ class WorkspaceViewModel @ViewModelInject constructor(
         _pagerPosition.value = 0
     }
 
-    fun showFavourite(){
+    fun showFavourite() {
         _favouriteShowed.value = true
+    }
+
+    fun toggleBackdrop(close: Boolean) {
+        _eventWorkspace.value = Event(WorkspaceEvent.Backdrop(close))
     }
 
 

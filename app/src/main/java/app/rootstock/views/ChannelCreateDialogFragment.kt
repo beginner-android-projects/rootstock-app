@@ -43,7 +43,7 @@ class ChannelCreateDialogFragment(
     private val viewModel: ChannelCreateViewModel by viewModels()
 
     private val adapterToSet =
-        PatternAdapter(items = channelPossibleColors.toMutableList(), ::patternClicked)
+        PatternAdapter(items = channelPossibleColors.toMutableList(), ::patternClicked, true)
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return MaterialAlertDialogBuilder(requireContext()).create()
@@ -58,9 +58,10 @@ class ChannelCreateDialogFragment(
         return binding.root
     }
 
-    private fun patternClicked(position: Int?, image: String?) {
-        if (position == null) return
-
+    private fun patternClicked(position: Int, image: String?) {
+        binding.colorsRv.findViewHolderForAdapterPosition(position)?.itemView?.findViewById<ChannelPickImageView>(
+            R.id.color_item
+        )?.togglePicked()
         val isPicked =
             binding.colorsRv.findViewHolderForAdapterPosition(position)?.itemView?.findViewById<ChannelPickImageView>(
                 R.id.color_item

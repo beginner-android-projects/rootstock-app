@@ -13,12 +13,7 @@ class ChannelPickImageView(context: Context, attributeSet: AttributeSet) :
 
     var isPicked = false
 
-    override fun performClick(): Boolean {
-        togglePicked()
-        return super.performClick()
-    }
-
-    private fun togglePicked() {
+    fun togglePicked() {
         isPicked = !isPicked
         foreground = if (isPicked) {
             ContextCompat.getDrawable(context, R.drawable.ic_check_24)

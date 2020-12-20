@@ -203,7 +203,7 @@ class MessagesFragment : Fragment() {
         popupWindow.showAtLocation(
             anchor,
             Gravity.NO_GRAVITY,
-            location[0] + anchor.width / 4,
+            location[0],
             location[1] + yoff
         )
         popUpView.findViewById<View>(R.id.copy)
@@ -249,11 +249,11 @@ class MessagesFragment : Fragment() {
         binding.content.setSelection(binding.content.length())
         binding.send.setImageResource(R.drawable.ic_check_32)
         lifecycleScope.launch {
-            delay(500)
+            delay(800)
             val linearSmoothScroller: LinearSmoothScroller =
                 object : LinearSmoothScroller(requireContext()) {
                     override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics): Float {
-                        return 100f / displayMetrics.densityDpi
+                        return 30f / displayMetrics.densityDpi
                     }
                 }
 

@@ -37,10 +37,9 @@ class ChannelEditDialogFragment(
 
     companion object {
         private const val spanCount = 4
-
     }
 
-    private var currentColor: String? = null
+    private var currentImageUrl: String? = null
 
     private lateinit var binding: DialogChannelEditBinding
 
@@ -48,14 +47,14 @@ class ChannelEditDialogFragment(
 
     private val editViewModel: ColorsViewModel by viewModels()
 
-    private val adapterToSet = PatternAdapter(items = mutableListOf(), ::patternClicked)
+    private val adapterToSet =
+        PatternAdapter(items = mutableListOf(), ::patternClicked)
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return MaterialAlertDialogBuilder(requireContext()).create()
     }
 
     // todo check not loaded patterns click
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -65,18 +64,14 @@ class ChannelEditDialogFragment(
         return binding.root
     }
 
-    private fun patternClicked(position: Int?, image: String?) {
-        if (position == null) return
-
-        val isPicked =
-            binding.colorsRv.findViewHolderForAdapterPosition(position)?.itemView?.findViewById<ChannelPickImageView>(
-                R.id.color_item
-            )?.isPicked
+    private fun patternClicked(position: Int, image: String?) {
+        binding.colorsRv.findViewHolderForAdapterPosition(position)?.itemView?.findViewById<ChannelPickImageView>(
+            R.id.color_item
+        )?.togglePicked()
 
         // if color is picked by user, change line accordingly
         // otherwise, return to the initial color
-        if (isPicked == false) changeImage(image)
-        else changeImage(image)
+        changeImage(image)
 
         // unpick previously picked color
         if (adapterToSet.previousPickedPosition != null && position != adapterToSet.previousPickedPosition) {
@@ -89,8 +84,7 @@ class ChannelEditDialogFragment(
     }
 
     private fun changeImage(image: String?) {
-        image ?: return
-        currentColor = image
+        currentImageUrl = image
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -126,9 +120,11 @@ class ChannelEditDialogFragment(
             val newName =
                 view?.findViewById<EditText>(R.id.channel_edit_name_text)?.text?.toString()
                     ?: return@setOnClickListener
+            // if image has not been changed - use initial image
+            if (currentImageUrl == null) currentImageUrl = channel.imageUrl
             val newChannel = Channel(
                 name = newName,
-                imageUrl = currentColor,
+                imageUrl = currentImageUrl,
                 channelId = channel.channelId,
                 workspaceId = channel.workspaceId,
                 lastMessage = channel.lastMessage,

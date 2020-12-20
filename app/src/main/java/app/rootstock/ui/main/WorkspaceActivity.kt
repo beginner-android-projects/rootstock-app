@@ -170,10 +170,7 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
                 try {
                     supportFragmentManager.commit {
                         val fragment =
-                            FavouriteChannelsFragment(
-                                binding.backdropView,
-                                viewModel.favouriteShowed
-                            ) { viewModel.showFavourite() }
+                            FavouriteChannelsFragment.newInstance()
                         setReorderingAllowed(true)
                         add(R.id.favourites_container, fragment)
                     }
@@ -194,12 +191,16 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
         // intent filter used exactly for this activity to avoid blinking while
         // switching from launcher activity to this
         viewModel.eventWorkspace.observe(this) {
-            when (it.peekContent()) {
+            when (val e = it.peekContent()) {
                 is WorkspaceEvent.NoUser -> {
                     if (isInShareMessageMode) {
                         startActivity(Intent(this, LauncherActivity::class.java))
                         finishAfterTransition()
                     }
+                }
+                is WorkspaceEvent.Backdrop -> {
+                    if (e.close) binding.backdropView.closeBackdrop()
+                    else binding.backdropView.openBackdrop()
                 }
                 else -> {
                 }

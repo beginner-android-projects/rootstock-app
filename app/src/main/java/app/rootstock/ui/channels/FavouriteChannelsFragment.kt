@@ -12,35 +12,34 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.lifecycleScope
 import app.rootstock.R
 import app.rootstock.adapters.ChannelFavouritesAdapter
 import app.rootstock.data.channel.Channel
 import app.rootstock.databinding.FragmentFavouritesBinding
 import app.rootstock.ui.main.WorkspaceActivity
+import app.rootstock.ui.main.WorkspaceViewModel
 import app.rootstock.ui.messages.MessageEvent
 import app.rootstock.ui.messages.MessagesFragment
 import app.rootstock.ui.messages.MessagesViewModel
 import app.rootstock.utils.autoFitColumns
 import app.rootstock.utils.convertDpToPx
 import app.rootstock.utils.makeToast
-import app.rootstock.views.Backdrop
 import app.rootstock.views.GridSpacingItemDecoratorWithCustomCenter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import java.util.*
 
+
 @AndroidEntryPoint
-class FavouriteChannelsFragment constructor(
-    private val backdrop: Backdrop,
-    private val favouriteShowed: LiveData<Boolean>,
-    private val showed: () -> Unit,
-) : Fragment() {
+class FavouriteChannelsFragment : Fragment() {
 
     private val viewModel: ChannelFavouritesViewModel by viewModels()
+
+    private val main: WorkspaceViewModel by activityViewModels()
 
     private lateinit var binding: FragmentFavouritesBinding
 
@@ -159,20 +158,20 @@ class FavouriteChannelsFragment constructor(
         viewModel.favourites.observe(viewLifecycleOwner) {
             adapter.submitList(it)
             if (currentSize != null && currentSize != it.size)
-                backdrop.closeBackdrop()
+                main.toggleBackdrop(close = true)
             currentSize = it.size
             if (it.isNullOrEmpty()) {
                 binding.noChannels.isVisible = true
             } else {
                 if (binding.noChannels.isVisible) binding.noChannels.isVisible = false
             }
-            if (favouriteShowed.value == false && !it.isNullOrEmpty()) {
+            if (main.favouriteShowed.value == false && !it.isNullOrEmpty()) {
                 lifecycleScope.launch {
                     delay(300)
-                    backdrop.openBackdrop()
+                    main.toggleBackdrop(close = false)
                 }
             }
-            if (it != null) showed()
+            if (it != null) main.showFavourite()
         }
 
     }
@@ -180,7 +179,10 @@ class FavouriteChannelsFragment constructor(
     companion object {
         const val CHANNELS_SPAN_COUNT = 2
         const val CHANNELS_COLUMN_WIDTH_DP = 100
-    }
 
+        fun newInstance(): FavouriteChannelsFragment {
+            return FavouriteChannelsFragment()
+        }
+    }
 
 }
