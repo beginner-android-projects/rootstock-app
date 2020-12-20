@@ -5,62 +5,63 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import app.rootstock.R
 import app.rootstock.adapters.PatternAdapter
-import app.rootstock.data.channel.Channel
-import app.rootstock.databinding.DialogChannelEditBinding
+import app.rootstock.data.network.CreateOperation
+import app.rootstock.databinding.DialogCreateWorkspaceBinding
 import app.rootstock.ui.channels.ColorsViewModel
 import app.rootstock.ui.main.WorkspaceViewModel
-import app.rootstock.utils.InternetUtil
+import app.rootstock.ui.workspace.WorkspaceCreateViewModel
 import app.rootstock.utils.autoFitColumns
 import app.rootstock.utils.convertDpToPx
-import app.rootstock.utils.makeToast
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 
-/**
- * Dialog that appears when editing channel.
- */
 @AndroidEntryPoint
 @ExperimentalCoroutinesApi
-class ChannelEditDialogFragment(
-    private val channel: Channel,
-    private val changed: ((channel: Channel) -> Unit)? = null
-) : AppCompatDialogFragment() {
+class WorkspaceCreateDialogFragment : AppCompatDialogFragment() {
 
     companion object {
         private const val spanCount = 4
+        private const val INTENT_EXTRAS_WS_ID = "wsId"
+
+        fun newInstance(wsId: String): WorkspaceCreateDialogFragment {
+            val bundle = Bundle().apply {
+                putString(INTENT_EXTRAS_WS_ID, wsId)
+            }
+            return WorkspaceCreateDialogFragment().apply { arguments = bundle }
+        }
     }
 
-    private var currentImageUrl: String? = null
+    private val colorsViewModel: ColorsViewModel by viewModels()
 
-    private lateinit var binding: DialogChannelEditBinding
+    private var wsId: String? = null
 
-    private val viewModel: WorkspaceViewModel by activityViewModels()
+    private val viewModel: WorkspaceCreateViewModel by viewModels()
 
-    private val editViewModel: ColorsViewModel by viewModels()
+    private lateinit var binding: DialogCreateWorkspaceBinding
 
     private val adapterToSet =
-        PatternAdapter(items = mutableListOf(), ::patternClicked, type = ItemType.CHANNEL)
+        PatternAdapter(
+            items = mutableListOf(), ::patternClicked, true, type = ItemType.WORKSPACE
+        )
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return MaterialAlertDialogBuilder(requireContext()).create()
     }
 
-    // todo check not loaded patterns click
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = DialogChannelEditBinding.inflate(layoutInflater, container, true)
+        binding = DialogCreateWorkspaceBinding.inflate(layoutInflater, container, true)
         return binding.root
     }
 
@@ -69,9 +70,7 @@ class ChannelEditDialogFragment(
             R.id.color_item
         )?.togglePicked()
 
-        // if color is picked by user, change line accordingly
-        // otherwise, return to the initial color
-        changeImage(image)
+        image?.let { viewModel.setImage(it) }
 
         // unpick previously picked color
         if (adapterToSet.previousPickedPosition != null && position != adapterToSet.previousPickedPosition) {
@@ -83,14 +82,11 @@ class ChannelEditDialogFragment(
         }
     }
 
-    private fun changeImage(image: String?) {
-        currentImageUrl = image
-    }
-
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        wsId = arguments?.getString(INTENT_EXTRAS_WS_ID)
         binding.apply {
-            channel = this@ChannelEditDialogFragment.channel
+            viewmodel = this@WorkspaceCreateDialogFragment.viewModel
             lifecycleOwner = viewLifecycleOwner
             executePendingBindings()
         }
@@ -105,37 +101,37 @@ class ChannelEditDialogFragment(
                 )
             )
         }
-        editViewModel.images.observe(this) {
+        colorsViewModel.images.observe(this) {
             adapterToSet.updateList(it.urls)
         }
 
         if (showsDialog) {
             (requireDialog() as AlertDialog).setView(binding.root)
         }
-        binding.save.setOnClickListener {
-            if (!InternetUtil.isInternetOn()) {
-                makeToast(getString(R.string.no_connection))
-                return@setOnClickListener
-            }
-            val newName =
-                view?.findViewById<EditText>(R.id.channel_edit_name_text)?.text?.toString()
-                    ?: return@setOnClickListener
-            // if image has not been changed - use initial image
-            if (currentImageUrl == null) currentImageUrl = channel.imageUrl
-            val newChannel = Channel(
-                name = newName,
-                imageUrl = currentImageUrl,
-                channelId = channel.channelId,
-                workspaceId = channel.workspaceId,
-                lastMessage = channel.lastMessage,
-                lastUpdate = channel.lastUpdate,
-                backgroundColor = channel.backgroundColor
-            )
-            changed?.invoke(newChannel)
-            viewModel.updateChannel(newChannel)
-            dismiss()
-        }
+        binding.save.setOnClickListener { createWorkspace() }
         binding.cancel.setOnClickListener { dismiss() }
+
+
+    }
+
+    private fun createWorkspace() {
+        if (wsId == null) dismiss()
+        //todo dd
+        viewModel.event.observe(this) {
+            when (val content = it.getContentIfNotHandled()) {
+                is CreateOperation.Success -> {
+                    val main: WorkspaceViewModel by activityViewModels()
+                    content.obj?.let { w -> main.createWorkspace(w) }
+                    dismiss()
+                }
+                is CreateOperation.Error -> {
+                    dismiss()
+                }
+                null -> {
+                }
+            }
+        }
+        viewModel.createWorkspace(wsId = requireNotNull(wsId))
     }
 
 }

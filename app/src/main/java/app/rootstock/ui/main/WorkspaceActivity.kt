@@ -28,6 +28,7 @@ import app.rootstock.ui.settings.SettingsActivity
 import app.rootstock.ui.signup.RegisterActivity
 import app.rootstock.utils.convertDpToPx
 import app.rootstock.views.ChannelCreateDialogFragment
+import app.rootstock.views.WorkspaceCreateDialogFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
@@ -115,15 +116,19 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
     private fun openAddItemDialog() {
         when (viewModel.pagerPosition.value) {
             1 -> {
+                // todo: redo arguments
                 val dialog = viewModel.workspace.value?.workspaceId?.let {
                     ChannelCreateDialogFragment(
                         it, ::createChannelOperation
                     )
                 }
-                dialog?.show(
-                    supportFragmentManager,
-                    DIALOG_CHANNEL_CREATE
-                )
+                dialog?.show(supportFragmentManager, DIALOG_CHANNEL_CREATE)
+            }
+            0 -> {
+                val dialog = viewModel.workspace.value?.workspaceId?.let {
+                    WorkspaceCreateDialogFragment.newInstance(it)
+                }
+                dialog?.show(supportFragmentManager, DIALOG_WORKSPACE_CREATE)
             }
             else -> {
             }
@@ -277,6 +282,7 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
         const val BUTTON_ROUNDED_SQUARE_SIZE = 10f
         const val BUTTON_ROUND_SIZE = 30f
         const val DIALOG_CHANNEL_CREATE = "DIALOG_CHANNEL_CREATE"
+        const val DIALOG_WORKSPACE_CREATE = "DIALOG_WORKSPACE_CREATE"
         const val REQUEST_CODE_CHANNEL_ACTIVITY = 100
         const val BUNDLE_WORKSPACE_EXTRA = "BUNDLE_WORKSPACE_EXTRA"
         const val BUNDLE_CHANNEL_EXTRA = "BUNDLE_CHANNEL_EXTRA"

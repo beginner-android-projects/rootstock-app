@@ -43,7 +43,7 @@ class ChannelCreateDialogFragment(
     private val viewModel: ChannelCreateViewModel by viewModels()
 
     private val adapterToSet =
-        PatternAdapter(items = channelPossibleColors.toMutableList(), ::patternClicked, true)
+        PatternAdapter(items = mutableListOf(), ::patternClicked, true, type = ItemType.CHANNEL)
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return MaterialAlertDialogBuilder(requireContext()).create()
@@ -62,15 +62,10 @@ class ChannelCreateDialogFragment(
         binding.colorsRv.findViewHolderForAdapterPosition(position)?.itemView?.findViewById<ChannelPickImageView>(
             R.id.color_item
         )?.togglePicked()
-        val isPicked =
-            binding.colorsRv.findViewHolderForAdapterPosition(position)?.itemView?.findViewById<ChannelPickImageView>(
-                R.id.color_item
-            )?.isPicked
 
         // if color is picked by user, change line accordingly
         // otherwise, return to the initial color
-        if (isPicked == false) changeImage(image)
-        else changeImage(image)
+        changeImage(image)
 
         // unpick previously picked color
         if (adapterToSet.previousPickedPosition != null && position != adapterToSet.previousPickedPosition) {

@@ -84,7 +84,7 @@
                 style="@style/Text.EditText.Base"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/form_edit_text_black"
+                android:background="@drawable/form_edit_text_white"
                 android:hint="@string/enter_your_email"
                 android:inputType="textEmailAddress"
                 android:maxLength="40"

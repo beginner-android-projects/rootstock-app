@@ -243,5 +243,11 @@ class WorkspaceViewModel @ViewModelInject constructor(
         _eventWorkspace.value = Event(WorkspaceEvent.Backdrop(close))
     }
 
+    fun createWorkspace(workspace: Workspace) {
+        _workspace.value = _workspace.value?.apply {
+            children.add(workspace)
+        }
+    }
+
 
 }

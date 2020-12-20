@@ -29,6 +29,8 @@ interface WorkspaceRepository {
      * sends a DELETE request for @param workspaceId
      */
     suspend fun deleteWorkspace(workspaceId: String): Flow<ResponseResult<Void?>>
+
+    suspend fun createWorkspace(createWorkspace: CreateWorkspaceRequest): Flow<ResponseResult<Workspace?>>
 }
 
 class WorkspaceRepositoryImpl @Inject constructor(
@@ -128,6 +130,28 @@ class WorkspaceRepositoryImpl @Inject constructor(
     }.catch {
         emit(ResponseResult.error("Something went wrong!"))
     }
+
+    override suspend fun createWorkspace(createWorkspace: CreateWorkspaceRequest): Flow<ResponseResult<Workspace?>> =
+        flow {
+            val response =
+                workspaceRemoteSource.createWorkspace(createWorkspace)
+
+            val state = when (response.isSuccessful) {
+                true -> {
+                    ResponseResult.success(response.body())
+                }
+                else -> ResponseResult.error(response.message())
+            }
+            if (response.isSuccessful) {
+                createWorkspace.workspaceId?.let {
+                    spController.updateCacheSettings(CacheClass.Workspace(it), true)
+                } ?: return@flow
+                workspaceLocal.insert(response.body())
+            }
+            emit(state)
+        }.catch {
+            emit(ResponseResult.error("Something went wrong!"))
+        }
 
 }
 

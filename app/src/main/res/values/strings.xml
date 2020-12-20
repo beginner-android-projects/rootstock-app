@@ -58,4 +58,6 @@
     <string name="error_message_not_send">Message has not been sent.</string>
     <string name="too_long_message">This message is too short or too long</string>
     <string name="no_connection">Check your connection</string>
+    <string name="add_new_workspace">add new workspace</string>
+    <string name="workspace_name">workspace name</string>
 </resources>

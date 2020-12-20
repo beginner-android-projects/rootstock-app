@@ -41,6 +41,7 @@
                         android:id="@+id/channel_icon"
                         imageUrl="@{viewmodel.channel.imageUrl}"
                         placeholder="@{@drawable/circle_channel}"
+                        circle="true"
                         android:layout_width="@dimen/basic_channel_size"
                         android:layout_height="@dimen/basic_channel_size"
                         android:layout_weight="1"

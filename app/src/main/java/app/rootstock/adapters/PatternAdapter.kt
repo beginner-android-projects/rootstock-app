@@ -6,18 +6,27 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import app.rootstock.R
 import app.rootstock.views.ChannelPickImageView
+import app.rootstock.views.ItemType
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
 
 class PatternAdapter constructor(
     private val items: MutableList<String>,
     private val patternClicked: ((position: Int, image: String?) -> Unit),
     // for create dialog we want to preselect color and be sure, that
     // there is always an image attached to entity.
-    private val selectFirst: Boolean = false
+    private val selectFirst: Boolean = false,
+    private val type: ItemType
 ) : RecyclerView.Adapter<PatternAdapter.PatternViewHolder>() {
 
     var previousPickedPosition: Int? = null
+
+    companion object{
+        private const val ROUNDED_CORNERS = 40
+    }
 
     inner class PatternViewHolder constructor(
         itemView: View
@@ -25,13 +34,32 @@ class PatternAdapter constructor(
         fun bind(item: String, position: Int) {
             itemView.findViewById<ChannelPickImageView>(R.id.color_item)
                 ?.let {
-                    Glide.with(it)
-                        .load(item)
-                        .diskCacheStrategy(DiskCacheStrategy.DATA)
-                        .circleCrop()
-                        .placeholder(R.drawable.circle_channel)
-                        .error(R.drawable.circle_channel)
-                        .into(it)
+                    when (type) {
+                        ItemType.CHANNEL -> {
+                            Glide.with(it)
+                                .load(item)
+                                .diskCacheStrategy(DiskCacheStrategy.DATA)
+                                .circleCrop()
+                                .placeholder(R.drawable.circle_channel)
+                                .error(R.drawable.circle_channel)
+                                .into(it)
+                        }
+                        ItemType.WORKSPACE -> {
+                            Glide.with(it)
+                                .applyDefaultRequestOptions(
+                                    RequestOptions().transform(
+                                        RoundedCorners(ROUNDED_CORNERS),
+                                        CenterCrop()
+                                    )
+                                )
+                                .load(item)
+                                .diskCacheStrategy(DiskCacheStrategy.DATA)
+                                .placeholder(R.drawable.placeholder_workspace)
+                                .error(R.drawable.placeholder_workspace)
+                                .into(it)
+                        }
+                    }
+
                     it.setOnClickListener {
                         if (previousPickedPosition == position && selectFirst) return@setOnClickListener
                         else if (previousPickedPosition == position) {

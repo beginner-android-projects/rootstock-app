@@ -2,9 +2,8 @@ package app.rootstock.di.modules
 
 
 import android.content.Context
-import android.content.SharedPreferences
 import app.rootstock.api.ColorService
-import app.rootstock.data.channel.ColorsDelegate
+import app.rootstock.data.channel.PatternsDelegate
 import app.rootstock.data.db.AppDatabase
 import app.rootstock.data.network.*
 import app.rootstock.data.prefs.SharedPrefsController
@@ -43,8 +42,8 @@ class AppModule {
 
     @Singleton
     @Provides
-    fun provideColorsDelegate(retrofit: Retrofit): ColorsDelegate {
-        return ColorsDelegate(retrofit.create(ColorService::class.java))
+    fun provideColorsDelegate(retrofit: Retrofit): PatternsDelegate {
+        return PatternsDelegate(retrofit.create(ColorService::class.java))
     }
 
     @Singleton
