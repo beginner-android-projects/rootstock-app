@@ -2,7 +2,6 @@ package app.rootstock.ui.settings
 
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.PorterDuff
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
@@ -17,8 +16,7 @@ import app.rootstock.databinding.ActivitySettingsBinding
 import app.rootstock.ui.signup.RegisterActivity
 import app.rootstock.views.DeleteAccountDialogFragment
 import app.rootstock.views.DrawableItemDecorator
-import app.rootstock.views.SimpleDialogFragment
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import app.rootstock.views.LogOutDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -76,25 +74,13 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun showSignOutDialog() {
-        val dialog = SimpleDialogFragment(::logOut)
-        dialog.show(
-            supportFragmentManager,
-            DIALOG_LOG_OUT
-        )
-    }
-
-    private fun logOut() {
-        viewModel.logOut()
-    }
-
-
-    private fun deleteAccount(email: String) {
-        viewModel.deleteAccount(email)
+        val dialog = LogOutDialogFragment()
+        dialog.show(supportFragmentManager, DIALOG_LOG_OUT)
     }
 
     private fun showDeleteDialog() {
         val email = viewModel.userData.value?.email ?: return
-        val dialog = DeleteAccountDialogFragment(::deleteAccount, email)
+        val dialog = DeleteAccountDialogFragment.newInstance(email)
         dialog.show(supportFragmentManager, DIALOG_DELETE_ACCOUNT)
 
     }

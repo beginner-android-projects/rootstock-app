@@ -7,34 +7,41 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDialogFragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import app.rootstock.R
 import app.rootstock.adapters.PatternAdapter
-import app.rootstock.data.channel.Channel
-import app.rootstock.data.channel.ChannelConstants.channelPossibleColors
 import app.rootstock.data.network.CreateOperation
 import app.rootstock.databinding.DialogChannelCreateBinding
 import app.rootstock.ui.channels.ChannelCreateViewModel
 import app.rootstock.ui.channels.ColorsViewModel
+import app.rootstock.ui.main.WorkspaceViewModel
 import app.rootstock.utils.autoFitColumns
 import app.rootstock.utils.convertDpToPx
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 
 
 @AndroidEntryPoint
 @ExperimentalCoroutinesApi
-class ChannelCreateDialogFragment(
-    private val workspaceId: String,
-    private val channelResult: ((CreateOperation<Channel?>) -> Unit)
-) : AppCompatDialogFragment() {
+class ChannelCreateDialogFragment : AppCompatDialogFragment() {
 
     companion object {
         private const val spanCount = 4
+        private const val ARGUMENT_WORKSPACE_ID = "ARGUMENT_WORKSPACE_ID"
+
+
+        fun newInstance(wsId: String): ChannelCreateDialogFragment {
+            return ChannelCreateDialogFragment().apply {
+                arguments = Bundle().apply {
+                    putString(ARGUMENT_WORKSPACE_ID, wsId)
+                }
+            }
+        }
     }
+
+    private var wsId: String? = null
 
     private val editViewModel: ColorsViewModel by viewModels()
 
@@ -84,6 +91,7 @@ class ChannelCreateDialogFragment(
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        wsId = arguments?.getString(ARGUMENT_WORKSPACE_ID)
         binding.apply {
             viewmodel = this@ChannelCreateDialogFragment.viewModel
             lifecycleOwner = viewLifecycleOwner
@@ -108,14 +116,23 @@ class ChannelCreateDialogFragment(
             (requireDialog() as AlertDialog).setView(binding.root)
         }
         binding.save.setOnClickListener {
-            viewModel.createChannel(workspaceId)
+            wsId?.let { id -> viewModel.createChannel(id) }
         }
         binding.cancel.setOnClickListener { dismiss() }
 
         viewModel.eventChannel.observe(viewLifecycleOwner) {
             if (it != null) {
                 val op = it.getContentIfNotHandled() ?: return@observe
-                channelResult(op)
+                when (op) {
+                    is CreateOperation.Success -> {
+                        op.obj?.let { c ->
+                            val main: WorkspaceViewModel by activityViewModels()
+                            main.addChannel(c)
+                        }
+                    }
+                    is CreateOperation.Error -> {
+                    }
+                }
                 dismiss()
             }
         }

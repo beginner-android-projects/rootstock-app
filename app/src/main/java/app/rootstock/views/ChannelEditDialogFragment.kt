@@ -2,12 +2,14 @@ package app.rootstock.views
 
 import android.app.Dialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDialogFragment
+import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import app.rootstock.R
@@ -16,6 +18,7 @@ import app.rootstock.data.channel.Channel
 import app.rootstock.databinding.DialogChannelEditBinding
 import app.rootstock.ui.channels.ColorsViewModel
 import app.rootstock.ui.main.WorkspaceViewModel
+import app.rootstock.ui.messages.MessagesViewModel
 import app.rootstock.utils.InternetUtil
 import app.rootstock.utils.autoFitColumns
 import app.rootstock.utils.convertDpToPx
@@ -30,13 +33,22 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
  */
 @AndroidEntryPoint
 @ExperimentalCoroutinesApi
-class ChannelEditDialogFragment(
-    private val channel: Channel,
-    private val changed: ((channel: Channel) -> Unit)? = null
-) : AppCompatDialogFragment() {
+class ChannelEditDialogFragment: AppCompatDialogFragment() {
 
     companion object {
         private const val spanCount = 4
+        private const val ARGUMENT_CHANNEL = "ARGUMENT_CHANNEL"
+        private const val ARGUMENT_CHANGE = "ARGUMENT_CHANGE"
+
+        fun newInstance(channel: Channel, change: Boolean): ChannelEditDialogFragment {
+            val f = ChannelEditDialogFragment().apply {
+                arguments = Bundle().apply {
+                    putSerializable(ARGUMENT_CHANNEL, channel)
+                    putBoolean(ARGUMENT_CHANGE, change)
+                }
+            }
+            return f
+        }
     }
 
     private var currentImageUrl: String? = null
@@ -46,6 +58,10 @@ class ChannelEditDialogFragment(
     private val viewModel: WorkspaceViewModel by activityViewModels()
 
     private val editViewModel: ColorsViewModel by viewModels()
+
+    private var channel: Channel? = null
+
+    private var change: Boolean? = null
 
     private val adapterToSet =
         PatternAdapter(items = mutableListOf(), ::patternClicked, type = ItemType.CHANNEL)
@@ -89,6 +105,8 @@ class ChannelEditDialogFragment(
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        channel = arguments?.getSerializable(ARGUMENT_CHANNEL) as? Channel
+        change = arguments?.getBoolean(ARGUMENT_CHANGE)
         binding.apply {
             channel = this@ChannelEditDialogFragment.channel
             lifecycleOwner = viewLifecycleOwner
@@ -117,23 +135,29 @@ class ChannelEditDialogFragment(
                 makeToast(getString(R.string.no_connection))
                 return@setOnClickListener
             }
-            val newName =
-                view?.findViewById<EditText>(R.id.channel_edit_name_text)?.text?.toString()
-                    ?: return@setOnClickListener
-            // if image has not been changed - use initial image
-            if (currentImageUrl == null) currentImageUrl = channel.imageUrl
-            val newChannel = Channel(
-                name = newName,
-                imageUrl = currentImageUrl,
-                channelId = channel.channelId,
-                workspaceId = channel.workspaceId,
-                lastMessage = channel.lastMessage,
-                lastUpdate = channel.lastUpdate,
-                backgroundColor = channel.backgroundColor
-            )
-            changed?.invoke(newChannel)
-            viewModel.updateChannel(newChannel)
-            dismiss()
+            channel?.let { channel ->
+                val newName =
+                    view?.findViewById<EditText>(R.id.channel_edit_name_text)?.text?.toString()
+                        ?: return@setOnClickListener
+                // if image has not been changed - use initial image
+                if (currentImageUrl == null) currentImageUrl = channel.imageUrl
+                val newChannel = Channel(
+                    name = newName,
+                    imageUrl = currentImageUrl,
+                    channelId = channel.channelId,
+                    workspaceId = channel.workspaceId,
+                    lastMessage = channel.lastMessage,
+                    lastUpdate = channel.lastUpdate,
+                    backgroundColor = channel.backgroundColor
+                )
+                if (change == true) {
+                    val messagesViewModel: MessagesViewModel by activityViewModels()
+                    messagesViewModel.setChannel(newChannel)
+                    messagesViewModel.modifyChannel()
+                }
+                viewModel.updateChannel(newChannel)
+                dismiss()
+            }
         }
         binding.cancel.setOnClickListener { dismiss() }
     }

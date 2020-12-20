@@ -4,7 +4,6 @@ import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -53,16 +52,11 @@ class ChannelActivity : AppCompatActivity(), ReLogInObserver {
         }
     }
 
-    private val moreListener = View.OnClickListener {
+    private val editListener = View.OnClickListener {
         messagesViewModel.channel.value?.let { c ->
-            val dialog = ChannelEditDialogFragment(c, ::updateChannel)
+            val dialog = ChannelEditDialogFragment.newInstance(c, true)
             dialog.show(supportFragmentManager, DIALOG_CHANNEL_EDIT)
         }
-    }
-
-    private fun updateChannel(channel: Channel) {
-        messagesViewModel.setChannel(channel)
-        messagesViewModel.modifyChannel()
     }
 
     @ExperimentalCoroutinesApi
@@ -76,7 +70,7 @@ class ChannelActivity : AppCompatActivity(), ReLogInObserver {
         channel?.let { messagesViewModel.setChannel(it) }
 
         binding.favourites.setOnClickListener(toggleListener)
-        binding.more.setOnClickListener(moreListener)
+        binding.more.setOnClickListener(editListener)
         setToolbar()
         checkIcon()
 

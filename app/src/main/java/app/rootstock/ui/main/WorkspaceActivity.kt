@@ -102,25 +102,12 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
         }
     }
 
-    private fun createChannelOperation(op: CreateOperation<Channel?>) {
-        when (op) {
-            is CreateOperation.Success -> {
-                op.obj?.let { viewModel.addChannel(it) }
-            }
-            is CreateOperation.Error -> {
-                // todo toast/snackbar
-            }
-        }
-    }
-
     private fun openAddItemDialog() {
         when (viewModel.pagerPosition.value) {
             1 -> {
                 // todo: redo arguments
                 val dialog = viewModel.workspace.value?.workspaceId?.let {
-                    ChannelCreateDialogFragment(
-                        it, ::createChannelOperation
-                    )
+                    ChannelCreateDialogFragment.newInstance(it)
                 }
                 dialog?.show(supportFragmentManager, DIALOG_CHANNEL_CREATE)
             }

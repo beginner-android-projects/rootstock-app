@@ -1,5 +1,6 @@
 package app.rootstock.ui.messages
 
+import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -29,7 +30,6 @@ sealed class MessageEvent() {
     class NoConnection(val attempt: String? = null) : MessageEvent()
 }
 
-@ActivityScoped
 @OptIn(ExperimentalPagingApi::class)
 class MessagesViewModel @ViewModelInject constructor(private val repository: MessageRepository) :
     ViewModel() {
