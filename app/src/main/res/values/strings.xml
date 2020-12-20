@@ -56,6 +56,6 @@
     <string name="send">send</string>
     <string name="channel_message_send">Do you want to send this message to %1$s?</string>
     <string name="error_message_not_send">Message has not been sent.</string>
-    <string name="too_long_message">This message is too long</string>
+    <string name="too_long_message">This message is too short or too long</string>
     <string name="no_connection">Check your connection</string>
 </resources>

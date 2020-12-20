@@ -9,5 +9,5 @@
     android:contentDescription="@null"
     android:focusable="true"
     android:scaleType="fitCenter"
-    android:src="@drawable/ic_channel_color">
+    android:src="@drawable/circle_channel">
 </app.rootstock.views.ChannelPickImageView>

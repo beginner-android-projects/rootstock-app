@@ -10,6 +10,7 @@
 
     <color name="primary">#7800D7</color>
     <color name="text_additional">#B2B2B2</color>
+    <color name="placeholder">#D6D6D6</color>
     <color name="text_additional_low_opacity">#99FFFFFF</color>
     <color name="layout_overlay">#000000</color>
     <color name="colorButtonDisabled">#B2B2B2</color>
@@ -18,7 +19,8 @@
     <color name="login_gradient_start">#00046D</color>
     <color name="icon_favourites">#FFD600</color>
     <color name="icon_favourites_not">@color/text_additional</color>
-    <color name="cardview_message_background">#F6F6F6</color>
+    <color name="cardview_message_background">#FFFFFF</color>
     <color name="cardview_message_date">@color/text_additional</color>
     <color name="red">#FF0000</color>
+    <color name="workspace_container_bg">#F3F3F3</color>
 </resources>

@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -20,12 +21,14 @@ import androidx.lifecycle.lifecycleScope
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import androidx.paging.PagingData
+import androidx.recyclerview.widget.LinearSmoothScroller
 import app.rootstock.R
 import app.rootstock.adapters.MessageAdapter
 import app.rootstock.data.messages.Message
 import app.rootstock.data.messages.MessageRepository.Companion.NETWORK_PAGE_SIZE
 import app.rootstock.databinding.MessagesFragmentBinding
 import app.rootstock.utils.convertDpToPx
+import app.rootstock.utils.hideSoftKeyboard
 import app.rootstock.utils.makeToast
 import app.rootstock.utils.showKeyboard
 import app.rootstock.views.MessagesLoadStateAdapter
@@ -33,6 +36,7 @@ import app.rootstock.views.SpacingItemDecorationReversed
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_account_start.*
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.*
@@ -52,11 +56,11 @@ class MessagesFragment : Fragment() {
 
     private var created = false
 
-    private var isEditing = false
-
     private var messageEditingId: Long? = null
 
     private var messageBeforeEdit: String? = null
+
+    private var unSelect: (() -> Unit)? = null
 
     private fun search(channelId: Long, refresh: Boolean = false) {
         // Make sure we cancel the previous job before creating a new one
@@ -116,6 +120,9 @@ class MessagesFragment : Fragment() {
                     if (!m.attempt.isNullOrBlank()) binding.input.editText?.setText(m.attempt)
                     makeToast(getString(R.string.no_connection))
                 }
+                is MessageEvent.CancelEditing -> {
+                    cancelEditingMessage()
+                }
                 else -> {
                 }
             }
@@ -136,13 +143,28 @@ class MessagesFragment : Fragment() {
         }
     }
 
+    private fun cancelEditingMessage() {
+        if (viewModel.isEditing.value == true) {
+            unSelect?.invoke()
+            unSelect = null
+            viewModel.stopEditing()
+            binding.send.setImageResource(R.drawable.ic_send_24)
+            messageBeforeEdit = null
+            messageEditingId = null
+            binding.content.text?.clear()
+        }
+    }
+
     private fun sendMessage() {
         var message = binding.content.text.toString()
-        if (message.isBlank()) return
+        if (message.isBlank() && (viewModel.isEditing.value == false)) return
         if (message.length > MAX_MESSAGE_LENGTH) message = message.slice(0 until MAX_MESSAGE_LENGTH)
         binding.content.text?.clear()
-        if (isEditing) {
-            isEditing = false
+        if (viewModel.isEditing.value == true) {
+            unSelect?.invoke()
+            unSelect = null
+            viewModel.stopEditing()
+            binding.send.setImageResource(R.drawable.ic_send_24)
             // if edited message is the same as the one to be sent, save bandwidth and dismiss
             if (messageBeforeEdit != null && messageBeforeEdit == message) {
                 messageBeforeEdit = null
@@ -150,7 +172,8 @@ class MessagesFragment : Fragment() {
             }
             messageBeforeEdit = null
             messageEditingId?.let {
-                viewModel.editMessage(it, message)
+                if (message.isNotBlank())
+                    viewModel.editMessage(it, message)
             }
             messageEditingId = null
         } else {
@@ -161,42 +184,42 @@ class MessagesFragment : Fragment() {
     }
 
     private fun openMenu(message: Message, anchor: View, unSelect: () -> Unit) {
-        lifecycleScope.launch {
-            val popUpView = layoutInflater.inflate(R.layout.popup_message_menu, null)
-            val width = LinearLayout.LayoutParams.WRAP_CONTENT
-            val height = LinearLayout.LayoutParams.WRAP_CONTENT
-            val popupWindow = PopupWindow(popUpView, width, height, true)
-            var yoff = anchor.height
-            val location = IntArray(2)
-            anchor.getLocationOnScreen(location)
+        cancelEditingMessage()
+        val popUpView = layoutInflater.inflate(R.layout.popup_message_menu, null)
+        val width = LinearLayout.LayoutParams.WRAP_CONTENT
+        val height = LinearLayout.LayoutParams.WRAP_CONTENT
+        val popupWindow = PopupWindow(popUpView, width, height, true)
+        var yoff = anchor.height
+        val location = IntArray(2)
+        anchor.getLocationOnScreen(location)
 
-            // difference between screen size and anchor location on y axis
-            val ydiff = Resources.getSystem().displayMetrics.heightPixels - location[1]
-            // if popup is going to be close to bottom nav bar, force yoff in opposite direction
-            if ((ydiff.toFloat() + anchor.height) / Resources.getSystem().displayMetrics.heightPixels < 0.35f)
-                yoff = -requireActivity().convertDpToPx(50f).toInt()
+        // difference between screen size and anchor location on y axis
+        val ydiff = Resources.getSystem().displayMetrics.heightPixels - location[1]
+        // if popup is going to be close to bottom nav bar, force yoff in opposite direction
+        if ((ydiff.toFloat() + anchor.height) / Resources.getSystem().displayMetrics.heightPixels < 0.35f)
+            yoff = -requireActivity().convertDpToPx(50f).toInt()
 
-            popupWindow.elevation = requireContext().resources.getDimension(R.dimen.popup_elevation)
-            popupWindow.showAtLocation(
-                anchor,
-                Gravity.NO_GRAVITY,
-                location[0] + anchor.width / 4,
-                location[1] + yoff
-            )
-            popUpView.findViewById<View>(R.id.copy)
-                ?.setOnClickListener { copyTextToClipboard(message.content); popupWindow.dismiss() }
+        popupWindow.elevation = requireContext().resources.getDimension(R.dimen.popup_elevation)
+        popupWindow.showAtLocation(
+            anchor,
+            Gravity.NO_GRAVITY,
+            location[0],
+            location[1] + yoff
+        )
+        popUpView.findViewById<View>(R.id.copy)
+            ?.setOnClickListener { copyTextToClipboard(message.content); popupWindow.dismiss() }
 
-            popUpView.findViewById<View>(R.id.share_note)
-                ?.setOnClickListener { shareText(message.content); popupWindow.dismiss() }
+        popUpView.findViewById<View>(R.id.share_note)
+            ?.setOnClickListener { shareText(message.content); popupWindow.dismiss() }
 
-            popUpView.findViewById<View>(R.id.delete)
-                ?.setOnClickListener { viewModel.deleteMessage(message.messageId); popupWindow.dismiss() }
+        popUpView.findViewById<View>(R.id.delete)
+            ?.setOnClickListener { viewModel.deleteMessage(message.messageId); popupWindow.dismiss() }
 
-            popupWindow.setOnDismissListener(unSelect)
-        }
+        popupWindow.setOnDismissListener(unSelect)
     }
 
     private fun shareText(text: String) {
+        requireActivity().hideSoftKeyboard()
         val sendIntent: Intent = Intent().apply {
             action = Intent.ACTION_SEND
             putExtra(Intent.EXTRA_TEXT, text)
@@ -213,14 +236,31 @@ class MessagesFragment : Fragment() {
     }
 
 
-    private fun editMessage(message: Message) {
-        isEditing = true
+    private fun editMessage(message: Message, unSelect: () -> Unit, position: Int) {
+
+        cancelEditingMessage()
+        this.unSelect = unSelect
+        viewModel.startEditing()
         messageBeforeEdit = message.content
         messageEditingId = message.messageId
         binding.content.setText(message.content)
         binding.content.requestFocus()
         requireContext().showKeyboard()
         binding.content.setSelection(binding.content.length())
+        binding.send.setImageResource(R.drawable.ic_check_32)
+        lifecycleScope.launch {
+            delay(800)
+            val linearSmoothScroller: LinearSmoothScroller =
+                object : LinearSmoothScroller(requireContext()) {
+                    override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics): Float {
+                        return 30f / displayMetrics.densityDpi
+                    }
+                }
+
+            linearSmoothScroller.targetPosition = position
+
+            binding.list.layoutManager?.startSmoothScroll(linearSmoothScroller)
+        }
     }
 
     private fun initAdapter() {

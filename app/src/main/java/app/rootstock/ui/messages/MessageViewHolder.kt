@@ -14,18 +14,18 @@ class MessageViewHolder(
     private val binding: ItemMessageBinding,
     private val lifecycleOwner: LifecycleOwner,
     private val openMenu: (message: Message, anchor: View, unSelect: () -> Unit) -> Unit,
-    private val edit: (message: Message) -> Unit,
+    private val edit: (message: Message, unSelect: () -> Unit, position: Int) -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(message: Message?) {
+    fun bind(message: Message?, position: Int) {
         binding.lifecycleOwner = lifecycleOwner
         message?.let { m ->
             binding.message = m
             binding.messageContainer.setOnClickListener {
-                select()
                 openMenu(m, binding.messageContainer, ::unSelect)
+                select()
             }
-            binding.edit.setOnClickListener { edit(m) }
+            binding.edit.setOnClickListener { edit(m, ::unSelect, position); select(); }
         }
         binding.executePendingBindings()
     }

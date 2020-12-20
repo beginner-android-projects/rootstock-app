@@ -17,7 +17,7 @@ import app.rootstock.ui.messages.MessageViewHolder
 class MessageAdapter(
     private val lifecycleOwner: LifecycleOwner,
     private val openMenu: (message: Message, anchor: View, unSelect: () -> Unit) -> Unit,
-    private val edit: (message: Message) -> Unit
+    private val edit: (message: Message, unSelect: () -> Unit, position: Int) -> Unit
 ) :
     PagingDataAdapter<Message, MessageViewHolder>(MESSAGE_COMPARATOR) {
 
@@ -34,7 +34,7 @@ class MessageAdapter(
         lastItemPosition = position
         val repoItem = getItem(position)
         if (repoItem != null) {
-            holder.bind(repoItem)
+            holder.bind(repoItem, position)
         }
 
     }

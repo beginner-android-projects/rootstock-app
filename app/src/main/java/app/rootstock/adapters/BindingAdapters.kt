@@ -1,6 +1,7 @@
 package app.rootstock.adapters
 
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.text.Layout
 import android.util.Log
 import android.view.View
@@ -8,11 +9,14 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import app.rootstock.R
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import retrofit2.http.Url
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -92,21 +96,20 @@ fun bindDate(text: TextView, date: Date?) {
     }
 }
 
-//
-//
-//@BindingAdapter(value = ["imageUrl", "placeholder"], requireAll = false)
-//fun imageUrl(imageView: ImageView, imageUrl: Url?, placeholder: Drawable?) {
-//    when (imageUrl) {
-//        null -> {
-//            Glide.with(imageView)
-//                .load(placeholder)
-//                .into(imageView)
-//        }
-//        else -> {
-//            Glide.with(imageView)
-//                .load(imageUrl)
-//                .apply(RequestOptions().placeholder(placeholder))
-//                .into(imageView)
-//        }
-//    }
-//}
+@BindingAdapter(value = ["imageUrl", "placeholder"], requireAll = false)
+fun imageUrl(imageView: ImageView, imageUrl: String?, placeholder: Drawable?) {
+    when (imageUrl) {
+        null -> {
+            Glide.with(imageView)
+                .load(placeholder)
+                .into(imageView)
+        }
+        else -> {
+            Glide.with(imageView)
+                .load(imageUrl)
+                .circleCrop()
+                .apply(RequestOptions().placeholder(placeholder))
+                .into(imageView)
+        }
+    }
+}

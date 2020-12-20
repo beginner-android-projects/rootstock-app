@@ -64,6 +64,5 @@ object ChannelConstants {
         "#c01f0a",
         "#c01f0a",
     )
-    const val defaultChannelColor = "#f0ff0f"
     const val channelNameMaxLength = 32
 }

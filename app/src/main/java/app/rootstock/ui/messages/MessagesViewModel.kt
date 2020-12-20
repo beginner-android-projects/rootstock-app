@@ -23,8 +23,9 @@ import kotlinx.coroutines.launch
 
 sealed class MessageEvent() {
     class Error(val message: String) : MessageEvent()
-    class Created() : MessageEvent()
-    class Deleted() : MessageEvent()
+    object Created : MessageEvent()
+    object Deleted : MessageEvent()
+    object CancelEditing : MessageEvent()
     class NoConnection(val attempt: String? = null) : MessageEvent()
 }
 
@@ -35,6 +36,9 @@ class MessagesViewModel @ViewModelInject constructor(private val repository: Mes
 
     private val _messageEvent = MutableLiveData<Event<MessageEvent>>()
     val messageEvent: LiveData<Event<MessageEvent>> get() = _messageEvent
+
+    private val _isEditing = MutableLiveData(false)
+    val isEditing: LiveData<Boolean> get() = _isEditing
 
     private val _channel = MutableLiveData<Channel>()
     val channel: LiveData<Channel>
@@ -86,7 +90,7 @@ class MessagesViewModel @ViewModelInject constructor(private val repository: Mes
             when (val message =
                 repository.sendMessage(message = sendMessage, workspaceId = wsId).first()) {
                 is ResponseResult.Success -> {
-                    _messageEvent.value = Event(MessageEvent.Created())
+                    _messageEvent.value = Event(MessageEvent.Created)
                     modifyChannel()
                 }
                 is ResponseResult.Error -> {
@@ -104,7 +108,7 @@ class MessagesViewModel @ViewModelInject constructor(private val repository: Mes
             val channelId = channel.value?.channelId ?: return@launch
             when (val response = repository.editMessage(editMessage, id, wsId, channelId).first()) {
                 is ResponseResult.Success -> {
-                    _messageEvent.value = Event(MessageEvent.Created())
+                    _messageEvent.value = Event(MessageEvent.Created)
                     modifyChannel()
                 }
                 is ResponseResult.Error -> {
@@ -118,6 +122,18 @@ class MessagesViewModel @ViewModelInject constructor(private val repository: Mes
         _modifiedChannel.value = true
     }
 
+    fun startEditing(){
+        _isEditing.value = true
+    }
+
+    fun stopEditing(){
+        _isEditing.value = false
+    }
+
+    fun cancelEdit(){
+        _messageEvent.value = Event(MessageEvent.CancelEditing)
+    }
+
     fun deleteMessage(messageId: Long) {
         if (!isConnected()) return
         viewModelScope.launch {
@@ -126,7 +142,7 @@ class MessagesViewModel @ViewModelInject constructor(private val repository: Mes
 
             when (val response = repository.deleteMessage(messageId, wsId, channelId).first()) {
                 is ResponseResult.Success -> {
-                    _messageEvent.value = Event(MessageEvent.Deleted())
+                    _messageEvent.value = Event(MessageEvent.Deleted)
                     modifyChannel()
                 }
                 is ResponseResult.Error -> {

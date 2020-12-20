@@ -5,6 +5,7 @@
 
     <data>
 
+
         <variable
             name="viewmodel"
             type="app.rootstock.ui.messages.MessagesViewModel" />
@@ -38,14 +39,18 @@
 
                     <ImageView
                         android:id="@+id/channel_icon"
-                        colorFilter="@{viewmodel.channel.backgroundColor}"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        imageUrl="@{viewmodel.channel.imageUrl}"
+                        placeholder="@{@drawable/circle_channel}"
+                        android:layout_width="@dimen/basic_channel_size"
+                        android:layout_height="@dimen/basic_channel_size"
                         android:layout_weight="1"
+                        android:paddingTop="@dimen/padding_8"
+                        android:paddingBottom="@dimen/padding_8"
                         android:src="@drawable/circle_toolbar"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:background="@drawable/circle_channel" />
 
 
                     <TextView
@@ -107,6 +112,7 @@
             android:name="app.rootstock.ui.messages.MessagesFragment"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:background="@color/workspace_container_bg"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/app_bar" />
 
