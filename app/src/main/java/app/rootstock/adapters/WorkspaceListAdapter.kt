@@ -19,7 +19,6 @@ class WorkspaceListAdapter constructor(
     private val lifecycleOwner: LifecycleOwner,
     private val workspaceEventHandler: WorkspaceEventHandler,
     private val editDialog: (v: View, w: WorkspaceI) -> Unit,
-
     ) :
     androidx.recyclerview.widget.ListAdapter<Workspace, WorkspaceListAdapter.WorkspaceViewHolder>(
         object :

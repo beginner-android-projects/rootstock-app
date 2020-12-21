@@ -1,11 +1,8 @@
 package app.rootstock.api
 
-import app.rootstock.data.workspace.WorkspaceWithChildren
+import app.rootstock.data.workspace.*
 import retrofit2.Response
-import retrofit2.http.DELETE
-import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.Path
+import retrofit2.http.*
 
 
 interface WorkspaceService {
@@ -19,5 +16,16 @@ interface WorkspaceService {
     suspend fun deleteWorkspace(
         @Path("workspaceId") workspaceId: String
     ): Response<Void>
+
+    @POST("/workspaces/")
+    suspend fun createWorkspace(
+        @Body workspaceRequest: CreateWorkspaceRequest
+    ): Response<Workspace>
+
+    @PATCH("/workspaces/{workspaceId}")
+    suspend fun updateWorkspace(
+        @Path("workspaceId") workspaceId: String,
+        @Body workspaceRequest: UpdateWorkspaceRequest
+    ): Response<Workspace>
 
 }

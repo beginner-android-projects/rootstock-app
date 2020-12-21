@@ -211,7 +211,7 @@ class ChannelsListFragment : Fragment() {
 
         popUpView.findViewById<View>(R.id.edit)?.setOnClickListener {
             popupWindow.dismiss()
-            val dialog = ChannelEditDialogFragment(channel)
+            val dialog = ChannelEditDialogFragment.newInstance(channel, false)
             dialog.show(requireActivity().supportFragmentManager, DIALOG_CHANNEL_EDIT)
         }
         popUpView.findViewById<View>(R.id.delete)?.setOnClickListener {

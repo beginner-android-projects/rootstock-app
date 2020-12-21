@@ -1,6 +1,5 @@
 package app.rootstock.ui.main
 
-import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import app.rootstock.adapters.WorkspaceEventHandler
@@ -28,8 +27,8 @@ sealed class WorkspaceEvent {
     class Backdrop(val close: Boolean) : WorkspaceEvent()
 }
 
-enum class EditEvent {
-    EDIT_OPEN, EDIT_EXIT
+enum class ChannelEvent {
+    EDIT_OPEN, EDIT_EXIT, UPDATE_FAILED
 }
 
 enum class PagerEvent {
@@ -72,8 +71,8 @@ class WorkspaceViewModel @ViewModelInject constructor(
     private val _eventWorkspace = MutableLiveData<Event<WorkspaceEvent>>()
     val eventWorkspace: LiveData<Event<WorkspaceEvent>> get() = _eventWorkspace
 
-    private val _eventChannel = MutableLiveData<Event<EditEvent>>()
-    val eventEdit: LiveData<Event<EditEvent>> get() = _eventChannel
+    private val _eventChannel = MutableLiveData<Event<ChannelEvent>>()
+    val eventEdit: LiveData<Event<ChannelEvent>> get() = _eventChannel
 
     private val _pagerPosition = MutableLiveData<Int>()
     val pagerPosition: LiveData<Int> get() = _pagerPosition
@@ -82,11 +81,11 @@ class WorkspaceViewModel @ViewModelInject constructor(
     val pagerScrolled: LiveData<Event<PagerEvent>> get() = _pagerScrolled
 
     fun editDialogOpened() {
-        _eventChannel.value = Event(EditEvent.EDIT_OPEN)
+        _eventChannel.value = Event(ChannelEvent.EDIT_OPEN)
     }
 
     fun editChannelStop() {
-        _eventChannel.value = Event(EditEvent.EDIT_EXIT)
+        _eventChannel.value = Event(ChannelEvent.EDIT_EXIT)
     }
 
 
@@ -143,7 +142,9 @@ class WorkspaceViewModel @ViewModelInject constructor(
     }
 
     fun updateChannel(channel: Channel) {
-        if (isChannelValid(channel)) {
+        if (channel.isValid()) {
+            val oldValue = _channels.value
+            var index: Int? = null
             // if new data is valid, update locally and send request to the server
             _channels.value = _channels.value?.apply {
                 val oldChannel = find { channel.channelId == it.channelId }
@@ -151,49 +152,46 @@ class WorkspaceViewModel @ViewModelInject constructor(
                 if (oldChannel == channel) return
                 // otherwise replace old channel with new one
                 oldChannel?.let { c ->
-                    this[indexOf(c)] = channel
+                    indexOf(c).let {
+                        index = it
+                        this[it] = channel
+                    }
                 }
             }
             viewModelScope.launch {
-                updateChannelRemote(channel)
+                when (val c = channelRepository.updateChannel(channel).first()) {
+                    is ResponseResult.Success -> {
+                        _channels.value = _channels.value?.apply {
+                            index?.let {
+                                if (c.data != null)
+                                    this[it] = c.data
+                            }
+                        }
+                    }
+                    is ResponseResult.Error -> {
+                        _channels.value = oldValue
+                    }
+                }
             }
         } else {
-            // todo
-            // notify
+            _eventChannel.value = Event(ChannelEvent.UPDATE_FAILED)
         }
-    }
-
-
-    private suspend fun updateChannelRemote(channelToUpdate: Channel) {
-        // fetch user from network
-        when (val channel = channelRepository.updateChannel(channelToUpdate).first()) {
-            is ResponseResult.Success -> {
-
-            }
-            is ResponseResult.Error -> {
-            }
-            else -> {
-            }
-        }
-    }
-
-
-    private fun isChannelValid(channel: Channel): Boolean {
-        if (channel.name.isBlank()) return false
-        return true
     }
 
     fun deleteChannel(channelId: Long) {
+        val oldValue = _channels.value ?: return
+        val wsId = workspace.value?.workspaceId ?: return
+
         _channels.value = _channels.value?.apply {
             val c = find { it.channelId == channelId }
             remove(c)
         }
         viewModelScope.launch {
-            val wsId = workspace.value?.workspaceId ?: return@launch
             when (channelRepository.deleteChannel(channelId, wsId).first()) {
                 is ResponseResult.Success -> {
                 }
                 is ResponseResult.Error -> {
+                    _channels.value = oldValue
                 }
             }
         }
@@ -214,6 +212,7 @@ class WorkspaceViewModel @ViewModelInject constructor(
     }
 
     fun deleteWorkspace(wsId: String) {
+        val oldValue = _workspace.value ?: return
         _workspace.value = _workspace.value?.apply {
             children.apply {
                 val w = find { it.workspaceId == wsId }
@@ -221,10 +220,12 @@ class WorkspaceViewModel @ViewModelInject constructor(
             }
         }
         viewModelScope.launch {
-            when (workspaceRepository.deleteWorkspace(wsId).first()) {
+            when (workspaceRepository.deleteWorkspace(wsId, oldValue.workspaceId).first()) {
                 is ResponseResult.Success -> {
                 }
                 is ResponseResult.Error -> {
+                    // in case of error, return to old workspace value
+                    _workspace.value = oldValue
                 }
             }
         }
@@ -241,6 +242,43 @@ class WorkspaceViewModel @ViewModelInject constructor(
 
     fun toggleBackdrop(close: Boolean) {
         _eventWorkspace.value = Event(WorkspaceEvent.Backdrop(close))
+    }
+
+    fun createWorkspace(workspace: Workspace) {
+        _workspace.value = _workspace.value?.apply {
+            children.add(workspace)
+        }
+    }
+
+    fun updateWorkspace(newWorkspace: Workspace) {
+        val oldValue = _workspace.value ?: return
+        var index: Int? = null
+        _workspace.value = _workspace.value?.apply {
+            val oldWorkspace =
+                children.find { it.workspaceId == newWorkspace.workspaceId } ?: return@apply
+            if (oldWorkspace == newWorkspace) return@apply
+            children.indexOf(oldWorkspace).let {
+                children[it] = newWorkspace
+                index = it
+            }
+        }
+        viewModelScope.launch {
+            when (val result =
+                workspaceRepository.updateWorkspace(newWorkspace, oldValue.workspaceId).first()) {
+                is ResponseResult.Success -> {
+                    _workspace.value = _workspace.value?.apply {
+                        index?.let {
+                            if (result.data != null)
+                                children[it] = result.data
+                        }
+                    }
+                }
+                is ResponseResult.Error -> {
+                    _workspace.value = oldValue
+                }
+            }
+        }
+
     }
 
 

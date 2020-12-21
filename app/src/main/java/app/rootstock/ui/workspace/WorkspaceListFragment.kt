@@ -20,10 +20,7 @@ import app.rootstock.utils.InternetUtil
 import app.rootstock.utils.autoFitColumns
 import app.rootstock.utils.convertDpToPx
 import app.rootstock.utils.makeToast
-import app.rootstock.views.DeleteDialogFragment
-import app.rootstock.views.DeleteObj
-import app.rootstock.views.ItemType
-import app.rootstock.views.GridSpacingItemDecoratorWithCustomCenter
+import app.rootstock.views.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
@@ -125,10 +122,8 @@ class WorkspaceListFragment : Fragment() {
 
         popUpView.findViewById<View>(R.id.edit)?.setOnClickListener {
             popupWindow.dismiss()
-//            val dialog = ChannelEditDialogFragment(channel)
-//            dialog.show(requireActivity().supportFragmentManager,
-//                ChannelsListFragment.DIALOG_CHANNEL_EDIT
-//            )
+            val dialog = WorkspaceEditDialogFragment.newInstance(workspace)
+            dialog.show(requireActivity().supportFragmentManager, DIALOG_WORKSPACE_EDIT)
         }
         popUpView.findViewById<View>(R.id.delete)?.setOnClickListener {
             popupWindow.dismiss()
@@ -162,6 +157,7 @@ class WorkspaceListFragment : Fragment() {
         const val WORKSPACE_SPAN_COUNT = 2
         const val WORKSPACE_COLUMN_WIDTH_DP = 100
         const val DIALOG_WORKSPACE_DELETE = "DIALOG_WORKSPACE_DELETE"
+        const val DIALOG_WORKSPACE_EDIT = "DIALOG_WORKSPACE_EDIT"
     }
 
 

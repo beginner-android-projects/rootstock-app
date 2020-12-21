@@ -12,10 +12,10 @@ import androidx.fragment.app.viewModels
 import app.rootstock.R
 import app.rootstock.adapters.PatternAdapter
 import app.rootstock.data.network.CreateOperation
-import app.rootstock.databinding.DialogChannelCreateBinding
-import app.rootstock.ui.channels.ChannelCreateViewModel
+import app.rootstock.databinding.DialogCreateWorkspaceBinding
 import app.rootstock.ui.channels.ColorsViewModel
 import app.rootstock.ui.main.WorkspaceViewModel
+import app.rootstock.ui.workspace.WorkspaceCreateViewModel
 import app.rootstock.utils.autoFitColumns
 import app.rootstock.utils.convertDpToPx
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -25,32 +25,32 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @AndroidEntryPoint
 @ExperimentalCoroutinesApi
-class ChannelCreateDialogFragment : AppCompatDialogFragment() {
+class WorkspaceCreateDialogFragment : AppCompatDialogFragment() {
 
     companion object {
         private const val spanCount = 4
-        private const val ARGUMENT_WORKSPACE_ID = "ARGUMENT_WORKSPACE_ID"
+        private const val INTENT_EXTRAS_WS_ID = "wsId"
 
-
-        fun newInstance(wsId: String): ChannelCreateDialogFragment {
-            return ChannelCreateDialogFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARGUMENT_WORKSPACE_ID, wsId)
-                }
+        fun newInstance(wsId: String): WorkspaceCreateDialogFragment {
+            val bundle = Bundle().apply {
+                putString(INTENT_EXTRAS_WS_ID, wsId)
             }
+            return WorkspaceCreateDialogFragment().apply { arguments = bundle }
         }
     }
 
+    private val colorsViewModel: ColorsViewModel by viewModels()
+
     private var wsId: String? = null
 
-    private val editViewModel: ColorsViewModel by viewModels()
+    private val viewModel: WorkspaceCreateViewModel by viewModels()
 
-    private lateinit var binding: DialogChannelCreateBinding
-
-    private val viewModel: ChannelCreateViewModel by viewModels()
+    private lateinit var binding: DialogCreateWorkspaceBinding
 
     private val adapterToSet =
-        PatternAdapter(items = mutableListOf(), ::patternClicked, true, circle = true)
+        PatternAdapter(
+            items = mutableListOf(), ::patternClicked, true, circle = false
+        )
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return MaterialAlertDialogBuilder(requireContext()).create()
@@ -61,7 +61,7 @@ class ChannelCreateDialogFragment : AppCompatDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = DialogChannelCreateBinding.inflate(layoutInflater, container, true)
+        binding = DialogCreateWorkspaceBinding.inflate(layoutInflater, container, true)
         return binding.root
     }
 
@@ -70,9 +70,7 @@ class ChannelCreateDialogFragment : AppCompatDialogFragment() {
             R.id.color_item
         )?.togglePicked()
 
-        // if color is picked by user, change line accordingly
-        // otherwise, return to the initial color
-        changeImage(image)
+        image?.let { viewModel.setImage(it) }
 
         // unpick previously picked color
         if (adapterToSet.previousPickedPosition != null && position != adapterToSet.previousPickedPosition) {
@@ -84,16 +82,11 @@ class ChannelCreateDialogFragment : AppCompatDialogFragment() {
         }
     }
 
-    private fun changeImage(image: String?) {
-        image ?: return
-        viewModel.channel.value?.imageUrl = image
-    }
-
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        wsId = arguments?.getString(ARGUMENT_WORKSPACE_ID)
+        wsId = arguments?.getString(INTENT_EXTRAS_WS_ID)
         binding.apply {
-            viewmodel = this@ChannelCreateDialogFragment.viewModel
+            viewmodel = this@WorkspaceCreateDialogFragment.viewModel
             lifecycleOwner = viewLifecycleOwner
             executePendingBindings()
         }
@@ -108,34 +101,37 @@ class ChannelCreateDialogFragment : AppCompatDialogFragment() {
                 )
             )
         }
-        editViewModel.images.observe(this) {
+        colorsViewModel.images.observe(this) {
             adapterToSet.updateList(it.urls)
         }
 
         if (showsDialog) {
             (requireDialog() as AlertDialog).setView(binding.root)
         }
-        binding.save.setOnClickListener {
-            wsId?.let { id -> viewModel.createChannel(id) }
-        }
+        binding.save.setOnClickListener { createWorkspace() }
         binding.cancel.setOnClickListener { dismiss() }
 
-        viewModel.eventChannel.observe(viewLifecycleOwner) {
-            if (it != null) {
-                val op = it.getContentIfNotHandled() ?: return@observe
-                when (op) {
-                    is CreateOperation.Success -> {
-                        op.obj?.let { c ->
-                            val main: WorkspaceViewModel by activityViewModels()
-                            main.addChannel(c)
-                        }
-                    }
-                    is CreateOperation.Error -> {
-                    }
+
+    }
+
+    private fun createWorkspace() {
+        if (wsId == null) dismiss()
+        //todo dd
+        viewModel.event.observe(this) {
+            when (val content = it.getContentIfNotHandled()) {
+                is CreateOperation.Success -> {
+                    val main: WorkspaceViewModel by activityViewModels()
+                    content.obj?.let { w -> main.createWorkspace(w) }
+                    dismiss()
                 }
-                dismiss()
+                is CreateOperation.Error -> {
+                    dismiss()
+                }
+                null -> {
+                }
             }
         }
+        viewModel.createWorkspace(wsId = requireNotNull(wsId))
     }
 
 }

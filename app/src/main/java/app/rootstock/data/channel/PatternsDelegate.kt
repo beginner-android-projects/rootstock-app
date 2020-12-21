@@ -13,9 +13,9 @@ import javax.inject.Inject
 
 data class ImageUrls(val urls: List<String>)
 
-class ColorsDelegate @Inject constructor(private val colorService: ColorService) {
+class PatternsDelegate @Inject constructor(private val colorService: ColorService) {
 
-    suspend fun getColors(): Flow<ResponseResult<ImageUrls?>> = flow {
+    suspend fun getPatterns(): Flow<ResponseResult<ImageUrls?>> = flow {
         val channelResponse = colorService.getColors()
 
         val state = when (channelResponse.isSuccessful) {

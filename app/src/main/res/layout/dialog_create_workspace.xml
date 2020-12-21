@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
@@ -7,7 +8,7 @@
 
         <variable
             name="viewmodel"
-            type="app.rootstock.ui.channels.ChannelCreateViewModel" />
+            type="app.rootstock.ui.workspace.WorkspaceCreateViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -24,37 +25,36 @@
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
             android:maxLines="1"
-            android:text="@string/add_new_channel"
+            android:text="@string/add_new_workspace"
             android:textAlignment="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="channel name" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/channel_edit_name"
+            android:id="@+id/workspace_edit_name"
             style="@style/Text.TextInputLayout.Primary"
+            error="@{viewmodel.workspace.nameValidWorkspace}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="20dp"
-            app:error="@{viewmodel.channel.nameValid}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/channel_name">
 
             <app.rootstock.views.BaseInputEditText
-                android:id="@+id/channel_edit_name_text"
+                android:id="@+id/workspace_edit_name_text"
                 style="@style/Text.EditText.Base"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/form_edit_text_white"
-                android:hint="@string/channel_name"
+                android:hint="@string/workspace_name"
                 android:inputType="text"
-                android:maxLength="@dimen/max_channel_name"
+                android:maxLength="@dimen/max_workspace_name"
                 android:maxLines="1"
-                android:text="@={viewmodel.channel.name}" />
+                android:text="@={viewmodel.workspace.nameWorkspace}" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -66,7 +66,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginEnd="20dp"
             android:overScrollMode="never"
-            app:layout_constraintTop_toBottomOf="@id/channel_edit_name"
+            app:layout_constraintTop_toBottomOf="@id/workspace_edit_name"
             app:spanCount="4"
             tools:itemCount="1"
             tools:listitem="@layout/item_color_channel" />
@@ -94,7 +94,6 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="20dp"
-            android:enabled="@{viewmodel.channel.nameValid}"
             android:text="@string/save"
             android:textAllCaps="false"
             app:layout_constraintEnd_toEndOf="parent"

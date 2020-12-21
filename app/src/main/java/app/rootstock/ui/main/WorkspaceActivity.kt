@@ -6,19 +6,15 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.util.Log
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.content.res.ResourcesCompat
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.add
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import app.rootstock.R
-import app.rootstock.data.channel.Channel
-import app.rootstock.data.network.CreateOperation
 import app.rootstock.data.network.ReLogInObservable
 import app.rootstock.data.network.ReLogInObserver
 import app.rootstock.databinding.ActivityMainWorkspaceBinding
@@ -28,12 +24,11 @@ import app.rootstock.ui.settings.SettingsActivity
 import app.rootstock.ui.signup.RegisterActivity
 import app.rootstock.utils.convertDpToPx
 import app.rootstock.views.ChannelCreateDialogFragment
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import app.rootstock.views.WorkspaceCreateDialogFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main_workspace.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.lang.Exception
 import javax.inject.Inject
@@ -101,29 +96,20 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
         }
     }
 
-    private fun createChannelOperation(op: CreateOperation<Channel?>) {
-        when (op) {
-            is CreateOperation.Success -> {
-                op.obj?.let { viewModel.addChannel(it) }
-            }
-            is CreateOperation.Error -> {
-                // todo toast/snackbar
-            }
-        }
-    }
-
     private fun openAddItemDialog() {
         when (viewModel.pagerPosition.value) {
             1 -> {
+                // todo: redo arguments
                 val dialog = viewModel.workspace.value?.workspaceId?.let {
-                    ChannelCreateDialogFragment(
-                        it, ::createChannelOperation
-                    )
+                    ChannelCreateDialogFragment.newInstance(it)
                 }
-                dialog?.show(
-                    supportFragmentManager,
-                    DIALOG_CHANNEL_CREATE
-                )
+                dialog?.show(supportFragmentManager, DIALOG_CHANNEL_CREATE)
+            }
+            0 -> {
+                val dialog = viewModel.workspace.value?.workspaceId?.let {
+                    WorkspaceCreateDialogFragment.newInstance(it)
+                }
+                dialog?.show(supportFragmentManager, DIALOG_WORKSPACE_CREATE)
             }
             else -> {
             }
@@ -153,13 +139,20 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
 
         viewModel.eventEdit.observe(this) {
             when (it.getContentIfNotHandled()) {
-                EditEvent.EDIT_OPEN -> {
+                ChannelEvent.EDIT_OPEN -> {
                     val vg = window.decorView.rootView as? ViewGroup ?: return@observe
                     applyDim(vg, DIM_AMOUNT)
                 }
-                EditEvent.EDIT_EXIT -> {
+                ChannelEvent.EDIT_EXIT -> {
                     val vg = window.decorView.rootView as? ViewGroup ?: return@observe
                     clearDim(vg)
+                }
+                ChannelEvent.UPDATE_FAILED -> {
+                    Toast.makeText(
+                        this,
+                        getString(R.string.error_channel_update_failed),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
                 else -> {
                 }
@@ -277,6 +270,7 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
         const val BUTTON_ROUNDED_SQUARE_SIZE = 10f
         const val BUTTON_ROUND_SIZE = 30f
         const val DIALOG_CHANNEL_CREATE = "DIALOG_CHANNEL_CREATE"
+        const val DIALOG_WORKSPACE_CREATE = "DIALOG_WORKSPACE_CREATE"
         const val REQUEST_CODE_CHANNEL_ACTIVITY = 100
         const val BUNDLE_WORKSPACE_EXTRA = "BUNDLE_WORKSPACE_EXTRA"
         const val BUNDLE_CHANNEL_EXTRA = "BUNDLE_CHANNEL_EXTRA"

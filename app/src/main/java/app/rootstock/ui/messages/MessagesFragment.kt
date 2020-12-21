@@ -249,7 +249,7 @@ class MessagesFragment : Fragment() {
         binding.content.setSelection(binding.content.length())
         binding.send.setImageResource(R.drawable.ic_check_32)
         lifecycleScope.launch {
-            delay(800)
+            delay(500)
             val linearSmoothScroller: LinearSmoothScroller =
                 object : LinearSmoothScroller(requireContext()) {
                     override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics): Float {

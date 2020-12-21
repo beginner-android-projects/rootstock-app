@@ -5,63 +5,71 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import app.rootstock.R
 import app.rootstock.adapters.PatternAdapter
-import app.rootstock.data.network.CreateOperation
-import app.rootstock.databinding.DialogChannelCreateBinding
-import app.rootstock.ui.channels.ChannelCreateViewModel
+import app.rootstock.data.workspace.Workspace
+import app.rootstock.data.workspace.WorkspaceI
+import app.rootstock.databinding.DialogWorkspaceEditBinding
 import app.rootstock.ui.channels.ColorsViewModel
 import app.rootstock.ui.main.WorkspaceViewModel
+import app.rootstock.utils.InternetUtil
 import app.rootstock.utils.autoFitColumns
 import app.rootstock.utils.convertDpToPx
+import app.rootstock.utils.makeToast
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.dialog_workspace_edit.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-
+/**
+ * Dialog that appears when editing workspace.
+ */
 @AndroidEntryPoint
 @ExperimentalCoroutinesApi
-class ChannelCreateDialogFragment : AppCompatDialogFragment() {
+class WorkspaceEditDialogFragment : AppCompatDialogFragment() {
 
     companion object {
         private const val spanCount = 4
-        private const val ARGUMENT_WORKSPACE_ID = "ARGUMENT_WORKSPACE_ID"
+        private const val ARGUMENT_WORKSPACE = "ARGUMENT_CHANNEL"
 
-
-        fun newInstance(wsId: String): ChannelCreateDialogFragment {
-            return ChannelCreateDialogFragment().apply {
+        fun newInstance(workspace: WorkspaceI): WorkspaceEditDialogFragment {
+            return WorkspaceEditDialogFragment().apply {
                 arguments = Bundle().apply {
-                    putString(ARGUMENT_WORKSPACE_ID, wsId)
+                    putSerializable(ARGUMENT_WORKSPACE, workspace)
                 }
             }
         }
     }
 
-    private var wsId: String? = null
+    private var imageUrl: String? = null
+
+    private lateinit var binding: DialogWorkspaceEditBinding
+
+    private val viewModel: WorkspaceViewModel by activityViewModels()
 
     private val editViewModel: ColorsViewModel by viewModels()
 
-    private lateinit var binding: DialogChannelCreateBinding
-
-    private val viewModel: ChannelCreateViewModel by viewModels()
+    private var workspace: WorkspaceI? = null
 
     private val adapterToSet =
-        PatternAdapter(items = mutableListOf(), ::patternClicked, true, circle = true)
+        PatternAdapter(items = mutableListOf(), ::patternClicked, circle = false, selectFirst = true)
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return MaterialAlertDialogBuilder(requireContext()).create()
     }
 
+    // todo check not loaded patterns click
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = DialogChannelCreateBinding.inflate(layoutInflater, container, true)
+        binding = DialogWorkspaceEditBinding.inflate(layoutInflater, container, true)
         return binding.root
     }
 
@@ -85,15 +93,14 @@ class ChannelCreateDialogFragment : AppCompatDialogFragment() {
     }
 
     private fun changeImage(image: String?) {
-        image ?: return
-        viewModel.channel.value?.imageUrl = image
+        imageUrl = image
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        wsId = arguments?.getString(ARGUMENT_WORKSPACE_ID)
+        workspace = arguments?.getSerializable(ARGUMENT_WORKSPACE) as? WorkspaceI
         binding.apply {
-            viewmodel = this@ChannelCreateDialogFragment.viewModel
+            workspace = this@WorkspaceEditDialogFragment.workspace
             lifecycleOwner = viewLifecycleOwner
             executePendingBindings()
         }
@@ -116,26 +123,29 @@ class ChannelCreateDialogFragment : AppCompatDialogFragment() {
             (requireDialog() as AlertDialog).setView(binding.root)
         }
         binding.save.setOnClickListener {
-            wsId?.let { id -> viewModel.createChannel(id) }
+            if (!InternetUtil.isInternetOn()) {
+                makeToast(getString(R.string.no_connection))
+                dismiss()
+                return@setOnClickListener
+            }
+            workspace?.let { w ->
+                val newName =
+                    view?.findViewById<EditText>(R.id.workspace_edit_name_text)?.text?.toString()
+                        ?: return@setOnClickListener
+                // if image has not been changed - use initial image
+                if (imageUrl == null) imageUrl = w.imageUrl
+                val newWorkspace = Workspace(
+                    workspaceId = w.workspaceId,
+                    name = newName,
+                    backgroundColor = w.backgroundColor,
+                    imageUrl = imageUrl,
+                    createdAt = w.createdAt,
+                )
+                viewModel.updateWorkspace(newWorkspace)
+            }
+            dismiss()
         }
         binding.cancel.setOnClickListener { dismiss() }
-
-        viewModel.eventChannel.observe(viewLifecycleOwner) {
-            if (it != null) {
-                val op = it.getContentIfNotHandled() ?: return@observe
-                when (op) {
-                    is CreateOperation.Success -> {
-                        op.obj?.let { c ->
-                            val main: WorkspaceViewModel by activityViewModels()
-                            main.addChannel(c)
-                        }
-                    }
-                    is CreateOperation.Error -> {
-                    }
-                }
-                dismiss()
-            }
-        }
     }
 
 }

@@ -50,19 +50,15 @@ data class Channel(
     @ColumnInfo(name = "workspace_id")
     @SerializedName("workspace_id")
     override var workspaceId: String
-) : ChannelI, Serializable
+) : ChannelI, Serializable {
+
+    fun isValid(): Boolean {
+        if (name.isBlank()) return false
+        return true
+    }
+}
 
 
 object ChannelConstants {
-    val channelPossibleColors = listOf(
-        "#f0ff0f",
-        "#f3fa0f",
-        "#b0ff0a",
-        "#c01f0a",
-        "#c01f0a",
-        "#c01f0a",
-        "#c01f0a",
-        "#c01f0a",
-    )
     const val channelNameMaxLength = 32
 }

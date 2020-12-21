@@ -5,9 +5,10 @@ import app.rootstock.data.channel.Channel
 import app.rootstock.data.db.DateConverter
 import app.rootstock.data.user.User
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 import java.util.*
 
-interface WorkspaceI {
+interface WorkspaceI: Serializable {
     val workspaceId: String
     val name: String
     val imageUrl: String?

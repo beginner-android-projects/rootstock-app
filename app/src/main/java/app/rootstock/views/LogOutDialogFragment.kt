@@ -7,11 +7,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDialogFragment
+import androidx.fragment.app.activityViewModels
 import app.rootstock.databinding.DialogLogoutBinding
+import app.rootstock.ui.settings.SettingsViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
-class SimpleDialogFragment(private val action: (() -> Unit)) :
-    AppCompatDialogFragment() {
+class LogOutDialogFragment : AppCompatDialogFragment() {
+
+    companion object {
+        fun newInstance(): DeleteAccountDialogFragment {
+            return DeleteAccountDialogFragment()
+        }
+    }
 
     private lateinit var binding: DialogLogoutBinding
 
@@ -31,10 +38,13 @@ class SimpleDialogFragment(private val action: (() -> Unit)) :
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         binding.apply {
-
             lifecycleOwner = viewLifecycleOwner
             executePendingBindings()
-            logout.setOnClickListener { dismiss(); action.invoke() }
+            logout.setOnClickListener {
+                val viewModel: SettingsViewModel by activityViewModels()
+                viewModel.logOut()
+                dismiss()
+            }
             cancel.setOnClickListener { dismiss() }
         }
         if (showsDialog) {

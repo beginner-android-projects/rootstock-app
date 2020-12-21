@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import app.rootstock.R
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.CoroutineScope
@@ -96,8 +97,13 @@ fun bindDate(text: TextView, date: Date?) {
     }
 }
 
-@BindingAdapter(value = ["imageUrl", "placeholder"], requireAll = false)
-fun imageUrl(imageView: ImageView, imageUrl: String?, placeholder: Drawable?) {
+@BindingAdapter(value = ["imageUrl", "placeholder", "circle"], requireAll = false)
+fun imageUrl(
+    imageView: ImageView,
+    imageUrl: String?,
+    placeholder: Drawable?,
+    circle: Boolean? = true
+) {
     when (imageUrl) {
         null -> {
             Glide.with(imageView)
@@ -105,10 +111,13 @@ fun imageUrl(imageView: ImageView, imageUrl: String?, placeholder: Drawable?) {
                 .into(imageView)
         }
         else -> {
+            val options = RequestOptions().placeholder(placeholder)
+            if (circle == false)
+                options.centerCrop() else options.circleCrop()
             Glide.with(imageView)
                 .load(imageUrl)
-                .circleCrop()
-                .apply(RequestOptions().placeholder(placeholder))
+                .error(placeholder)
+                .apply(options)
                 .into(imageView)
         }
     }
