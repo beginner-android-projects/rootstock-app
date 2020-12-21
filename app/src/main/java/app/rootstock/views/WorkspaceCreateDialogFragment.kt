@@ -49,7 +49,7 @@ class WorkspaceCreateDialogFragment : AppCompatDialogFragment() {
 
     private val adapterToSet =
         PatternAdapter(
-            items = mutableListOf(), ::patternClicked, true, type = ItemType.WORKSPACE
+            items = mutableListOf(), ::patternClicked, true, circle = false
         )
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

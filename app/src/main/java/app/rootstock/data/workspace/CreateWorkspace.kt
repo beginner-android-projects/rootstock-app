@@ -49,5 +49,5 @@ class CreateWorkspace
     }
 
     // todo check
-    private fun isNameValid() = nameWorkspace.length in (0..32)
+    private fun isNameValid() = nameWorkspace.length in (2..32)
 }

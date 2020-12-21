@@ -26,11 +26,13 @@ interface WorkspaceRepository {
     ): Flow<ResponseResult<WorkspaceWithChildren?>>
 
     /**
-     * sends a DELETE request for @param workspaceId
+     * sends a DELETE request for @param workspaceId and removes from local storage
      */
-    suspend fun deleteWorkspace(workspaceId: String): Flow<ResponseResult<Void?>>
+    suspend fun deleteWorkspace(workspaceId: String, parentId: String): Flow<ResponseResult<Void?>>
 
     suspend fun createWorkspace(createWorkspace: CreateWorkspaceRequest): Flow<ResponseResult<Workspace?>>
+
+    suspend fun updateWorkspace(workspace: WorkspaceI, workspaceId: String): Flow<ResponseResult<Workspace?>>
 }
 
 class WorkspaceRepositoryImpl @Inject constructor(
@@ -111,7 +113,7 @@ class WorkspaceRepositoryImpl @Inject constructor(
         }.asFlow()
 
 
-    override suspend fun deleteWorkspace(workspaceId: String): Flow<ResponseResult<Void?>> = flow {
+    override suspend fun deleteWorkspace(workspaceId: String, parentId: String): Flow<ResponseResult<Void?>> = flow {
         val channelResponse =
             workspaceRemoteSource.deleteWorkspace(workspaceId)
 
@@ -123,12 +125,12 @@ class WorkspaceRepositoryImpl @Inject constructor(
         }
         if (channelResponse.isSuccessful) {
             workspaceLocal.delete(workspaceId)
-            spController.updateCacheSettings(CacheClass.Workspace(workspaceId), true)
+            spController.updateCacheSettings(CacheClass.Workspace(parentId), true)
         }
         emit(state)
 
     }.catch {
-        emit(ResponseResult.error("Something went wrong!"))
+        emit(ResponseResult.error("Unable to delete workspace"))
     }
 
     override suspend fun createWorkspace(createWorkspace: CreateWorkspaceRequest): Flow<ResponseResult<Workspace?>> =
@@ -150,8 +152,36 @@ class WorkspaceRepositoryImpl @Inject constructor(
             }
             emit(state)
         }.catch {
-            emit(ResponseResult.error("Something went wrong!"))
+            emit(ResponseResult.error("Unable to create workspace"))
         }
+
+
+    override suspend fun updateWorkspace(workspace: WorkspaceI, workspaceId: String): Flow<ResponseResult<Workspace?>> =
+        flow {
+            val request =
+                UpdateWorkspaceRequest(name = workspace.name, imageUrl = workspace.imageUrl)
+            val response =
+                workspaceRemoteSource.updateWorkspace(
+                    workspaceId = workspace.workspaceId,
+                    workspaceRequest = request
+                )
+
+            val state = when (response.isSuccessful) {
+                true -> {
+                    ResponseResult.success(response.body())
+                }
+                else -> ResponseResult.error(response.message())
+            }
+            if (response.isSuccessful) {
+                workspaceLocal.update(workspace = response.body())
+                spController.updateCacheSettings(CacheClass.Workspace(workspace.workspaceId), true)
+                spController.updateCacheSettings(CacheClass.Workspace(workspaceId), true)
+            }
+            emit(state)
+        }.catch {
+            emit(ResponseResult.error("Unable to update workspace"))
+        }
+
 
 }
 

@@ -2,14 +2,12 @@ package app.rootstock.views
 
 import android.app.Dialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDialogFragment
-import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import app.rootstock.R
@@ -41,13 +39,12 @@ class ChannelEditDialogFragment: AppCompatDialogFragment() {
         private const val ARGUMENT_CHANGE = "ARGUMENT_CHANGE"
 
         fun newInstance(channel: Channel, change: Boolean): ChannelEditDialogFragment {
-            val f = ChannelEditDialogFragment().apply {
+            return ChannelEditDialogFragment().apply {
                 arguments = Bundle().apply {
                     putSerializable(ARGUMENT_CHANNEL, channel)
                     putBoolean(ARGUMENT_CHANGE, change)
                 }
             }
-            return f
         }
     }
 
@@ -64,7 +61,7 @@ class ChannelEditDialogFragment: AppCompatDialogFragment() {
     private var change: Boolean? = null
 
     private val adapterToSet =
-        PatternAdapter(items = mutableListOf(), ::patternClicked, type = ItemType.CHANNEL)
+        PatternAdapter(items = mutableListOf(), ::patternClicked, circle = true)
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return MaterialAlertDialogBuilder(requireContext()).create()
@@ -133,6 +130,7 @@ class ChannelEditDialogFragment: AppCompatDialogFragment() {
         binding.save.setOnClickListener {
             if (!InternetUtil.isInternetOn()) {
                 makeToast(getString(R.string.no_connection))
+                dismiss()
                 return@setOnClickListener
             }
             channel?.let { channel ->

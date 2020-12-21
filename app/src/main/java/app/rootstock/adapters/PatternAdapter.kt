@@ -19,7 +19,7 @@ class PatternAdapter constructor(
     // for create dialog we want to preselect color and be sure, that
     // there is always an image attached to entity.
     private val selectFirst: Boolean = false,
-    private val type: ItemType
+    private val circle: Boolean = true
 ) : RecyclerView.Adapter<PatternAdapter.PatternViewHolder>() {
 
     var previousPickedPosition: Int? = null
@@ -34,8 +34,8 @@ class PatternAdapter constructor(
         fun bind(item: String, position: Int) {
             itemView.findViewById<ChannelPickImageView>(R.id.color_item)
                 ?.let {
-                    when (type) {
-                        ItemType.CHANNEL -> {
+                    when (circle) {
+                        true -> {
                             Glide.with(it)
                                 .load(item)
                                 .diskCacheStrategy(DiskCacheStrategy.DATA)
@@ -44,7 +44,7 @@ class PatternAdapter constructor(
                                 .error(R.drawable.circle_channel)
                                 .into(it)
                         }
-                        ItemType.WORKSPACE -> {
+                        false -> {
                             Glide.with(it)
                                 .applyDefaultRequestOptions(
                                     RequestOptions().transform(
