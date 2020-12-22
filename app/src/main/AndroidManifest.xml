@@ -14,7 +14,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Rootstock"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.launch.LauncherActivity">
+        <activity
+            android:name=".ui.launch.LauncherActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -22,16 +24,24 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.signup.RegisterActivity" />
-        <activity android:name=".ui.main.WorkspaceActivity">
+        <activity
+            android:name=".ui.signup.RegisterActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.main.WorkspaceActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.settings.SettingsActivity" />
-        <activity android:name=".ui.channels.ChannelActivity" />
+        <activity
+            android:name=".ui.settings.SettingsActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.channels.ChannelActivity"
+            android:screenOrientation="portrait" />
 
         <meta-data
             android:name="preloaded_fonts"
