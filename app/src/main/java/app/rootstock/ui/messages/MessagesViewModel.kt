@@ -1,6 +1,5 @@
 package app.rootstock.ui.messages
 
-import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -17,7 +16,6 @@ import app.rootstock.data.messages.MessageRepository
 import app.rootstock.data.network.ResponseResult
 import app.rootstock.data.result.Event
 import app.rootstock.utils.InternetUtil
-import dagger.hilt.android.scopes.ActivityScoped
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch

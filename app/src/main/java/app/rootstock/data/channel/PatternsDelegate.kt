@@ -1,11 +1,7 @@
 package app.rootstock.data.channel
 
-import app.rootstock.api.ChannelService
 import app.rootstock.api.ColorService
 import app.rootstock.data.network.ResponseResult
-import app.rootstock.data.prefs.CacheClass
-import app.rootstock.data.prefs.SharedPrefsController
-import app.rootstock.ui.channels.ChannelRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow

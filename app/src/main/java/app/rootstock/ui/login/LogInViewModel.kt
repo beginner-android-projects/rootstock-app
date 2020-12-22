@@ -1,11 +1,9 @@
 package app.rootstock.ui.login
 
-import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import app.rootstock.data.network.ResponseResult
 import app.rootstock.data.result.Event
-import app.rootstock.data.token.Token
 import app.rootstock.data.token.TokenRepository
 import app.rootstock.data.user.UserRepository
 import app.rootstock.data.user.UserWithPassword
