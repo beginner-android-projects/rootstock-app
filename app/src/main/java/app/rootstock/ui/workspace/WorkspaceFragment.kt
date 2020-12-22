@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -56,6 +57,8 @@ class WorkspaceFragment : Fragment() {
 
     }
 
+    private var indicatorWidth: Int? = null
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -75,6 +78,33 @@ class WorkspaceFragment : Fragment() {
                 else -> "workspaces"
             }
         }.attach()
+
+        //Determine indicator width at runtime
+        binding.tabLayout.post {
+            indicatorWidth = binding.tabLayout.width / binding.tabLayout.tabCount
+
+            //Assign new width
+            val indicatorParams = binding.indicator.layoutParams as? FrameLayout.LayoutParams
+            indicatorWidth?.let {
+                indicatorParams?.width = it
+                binding.indicator.layoutParams = indicatorParams
+            }
+        }
+
+        binding.pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageScrolled(i: Int, positionOffset: Float, positionOffsetPx: Int) {
+                indicatorWidth ?: return
+                val params = binding.indicator.layoutParams as FrameLayout.LayoutParams
+
+                val translationOffset: Float = (positionOffset + i) * indicatorWidth!!
+                params.leftMargin = translationOffset.toInt()
+                binding.indicator.layoutParams = params
+            }
+
+            override fun onPageSelected(i: Int) {}
+            override fun onPageScrollStateChanged(i: Int) {}
+        })
+
         viewModel.loadWorkspace(args.workspaceId)
         viewModel.setRoot(isAtRoot())
         setObservers()

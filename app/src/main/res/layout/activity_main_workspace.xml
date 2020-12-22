@@ -46,11 +46,11 @@
 
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/nav_host"
-                android:backgroundTint="@color/workspace_container_bg"
                 android:name="androidx.navigation.fragment.NavHostFragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginBottom="?attr/actionBarSize"
+                android:backgroundTint="@color/workspace_container_bg"
                 app:defaultNavHost="true"
                 app:navGraph="@navigation/nav_workspaces" />
         </app.rootstock.views.Backdrop>
@@ -71,7 +71,7 @@
             android:contentDescription="@null"
             android:src="@drawable/ic_add_24_white"
             app:backgroundTint="@color/primary"
-            app:elevation="10dp"
+            app:elevation="8dp"
             app:layout_anchor="@id/bottom_app_bar"
             app:layout_anchorGravity="center_horizontal" />
 

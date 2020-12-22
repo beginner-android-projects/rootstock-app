@@ -5,9 +5,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import app.rootstock.R
+import app.rootstock.utils.GlideApp.with
 import app.rootstock.views.ChannelPickImageView
-import app.rootstock.views.ItemType
-import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -24,7 +23,7 @@ class PatternAdapter constructor(
 
     var previousPickedPosition: Int? = null
 
-    companion object{
+    companion object {
         private const val ROUNDED_CORNERS = 40
     }
 
@@ -36,7 +35,7 @@ class PatternAdapter constructor(
                 ?.let {
                     when (circle) {
                         true -> {
-                            Glide.with(it)
+                            with(it)
                                 .load(item)
                                 .diskCacheStrategy(DiskCacheStrategy.DATA)
                                 .circleCrop()
@@ -45,7 +44,7 @@ class PatternAdapter constructor(
                                 .into(it)
                         }
                         false -> {
-                            Glide.with(it)
+                            with(it)
                                 .applyDefaultRequestOptions(
                                     RequestOptions().transform(
                                         RoundedCorners(ROUNDED_CORNERS),

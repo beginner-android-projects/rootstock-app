@@ -1,10 +1,7 @@
 package app.rootstock.data.channel
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.ForeignKey
+import androidx.room.*
 import androidx.room.ForeignKey.CASCADE
-import androidx.room.PrimaryKey
 
 @Entity(
     tableName = "channels_favourite",
@@ -13,7 +10,8 @@ import androidx.room.PrimaryKey
         childColumns = ["channel_id"],
         parentColumns = ["channel_id"],
         onDelete = CASCADE
-    )]
+    )],
+    indices = [Index("channel_id")]
 )
 data class ChannelFavourite constructor(
     @PrimaryKey val id: Int,

@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import app.rootstock.R
+import app.rootstock.utils.GlideApp
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
@@ -106,7 +107,7 @@ fun imageUrl(
 ) {
     when (imageUrl) {
         null -> {
-            Glide.with(imageView)
+            GlideApp.with(imageView)
                 .load(placeholder)
                 .into(imageView)
         }
@@ -114,7 +115,7 @@ fun imageUrl(
             val options = RequestOptions().placeholder(placeholder)
             if (circle == false)
                 options.centerCrop() else options.circleCrop()
-            Glide.with(imageView)
+            GlideApp.with(imageView)
                 .load(imageUrl)
                 .error(placeholder)
                 .apply(options)
