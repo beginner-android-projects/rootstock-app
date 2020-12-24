@@ -54,7 +54,6 @@ object WorkspaceModule {
         workspaceDataSource: WorkspaceService,
         workspaceDao: WorkspaceDao,
         channelDao: ChannelDao,
-        cacheCleaner: CacheCleaner,
         spController: SharedPrefsController,
         appDatabase: AppDatabase
     ): WorkspaceRepository {

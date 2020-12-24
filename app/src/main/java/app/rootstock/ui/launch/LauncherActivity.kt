@@ -12,9 +12,6 @@ import app.rootstock.ui.signup.RegisterActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
-
-// todo: remove cleartext traffic from manifest on prod
-
 @AndroidEntryPoint
 class LauncherActivity : AppCompatActivity() {
     val viewModel: LaunchViewModel by viewModels()

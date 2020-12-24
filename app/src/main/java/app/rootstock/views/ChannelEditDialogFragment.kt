@@ -70,7 +70,6 @@ class ChannelEditDialogFragment : AppCompatDialogFragment() {
         return MaterialAlertDialogBuilder(requireContext()).create()
     }
 
-    // todo check not loaded patterns click
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

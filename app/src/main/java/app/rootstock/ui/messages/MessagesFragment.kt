@@ -76,7 +76,6 @@ class MessagesFragment : Fragment() {
         }
     }
 
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -237,7 +236,6 @@ class MessagesFragment : Fragment() {
 
 
     private fun editMessage(message: Message, unSelect: () -> Unit, position: Int) {
-
         cancelEditingMessage()
         this.unSelect = unSelect
         viewModel.startEditing()

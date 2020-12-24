@@ -1,9 +1,6 @@
 package app.rootstock.data.token
 
-import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.room.*
-import java.util.*
 
 @Dao
 interface TokenDao {

@@ -1,6 +1,7 @@
 package app.rootstock.ui.channels.favourites
 
 import app.rootstock.data.channel.Channel
+import app.rootstock.data.channel.ChannelConstants.maxFavouriteChannels
 import app.rootstock.data.channel.ChannelFavouriteDao
 import kotlinx.coroutines.flow.Flow
 import java.lang.IllegalStateException
@@ -21,7 +22,8 @@ class ChannelFavouriteRepositoryImpl @Inject constructor(
     override suspend fun toggleFavourite(channelId: Long) {
         if (isFavourite(channelId)) favourites.remove(channelId)
         else {
-            if (favourites.getSize() > 3) throw IllegalStateException()
+            // allow only 4 favourite channels
+            if (favourites.getSize() > maxFavouriteChannels - 1) throw IllegalStateException()
             else favourites.add(channelId)
         }
     }

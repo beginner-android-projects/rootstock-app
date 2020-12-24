@@ -68,7 +68,6 @@ class ServerAuthenticator @Inject constructor(
         }
 
         // revoke old token
-        // todo: inject coroutine context
         CoroutineScope(Dispatchers.Main).launch {
             tokenRepository.revokeToken(refreshToken, newToken.accessToken)
         }

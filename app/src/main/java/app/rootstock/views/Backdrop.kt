@@ -134,14 +134,6 @@ class Backdrop(
             ResourcesCompat.getDrawable(resources, frontLayerBackground, null)
     }
 
-    //    override fun onKeyPreIme(keyCode: Int, event: KeyEvent?): Boolean {
-//        // clear focus if back button pressed
-//        if (keyCode == KeyEvent.KEYCODE_BACK) {
-//            closeBackdrop()
-//        }
-//        return super.onKeyPreIme(keyCode, event)
-//    }
-//
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         if (mcToolbarId != -1) {

@@ -48,7 +48,6 @@ object ChannelModule {
         remoteKeysDao: RemoteKeysDao,
         database: AppDatabase,
         spController: SharedPrefsController
-//        cacheCleaner: CacheCleaner
     ): MessageRepository {
         return MessageRepository(messageDao, messageService, remoteKeysDao, database, spController)
     }

@@ -25,8 +25,7 @@ interface RemoteKeysDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(remoteKey: RemoteKeys)
 
-    // todo rmeove 1st channel_id check
-    @Query("SELECT * FROM remote_keys WHERE channel_id = :channelId and message_id in (select max(message_id) from remote_keys where channel_id = :channelId)")
+    @Query("SELECT * FROM remote_keys WHERE message_id in (select max(message_id) from remote_keys where channel_id = :channelId)")
     fun getLastRemoteKeys(channelId: Long): RemoteKeys?
 
     @Query("select count(*) from remote_keys where channel_id = :channelId")

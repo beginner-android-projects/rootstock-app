@@ -63,7 +63,6 @@ class SignUpFragment : Fragment() {
         txtPrivacy.setOnClickListener {
             // todo: open web privacy policy
         }
-        // in case of translations??
         try {
             val spannable = SpannableString(txtPrivacy.text ?: getString(R.string.sign_up_privacy))
             spannable.setSpan(

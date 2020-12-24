@@ -60,6 +60,7 @@ data class Channel(
 
 
 object ChannelConstants {
-    const val channelNameMaxLength = 50
+    private const val channelNameMaxLength = 50
+    const val maxFavouriteChannels = 4
     val channelNameRange = (1..channelNameMaxLength)
 }

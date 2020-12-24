@@ -25,20 +25,20 @@ class GridSpacingItemDecorator(
         val column = position % spanCount // item column
         if (includeEdge) {
             outRect.left =
-                spacing - column * spacing / spanCount // spacing - column * ((1f / spanCount) * spacing)
+                spacing - column * spacing / spanCount
             outRect.right =
-                (column + 1) * spacing / spanCount // (column + 1) * ((1f / spanCount) * spacing)
+                (column + 1) * spacing / spanCount
             if (position < spanCount) { // top edge
                 outRect.top = spacing
             }
             outRect.bottom = spacing // item bottom
         } else {
-            outRect.left = column * spacing / spanCount // column * ((1f / spanCount) * spacing)
+            outRect.left = column * spacing / spanCount
             outRect.right =
-                spacing - (column + 1) * spacing / spanCount // spacing - (column + 1) * ((1f /    spanCount) * spacing)
+                spacing - (column + 1) * spacing / spanCount
             if (position >= spanCount) {
 
-                outRect.top = if (bottomSameAsSide == true) spacing % 2 else spacing // item top
+                outRect.top = if (bottomSameAsSide == true) spacing % 2 else spacing
             }
         }
     }
@@ -62,7 +62,7 @@ class GridSpacingItemDecoratorWithCustomCenter(
         val position = parent.getChildAdapterPosition(view) // item position
         val column = position % spanCount // item column
         outRect.left =
-            if (position % 2 == 1) column * (spacing + centerSpacing) / spanCount else column * spacing / spanCount // column * ((1f / spanCount) * spacing)
+            if (position % 2 == 1) column * (spacing + centerSpacing) / spanCount else column * spacing / spanCount
         outRect.right =
             if (position % 2 == 1) spacing - (column + 1) * spacing / spanCount else spacing - (column + 1) * (spacing - centerSpacing) / spanCount
 

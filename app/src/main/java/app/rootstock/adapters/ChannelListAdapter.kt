@@ -1,10 +1,8 @@
 package app.rootstock.adapters
 
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.cardview.widget.CardView
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -41,7 +39,6 @@ class ChannelListAdapter(
             binding.channels = item
             binding.lifecycleOwner = lifecycleOwner
             binding.executePendingBindings()
-//            binding.channelColor.setColorFilter(Color.parseColor(item.backgroundColor))
             item.imageUrl?.let {
                 Glide.with(binding.channelColor.context)
                     .applyDefaultRequestOptions(

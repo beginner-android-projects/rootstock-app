@@ -163,7 +163,7 @@ class AppModule {
     @Singleton
     fun getCache(@ApplicationContext context: Context): Cache {
         val httpCacheDirectory = File(context.cacheDir, "http-cache")
-        val cacheSize = 10 * 1024 * 1024 // 10 MiB
+        val cacheSize = 20 * 1024 * 1024 // 20 MiB
         return Cache(httpCacheDirectory, cacheSize.toLong())
     }
 

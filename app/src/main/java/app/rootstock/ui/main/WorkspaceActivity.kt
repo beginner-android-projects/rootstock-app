@@ -99,7 +99,6 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
     private fun openAddItemDialog() {
         when (viewModel.pagerPosition.value) {
             1 -> {
-                // todo: redo arguments
                 val dialog = viewModel.workspace.value?.workspaceId?.let {
                     ChannelCreateDialogFragment.newInstance(it)
                 }
@@ -117,7 +116,6 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
     }
 
     private fun navigateToSettings() {
-        // todo change to nav
         val intent = Intent(this, SettingsActivity::class.java)
         startActivity(intent)
     }

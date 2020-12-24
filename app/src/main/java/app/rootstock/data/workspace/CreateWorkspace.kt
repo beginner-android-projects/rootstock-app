@@ -48,6 +48,5 @@ class CreateWorkspace
         notifyPropertyChanged(BR.nameValidWorkspace)
     }
 
-    // todo check
-    private fun isNameValid() = nameWorkspace.length in (2..32)
+    private fun isNameValid() = nameWorkspace.length in WorkspaceConstants.workspaceNameRange
 }
