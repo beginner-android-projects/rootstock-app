@@ -77,7 +77,6 @@
                     android:layout_marginTop="32dp"
                     android:layout_marginEnd="@dimen/padding_16"
                     android:layout_marginBottom="@dimen/padding_16"
-                    app:cardElevation="5dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

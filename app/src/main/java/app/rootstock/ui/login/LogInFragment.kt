@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import app.rootstock.R
+import app.rootstock.data.user.UserWithPassword
 import app.rootstock.databinding.FragmentLoginBinding
 import app.rootstock.ui.main.WorkspaceActivity
 import app.rootstock.utils.makeToast
@@ -53,23 +54,6 @@ class LogInFragment : Fragment() {
         setObservers()
 
     }
-
-    private fun setUpTextNoAccount(txtNoAccount: TextView) {
-        // in case of translations??
-        try {
-            val spannable = SpannableString(txtNoAccount.text ?: getString(R.string.no_account))
-            spannable.setSpan(
-                ForegroundColorSpan(requireContext().getColor(R.color.primary)),
-                12,
-                22,
-                Spannable.SPAN_EXCLUSIVE_INCLUSIVE
-            )
-            txtNoAccount.text = spannable
-        } catch (e: IndexOutOfBoundsException) {
-            e.printStackTrace()
-        }
-    }
-
 
     private fun setObservers() {
         viewModel.logInStatus.observe(viewLifecycleOwner) {

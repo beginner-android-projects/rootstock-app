@@ -2,6 +2,8 @@ package app.rootstock.views
 
 import android.app.Dialog
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +15,7 @@ import androidx.fragment.app.viewModels
 import app.rootstock.R
 import app.rootstock.adapters.PatternAdapter
 import app.rootstock.data.workspace.Workspace
+import app.rootstock.data.workspace.WorkspaceConstants.workspaceNameRange
 import app.rootstock.data.workspace.WorkspaceI
 import app.rootstock.databinding.DialogWorkspaceEditBinding
 import app.rootstock.ui.channels.ColorsViewModel
@@ -57,7 +60,7 @@ class WorkspaceEditDialogFragment : AppCompatDialogFragment() {
     private var workspace: WorkspaceI? = null
 
     private val adapterToSet =
-        PatternAdapter(items = mutableListOf(), ::patternClicked, circle = false, selectFirst = true)
+        PatternAdapter(items = mutableListOf(), ::patternClicked, circle = false, selectFirst = false)
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return MaterialAlertDialogBuilder(requireContext()).create()
@@ -122,6 +125,18 @@ class WorkspaceEditDialogFragment : AppCompatDialogFragment() {
         if (showsDialog) {
             (requireDialog() as AlertDialog).setView(binding.root)
         }
+        binding.workspaceEditNameText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                binding.save.isEnabled = p0 != null && p0.length in workspaceNameRange
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+            }
+
+        })
         binding.save.setOnClickListener {
             if (!InternetUtil.isInternetOn()) {
                 makeToast(getString(R.string.no_connection))

@@ -20,9 +20,11 @@ import app.rootstock.data.network.ReLogInObserver
 import app.rootstock.databinding.ActivityChannelBinding
 import app.rootstock.ui.main.WorkspaceActivity.Companion.BUNDLE_CHANNEL_EXTRA
 import app.rootstock.ui.main.WorkspaceActivity.Companion.BUNDLE_WORKSPACE_EXTRA
+import app.rootstock.ui.messages.MessageEvent
 import app.rootstock.ui.messages.MessagesViewModel
 import app.rootstock.ui.signup.RegisterActivity
 import app.rootstock.utils.hideSoftKeyboard
+import app.rootstock.utils.makeToast
 import app.rootstock.views.ChannelEditDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -88,6 +90,22 @@ class ChannelActivity : AppCompatActivity(), ReLogInObserver {
                     ).show()
                 }
                 null -> {
+                }
+            }
+        }
+
+        messagesViewModel.messageEvent.observe(this) {
+            when (it.getContentIfNotHandled()) {
+                MessageEvent.UpdateFailed -> {
+                    Toast.makeText(
+                        this,
+                        getString(R.string.error_channel_update_failed),
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                    channel?.let { it1 -> messagesViewModel.setChannel(it1) }
+                }
+                else -> {
                 }
             }
         }

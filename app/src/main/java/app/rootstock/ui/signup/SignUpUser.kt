@@ -20,9 +20,8 @@ class SignUpUser :
         }
 
         // only ascii chars with no spaces or tabs
-        // todo: change 2 to 6
         private val passwordRegex =
-            """^[a-zA-Z0-9@\#\?+!:;'"*\-\$\_&\(\)^,./\\-]{2,32}$""".toRegex()
+            """^([a-zA-Z0-9!@#$%^&*()_+§}|?~`=\\/<>,.\-\'\"]{6,32})$""".toRegex()
 
         // standard email regex
         private val emailRegex =

@@ -197,14 +197,14 @@ class ChannelsListFragment : Fragment() {
         val width = LinearLayout.LayoutParams.WRAP_CONTENT
         val height = LinearLayout.LayoutParams.WRAP_CONTENT
         val popupWindow = PopupWindow(popUpView, width, height, true)
-        var yoff = requireContext().convertDpToPx(60f).toInt()
+        var yoff = 0
         val location = IntArray(2)
         anchor.getLocationOnScreen(location)
 
         // difference between screen size and anchor location on y axis
         val ydiff = Resources.getSystem().displayMetrics.heightPixels - location[1]
         // if popup is going to be close to bottom nav bar, force yoff in opposite direction
-        if (ydiff.toFloat() / Resources.getSystem().displayMetrics.heightPixels < 0.35f) yoff *= -3
+        if (ydiff.toFloat() / Resources.getSystem().displayMetrics.heightPixels < 0.35f) yoff = -requireContext().convertDpToPx(180f).toInt()
 
         popupWindow.showAsDropDown(anchor, 0, yoff)
         popupWindow.setOnDismissListener { viewModel.editChannelStop() }

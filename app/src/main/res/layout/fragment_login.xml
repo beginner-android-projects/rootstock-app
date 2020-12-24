@@ -40,14 +40,14 @@
             android:id="@+id/email"
             style="@style/Text.TextInputLayout.Primary"
             android:layout_width="match_parent"
-            app:layout_constraintTop_toBottomOf="@id/guideline_header"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
+            android:layout_marginTop="80dp"
             android:layout_marginEnd="32dp"
             app:error="@{viewmodel.user.emailValid}"
-            android:layout_marginTop="80dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/guideline_header">
 
             <app.rootstock.views.BaseInputEditText
                 style="@style/Text.EditText.Base"
@@ -71,9 +71,9 @@
             android:layout_marginStart="32dp"
             android:layout_marginEnd="32dp"
             android:layout_marginBottom="50dp"
-            app:layout_constraintTop_toBottomOf="@id/email"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/email">
 
             <app.rootstock.views.BaseInputEditText
                 style="@style/Text.EditText.Base"
@@ -90,17 +90,16 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/materialButton"
-            app:layout_constraintTop_toBottomOf="@id/password"
             style="@style/AppMaterialButton.Base"
             android:layout_width="match_parent"
             android:layout_height="75dp"
-            app:layout_constraintVertical_bias="1.5"
-            android:layout_marginBottom="100dp"
             android:onClick="@{()->viewmodel.logIn()}"
             android:text="@string/log_in"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/password"
+            app:layout_constraintVertical_bias=".6" />
 
         <ProgressBar
             loading="@{viewmodel.loading}"

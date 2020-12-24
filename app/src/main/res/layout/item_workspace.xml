@@ -54,7 +54,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginStart="24dp"
                     android:layout_toStartOf="@id/edit_workspace"
-                    android:ellipsize="end"
+                    android:ellipsize="marquee"
                     android:lineSpacingMultiplier=".8"
                     android:maxLines="2"
                     android:text="@{workspace.name}"

@@ -3,7 +3,7 @@ package app.rootstock.data.channel
 import androidx.databinding.BaseObservable
 import androidx.databinding.Bindable
 import app.rootstock.BR
-import app.rootstock.data.channel.ChannelConstants.channelNameMaxLength
+import app.rootstock.data.channel.ChannelConstants.channelNameRange
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
@@ -13,7 +13,7 @@ data class CreateChannelRequest(
     private val color: String? = null,
     @SerializedName("image_url")
     private val imageUrl: String?,
-    @SerializedName("ws_id_to_add_to")
+    @SerializedName("ws_id")
     private val workspaceId: String?,
 )
 
@@ -49,5 +49,5 @@ class CreateChannel
     }
 
 
-    private fun isNameValid() = name.length in (2..channelNameMaxLength)
+    private fun isNameValid() = name.length in channelNameRange
 }

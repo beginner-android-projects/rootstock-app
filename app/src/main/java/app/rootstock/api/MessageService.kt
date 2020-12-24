@@ -7,12 +7,12 @@ import retrofit2.http.*
 
 interface MessageService {
 
-    @GET("/messages/{channelId}")
+    @GET("/messages/")
     suspend fun getMessages(
-        @Path("channelId") channelId: Long,
+        @Query("channel_id") channelId: Long,
         @Query("offset") offset: Int = 0,
         @Header("Cache-Control") cacheControl: String? = null,
-        ): List<Message>
+    ): List<Message>
 
     @POST("/messages/")
     suspend fun sendMessages(
@@ -33,7 +33,7 @@ interface MessageService {
 
 data class SendMessage(
     val content: String,
-    @SerializedName("channel_id_to_add_to") val channelId: Long
+    @SerializedName("channel_id") val channelId: Long
 )
 
 data class EditMessage(

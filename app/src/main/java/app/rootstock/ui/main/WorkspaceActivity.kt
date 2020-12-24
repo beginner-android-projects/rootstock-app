@@ -195,6 +195,13 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
                     if (e.close) binding.backdropView.closeBackdrop()
                     else binding.backdropView.openBackdrop()
                 }
+                is WorkspaceEvent.UpdateFailed -> {
+                    Toast.makeText(
+                        this,
+                        getString(R.string.error_channel_update_failed),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
                 else -> {
                 }
             }
@@ -266,9 +273,9 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
         const val DIM_AMOUNT = 0.3f
 
         // 10f - round dps for square button
-        // 30f - for circle button
-        const val BUTTON_ROUNDED_SQUARE_SIZE = 10f
-        const val BUTTON_ROUND_SIZE = 30f
+        // 50f - for circle button
+        const val BUTTON_ROUNDED_SQUARE_SIZE = 15f
+        const val BUTTON_ROUND_SIZE = 50f
         const val DIALOG_CHANNEL_CREATE = "DIALOG_CHANNEL_CREATE"
         const val DIALOG_WORKSPACE_CREATE = "DIALOG_WORKSPACE_CREATE"
         const val REQUEST_CODE_CHANNEL_ACTIVITY = 100

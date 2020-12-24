@@ -13,7 +13,7 @@ data class CreateWorkspaceRequest(
     private val color: String? = null,
     @SerializedName("image_url")
     private val imageUrl: String?,
-    @SerializedName("ws_id_to_add")
+    @SerializedName("ws_id")
     val workspaceId: String?,
 )
 

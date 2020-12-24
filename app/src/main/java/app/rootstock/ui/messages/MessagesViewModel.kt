@@ -1,5 +1,6 @@
 package app.rootstock.ui.messages
 
+import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -15,6 +16,8 @@ import app.rootstock.data.messages.Message
 import app.rootstock.data.messages.MessageRepository
 import app.rootstock.data.network.ResponseResult
 import app.rootstock.data.result.Event
+import app.rootstock.ui.channels.ChannelRepository
+import app.rootstock.ui.main.ChannelEvent
 import app.rootstock.utils.InternetUtil
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -25,11 +28,15 @@ sealed class MessageEvent() {
     object Created : MessageEvent()
     object Deleted : MessageEvent()
     object CancelEditing : MessageEvent()
+    object UpdateFailed : MessageEvent()
     class NoConnection(val attempt: String? = null) : MessageEvent()
 }
 
 @OptIn(ExperimentalPagingApi::class)
-class MessagesViewModel @ViewModelInject constructor(private val repository: MessageRepository) :
+class MessagesViewModel @ViewModelInject constructor(
+    private val repository: MessageRepository,
+    private val channelRepository: ChannelRepository,
+) :
     ViewModel() {
 
     private val _messageEvent = MutableLiveData<Event<MessageEvent>>()
@@ -120,15 +127,15 @@ class MessagesViewModel @ViewModelInject constructor(private val repository: Mes
         _modifiedChannel.value = true
     }
 
-    fun startEditing(){
+    fun startEditing() {
         _isEditing.value = true
     }
 
-    fun stopEditing(){
+    fun stopEditing() {
         _isEditing.value = false
     }
 
-    fun cancelEdit(){
+    fun cancelEdit() {
         _messageEvent.value = Event(MessageEvent.CancelEditing)
     }
 
@@ -147,6 +154,22 @@ class MessagesViewModel @ViewModelInject constructor(private val repository: Mes
                     _messageEvent.postValue(Event(MessageEvent.Error(message = response.message)))
                 }
             }
+        }
+    }
+
+    fun updateChannel(channel: Channel) {
+        if (channel.isValid()) {
+            viewModelScope.launch {
+                when (val c = channelRepository.updateChannel(channel).first()) {
+                    is ResponseResult.Success -> {
+                    }
+                    is ResponseResult.Error -> {
+                        _messageEvent.value = Event(MessageEvent.UpdateFailed)
+                    }
+                }
+            }
+        } else {
+            _messageEvent.value = Event(MessageEvent.UpdateFailed)
         }
     }
 }

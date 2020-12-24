@@ -1,5 +1,6 @@
 package app.rootstock.ui.main
 
+import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import app.rootstock.adapters.WorkspaceEventHandler
@@ -24,6 +25,7 @@ sealed class WorkspaceEvent {
     object NoUser : WorkspaceEvent()
     object Error : WorkspaceEvent()
     object NavigateToRoot : WorkspaceEvent()
+    object UpdateFailed : WorkspaceEvent()
     class Backdrop(val close: Boolean) : WorkspaceEvent()
 }
 
@@ -141,42 +143,6 @@ class WorkspaceViewModel @ViewModelInject constructor(
         _eventWorkspace.value = Event(WorkspaceEvent.NavigateToRoot)
     }
 
-    fun updateChannel(channel: Channel) {
-        if (channel.isValid()) {
-            val oldValue = _channels.value
-            var index: Int? = null
-            // if new data is valid, update locally and send request to the server
-            _channels.value = _channels.value?.apply {
-                val oldChannel = find { channel.channelId == it.channelId }
-                // return if there were no changes
-                if (oldChannel == channel) return
-                // otherwise replace old channel with new one
-                oldChannel?.let { c ->
-                    indexOf(c).let {
-                        index = it
-                        this[it] = channel
-                    }
-                }
-            }
-            viewModelScope.launch {
-                when (val c = channelRepository.updateChannel(channel).first()) {
-                    is ResponseResult.Success -> {
-                        _channels.value = _channels.value?.apply {
-                            index?.let {
-                                if (c.data != null)
-                                    this[it] = c.data
-                            }
-                        }
-                    }
-                    is ResponseResult.Error -> {
-                        _channels.value = oldValue
-                    }
-                }
-            }
-        } else {
-            _eventChannel.value = Event(ChannelEvent.UPDATE_FAILED)
-        }
-    }
 
     fun deleteChannel(channelId: Long) {
         val oldValue = _channels.value ?: return
@@ -244,6 +210,14 @@ class WorkspaceViewModel @ViewModelInject constructor(
         _eventWorkspace.value = Event(WorkspaceEvent.Backdrop(close))
     }
 
+    fun removeWorkspace(workspaceId: String) {
+        _workspace.value = _workspace.value?.apply {
+            children.find { it.workspaceId == workspaceId }?.let {
+                children.remove(it)
+            }
+        }
+    }
+
     fun createWorkspace(workspace: Workspace) {
         _workspace.value = _workspace.value?.apply {
             children.add(workspace)
@@ -251,12 +225,13 @@ class WorkspaceViewModel @ViewModelInject constructor(
     }
 
     fun updateWorkspace(newWorkspace: Workspace) {
-        val oldValue = _workspace.value ?: return
+        val oldWorkspaceParent = _workspace.value ?: return
+        val oldWorkspace = oldWorkspaceParent.run {
+            children.find { it.workspaceId == newWorkspace.workspaceId } ?: return
+        }
+        if (oldWorkspace == newWorkspace) return
         var index: Int? = null
         _workspace.value = _workspace.value?.apply {
-            val oldWorkspace =
-                children.find { it.workspaceId == newWorkspace.workspaceId } ?: return@apply
-            if (oldWorkspace == newWorkspace) return@apply
             children.indexOf(oldWorkspace).let {
                 children[it] = newWorkspace
                 index = it
@@ -264,7 +239,8 @@ class WorkspaceViewModel @ViewModelInject constructor(
         }
         viewModelScope.launch {
             when (val result =
-                workspaceRepository.updateWorkspace(newWorkspace, oldValue.workspaceId).first()) {
+                workspaceRepository.updateWorkspace(newWorkspace, oldWorkspaceParent.workspaceId)
+                    .first()) {
                 is ResponseResult.Success -> {
                     _workspace.value = _workspace.value?.apply {
                         index?.let {
@@ -274,7 +250,12 @@ class WorkspaceViewModel @ViewModelInject constructor(
                     }
                 }
                 is ResponseResult.Error -> {
-                    _workspace.value = oldValue
+                    _eventWorkspace.value = Event(WorkspaceEvent.UpdateFailed)
+                    index?.let {
+                        _workspace.value = _workspace.value?.apply {
+                            children[it] = oldWorkspace
+                        }
+                    }
                 }
             }
         }

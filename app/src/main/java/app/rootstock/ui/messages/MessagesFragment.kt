@@ -148,7 +148,7 @@ class MessagesFragment : Fragment() {
             unSelect?.invoke()
             unSelect = null
             viewModel.stopEditing()
-            binding.send.setImageResource(R.drawable.ic_send_24)
+            binding.send.setImageResource(R.drawable.ic_send)
             messageBeforeEdit = null
             messageEditingId = null
             binding.content.text?.clear()
@@ -164,7 +164,7 @@ class MessagesFragment : Fragment() {
             unSelect?.invoke()
             unSelect = null
             viewModel.stopEditing()
-            binding.send.setImageResource(R.drawable.ic_send_24)
+            binding.send.setImageResource(R.drawable.ic_send)
             // if edited message is the same as the one to be sent, save bandwidth and dismiss
             if (messageBeforeEdit != null && messageBeforeEdit == message) {
                 messageBeforeEdit = null

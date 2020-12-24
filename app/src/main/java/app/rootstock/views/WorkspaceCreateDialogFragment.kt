@@ -18,6 +18,7 @@ import app.rootstock.ui.main.WorkspaceViewModel
 import app.rootstock.ui.workspace.WorkspaceCreateViewModel
 import app.rootstock.utils.autoFitColumns
 import app.rootstock.utils.convertDpToPx
+import app.rootstock.utils.makeToast
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -125,6 +126,9 @@ class WorkspaceCreateDialogFragment : AppCompatDialogFragment() {
                     dismiss()
                 }
                 is CreateOperation.Error -> {
+                    makeToast(getString(R.string.error_workspace_not_created))
+                    val main: WorkspaceViewModel by activityViewModels()
+                    main.removeWorkspace(workspaceId = requireNotNull(wsId))
                     dismiss()
                 }
                 null -> {

@@ -94,6 +94,7 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="20dp"
+            android:enabled="@{viewmodel.workspace.nameValidWorkspace}"
             android:text="@string/save"
             android:textAllCaps="false"
             app:layout_constraintEnd_toEndOf="parent"

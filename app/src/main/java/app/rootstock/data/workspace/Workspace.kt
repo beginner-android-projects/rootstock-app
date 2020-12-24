@@ -8,7 +8,7 @@ import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 import java.util.*
 
-interface WorkspaceI: Serializable {
+interface WorkspaceI : Serializable {
     val workspaceId: String
     val name: String
     val imageUrl: String?
@@ -64,3 +64,9 @@ data class WorkspaceWithChildren(
     var channels: List<Channel>,
     var children: MutableList<Workspace>,
 ) : WorkspaceI
+
+
+object WorkspaceConstants{
+    private const val workspaceNameMaxLength = 50
+    val workspaceNameRange = (1..workspaceNameMaxLength)
+}

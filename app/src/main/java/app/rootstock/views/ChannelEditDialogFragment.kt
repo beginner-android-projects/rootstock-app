@@ -2,6 +2,8 @@ package app.rootstock.views
 
 import android.app.Dialog
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,9 +15,12 @@ import androidx.fragment.app.viewModels
 import app.rootstock.R
 import app.rootstock.adapters.PatternAdapter
 import app.rootstock.data.channel.Channel
+import app.rootstock.data.channel.ChannelConstants.channelNameRange
 import app.rootstock.databinding.DialogChannelEditBinding
 import app.rootstock.ui.channels.ColorsViewModel
+import app.rootstock.ui.main.ChannelEvent
 import app.rootstock.ui.main.WorkspaceViewModel
+import app.rootstock.ui.messages.MessageEvent
 import app.rootstock.ui.messages.MessagesViewModel
 import app.rootstock.utils.InternetUtil
 import app.rootstock.utils.autoFitColumns
@@ -31,7 +36,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
  */
 @AndroidEntryPoint
 @ExperimentalCoroutinesApi
-class ChannelEditDialogFragment: AppCompatDialogFragment() {
+class ChannelEditDialogFragment : AppCompatDialogFragment() {
 
     companion object {
         private const val spanCount = 4
@@ -51,8 +56,6 @@ class ChannelEditDialogFragment: AppCompatDialogFragment() {
     private var currentImageUrl: String? = null
 
     private lateinit var binding: DialogChannelEditBinding
-
-    private val viewModel: WorkspaceViewModel by activityViewModels()
 
     private val editViewModel: ColorsViewModel by viewModels()
 
@@ -127,6 +130,19 @@ class ChannelEditDialogFragment: AppCompatDialogFragment() {
         if (showsDialog) {
             (requireDialog() as AlertDialog).setView(binding.root)
         }
+        binding.channelEditNameText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                binding.save.isEnabled = p0 != null && p0.length in channelNameRange
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+            }
+
+        })
+
         binding.save.setOnClickListener {
             if (!InternetUtil.isInternetOn()) {
                 makeToast(getString(R.string.no_connection))
@@ -139,24 +155,17 @@ class ChannelEditDialogFragment: AppCompatDialogFragment() {
                         ?: return@setOnClickListener
                 // if image has not been changed - use initial image
                 if (currentImageUrl == null) currentImageUrl = channel.imageUrl
-                val newChannel = Channel(
-                    name = newName,
-                    imageUrl = currentImageUrl,
-                    channelId = channel.channelId,
-                    workspaceId = channel.workspaceId,
-                    lastMessage = channel.lastMessage,
-                    lastUpdate = channel.lastUpdate,
-                    backgroundColor = channel.backgroundColor
-                )
+                val newChannel = channel.copy(name = newName, imageUrl = currentImageUrl)
+                val messagesViewModel: MessagesViewModel by activityViewModels()
                 if (change == true) {
-                    val messagesViewModel: MessagesViewModel by activityViewModels()
                     messagesViewModel.setChannel(newChannel)
                     messagesViewModel.modifyChannel()
                 }
-                viewModel.updateChannel(newChannel)
+                messagesViewModel.updateChannel(newChannel)
                 dismiss()
             }
         }
+
         binding.cancel.setOnClickListener { dismiss() }
     }
 
