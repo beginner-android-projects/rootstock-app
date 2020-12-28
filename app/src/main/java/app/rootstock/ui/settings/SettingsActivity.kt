@@ -41,17 +41,17 @@ class SettingsActivity : AppCompatActivity() {
     private fun setRv() {
         val items = listOf(
             SettingsItem(
-                drawable = R.drawable.ic_baseline_work_24,
+                drawable = R.drawable.ic_baseline_security_24,
                 title = getString(R.string.privacy_policy),
                 actionHandler = ::privacyClicked
             ),
             SettingsItem(
-                drawable = R.drawable.ic_baseline_work_24,
+                drawable = R.drawable.ic_logout_24,
                 title = getString(R.string.settings_log_out),
                 actionHandler = ::showSignOutDialog
             ),
             SettingsItem(
-                drawable = R.drawable.ic_delete_24,
+                drawable = R.drawable.ic_delete_forever_24,
                 title = getString(R.string.delete_account),
                 actionHandler = ::showDeleteDialog
             ),

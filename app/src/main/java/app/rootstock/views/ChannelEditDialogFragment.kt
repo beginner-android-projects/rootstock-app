@@ -155,12 +155,15 @@ class ChannelEditDialogFragment : AppCompatDialogFragment() {
                 // if image has not been changed - use initial image
                 if (currentImageUrl == null) currentImageUrl = channel.imageUrl
                 val newChannel = channel.copy(name = newName, imageUrl = currentImageUrl)
-                val messagesViewModel: MessagesViewModel by activityViewModels()
                 if (change == true) {
+                    val messagesViewModel: MessagesViewModel by activityViewModels()
                     messagesViewModel.setChannel(newChannel)
                     messagesViewModel.modifyChannel()
+                    messagesViewModel.updateChannel(newChannel)
+                } else {
+                    val main: WorkspaceViewModel by activityViewModels()
+                    main.updateChannel(newChannel)
                 }
-                messagesViewModel.updateChannel(newChannel)
                 dismiss()
             }
         }

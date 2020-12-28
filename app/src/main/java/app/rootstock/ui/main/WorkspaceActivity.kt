@@ -88,7 +88,14 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
         binding.bottomAppBar.apply {
             setOnNavigationItemSelectedListener { menuItem ->
                 when (menuItem.itemId) {
-                    R.id.menu_home -> viewModel.navigateToRoot()
+                    R.id.menu_home -> {
+                        binding.bottomAppBar.menu.setGroupCheckable(
+                            0,
+                            true,
+                            true
+                        )
+                        viewModel.navigateToRoot()
+                    }
                     R.id.menu_settings -> navigateToSettings()
                 }
                 true
@@ -158,6 +165,7 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
         }
         viewModel.isAtRoot.observe(this) {
             if (it == true) {
+                binding.bottomAppBar.menu.setGroupCheckable(0, true, true)
                 try {
                     supportFragmentManager.commit {
                         val fragment =
@@ -167,6 +175,8 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
                     }
                 } catch (e: Exception) {
                 }
+            } else if (it == false) {
+                binding.bottomAppBar.menu.setGroupCheckable(0, false, true)
             }
         }
         viewModel.pagerScrolled.observe(this) {
@@ -270,7 +280,7 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
         const val ANIMATION_DURATION_FAB = 200L
         const val DIM_AMOUNT = 0.3f
 
-        // 10f - round dps for square button
+        // 15f - round dps for square button
         // 50f - for circle button
         const val BUTTON_ROUNDED_SQUARE_SIZE = 15f
         const val BUTTON_ROUND_SIZE = 50f

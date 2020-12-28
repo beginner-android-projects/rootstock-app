@@ -95,7 +95,7 @@ class ChannelActivity : AppCompatActivity(), ReLogInObserver {
         }
 
         messagesViewModel.messageEvent.observe(this) {
-            when (it.getContentIfNotHandled()) {
+            when (it.peekContent()) {
                 MessageEvent.UpdateFailed -> {
                     Toast.makeText(
                         this,

@@ -14,5 +14,6 @@
     <dimen name="padding_top">20dp</dimen>
     <dimen name="basic_channel_size">56dp</dimen>
     <dimen name="padding_4">4dp</dimen>
+    <dimen name="workspace_radius">15dp</dimen>
     <item name="max_workspace_name" format="integer" type="dimen">50</item>
 </resources>

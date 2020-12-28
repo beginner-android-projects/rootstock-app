@@ -58,7 +58,7 @@
             android:paddingBottom="@dimen/padding_16"
             android:text="@string/favourites_no_channels"
             android:textAlignment="center"
-            android:textColor="@color/text_additional_low_opacity"
+            android:textColor="@color/favourite_no_text"
             android:textSize="17sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

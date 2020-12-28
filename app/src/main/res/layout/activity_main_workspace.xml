@@ -8,6 +8,7 @@
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
+        android:background="@color/workspace_container_bg"
         android:layout_height="match_parent">
 
         <com.google.android.material.appbar.AppBarLayout
@@ -71,7 +72,7 @@
             android:contentDescription="@null"
             android:src="@drawable/ic_add_24_white"
             app:backgroundTint="@color/primary"
-            app:elevation="8dp"
+            app:elevation="10dp"
             app:layout_anchor="@id/bottom_app_bar"
             app:layout_anchorGravity="center_horizontal" />
 

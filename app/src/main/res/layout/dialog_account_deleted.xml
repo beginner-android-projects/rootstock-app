@@ -22,6 +22,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <ImageView
+            android:id="@+id/illustration"
+            android:layout_marginTop="@dimen/padding_16"
+            android:src="@drawable/ic_account_deleted_illustration"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/account_deleted"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"/>
+
         <TextView
             android:id="@+id/message"
             style="@style/AlertDialog.BodyText"
@@ -34,7 +44,7 @@
             android:textAlignment="textStart"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/account_deleted" />
+            app:layout_constraintTop_toBottomOf="@id/illustration" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/ok"

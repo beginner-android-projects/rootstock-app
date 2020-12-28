@@ -12,6 +12,7 @@ import app.rootstock.data.user.UserRepository
 import app.rootstock.data.workspace.Workspace
 import app.rootstock.data.workspace.WorkspaceWithChildren
 import app.rootstock.ui.channels.ChannelRepository
+import app.rootstock.ui.messages.MessageEvent
 import app.rootstock.ui.workspace.WorkspaceRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
@@ -258,7 +259,40 @@ class WorkspaceViewModel @ViewModelInject constructor(
                 }
             }
         }
+    }
 
+    fun updateChannel(channel: Channel) {
+        val oldChannel =
+            _channels.value?.run { find { it.channelId == channel.channelId } } ?: return
+        if (oldChannel == channel) return
+        val index = _channels.value?.run { indexOf(oldChannel) } ?: return
+
+        // preupdate new channel
+        _channels.value = _channels.value?.apply {
+            this[index] = channel
+        }
+        if (channel.isValid()) {
+            viewModelScope.launch {
+                when (val c = channelRepository.updateChannel(channel).first()) {
+                    is ResponseResult.Success -> {
+                        _channels.value = _channels.value?.apply {
+                            c.data?.let { this[index] = it }
+                        }
+                    }
+                    is ResponseResult.Error -> {
+                        _eventChannel.value = Event(ChannelEvent.UPDATE_FAILED)
+                        _channels.value = _channels.value?.apply {
+                            this[index] = oldChannel
+                        }
+                    }
+                }
+            }
+        } else {
+            _eventChannel.value = Event(ChannelEvent.UPDATE_FAILED)
+            _channels.value = _channels.value?.apply {
+                this[index] = oldChannel
+            }
+        }
     }
 
 

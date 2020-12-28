@@ -245,9 +245,9 @@ class MessagesFragment : Fragment() {
         binding.content.requestFocus()
         requireContext().showKeyboard()
         binding.content.setSelection(binding.content.length())
-        binding.send.setImageResource(R.drawable.ic_check_32)
+        binding.send.setImageResource(R.drawable.ic_check_message_edit)
         lifecycleScope.launch {
-            delay(500)
+            delay(600)
             val linearSmoothScroller: LinearSmoothScroller =
                 object : LinearSmoothScroller(requireContext()) {
                     override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics): Float {

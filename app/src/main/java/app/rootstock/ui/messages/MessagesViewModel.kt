@@ -172,4 +172,5 @@ class MessagesViewModel @ViewModelInject constructor(
             _messageEvent.value = Event(MessageEvent.UpdateFailed)
         }
     }
+
 }

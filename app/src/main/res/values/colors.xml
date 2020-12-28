@@ -11,7 +11,7 @@
     <color name="primary">#7800D7</color>
     <color name="text_additional">#B2B2B2</color>
     <color name="placeholder">#D6D6D6</color>
-    <color name="text_additional_low_opacity">#99FFFFFF</color>
+    <color name="favourite_no_text">@color/text_additional</color>
     <color name="layout_overlay">#000000</color>
     <color name="colorButtonDisabled">#B2B2B2</color>
     <color name="colorButtonEnabled">@color/primary</color>
