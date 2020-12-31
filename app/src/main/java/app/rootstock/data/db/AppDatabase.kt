@@ -15,6 +15,8 @@ import app.rootstock.data.token.Token
 import app.rootstock.data.token.TokenDao
 import app.rootstock.data.user.User
 import app.rootstock.data.user.UserDao
+import app.rootstock.data.version.Version
+import app.rootstock.data.version.VersionDao
 import app.rootstock.data.workspace.Workspace
 import app.rootstock.data.workspace.WorkspaceDao
 import app.rootstock.data.workspace.WorkspaceTree
@@ -28,7 +30,8 @@ import app.rootstock.utils.DATABASE_NAME
         User::class, Token::class, Workspace::class, Channel::class, WorkspaceTree::class,
         Message::class,
         RemoteKeys::class,
-        ChannelFavourite::class
+        ChannelFavourite::class,
+        Version::class
     ], version = 1
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -39,6 +42,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun remoteKeysDao(): RemoteKeysDao
     abstract fun channelDao(): ChannelDao
     abstract fun favouritesDao(): ChannelFavouriteDao
+    abstract fun versionDao(): VersionDao
 
     companion object {
 

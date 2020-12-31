@@ -13,6 +13,7 @@ import androidx.databinding.DataBindingUtil
 import app.rootstock.R
 import app.rootstock.adapters.SettingsListAdapter
 import app.rootstock.databinding.ActivitySettingsBinding
+import app.rootstock.di.modules.AppModule.Companion.URL_PRIVACY_POLICY
 import app.rootstock.ui.signup.RegisterActivity
 import app.rootstock.views.DeleteAccountDialogFragment
 import app.rootstock.views.DrawableItemDecorator
@@ -119,7 +120,6 @@ class SettingsActivity : AppCompatActivity() {
 
     companion object {
         // todo real site link
-        const val URL_PRIVACY_POLICY = "https://google.com"
         const val DIALOG_LOG_OUT = "DIALOG_LOG_OUT"
         const val DIALOG_DELETE_ACCOUNT = "DIALOG_DELETE_ACCOUNT"
         const val ACCOUNT_DELETED = "ACCOUNT_DELETED"

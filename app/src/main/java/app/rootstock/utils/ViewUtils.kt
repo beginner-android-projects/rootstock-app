@@ -2,6 +2,7 @@ package app.rootstock.utils
 
 import android.app.Activity
 import android.content.Context
+import android.content.res.Configuration
 import android.util.DisplayMetrics
 import android.view.inputmethod.InputMethodManager
 import androidx.recyclerview.widget.GridLayoutManager
@@ -41,4 +42,10 @@ fun Activity.hideSoftKeyboard() {
     } catch (e: Exception) {
 
     }
+}
+
+fun Context.isTablet(): Boolean {
+    return ((resources.configuration.screenLayout
+            and Configuration.SCREENLAYOUT_SIZE_MASK)
+            >= Configuration.SCREENLAYOUT_SIZE_LARGE)
 }

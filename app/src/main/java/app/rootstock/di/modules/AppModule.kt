@@ -34,6 +34,7 @@ import javax.inject.Singleton
 class AppModule {
 
     companion object {
+        const val URL_PRIVACY_POLICY = "https://fraktus.app/privacy-policy"
         const val SERVER_DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS"
         const val SHARED_PREFS = "Fraktus"
 //        const val API_BASE_URL = "http://192.168.43.116:8000"

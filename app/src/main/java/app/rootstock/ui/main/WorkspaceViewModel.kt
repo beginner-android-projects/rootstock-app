@@ -12,7 +12,7 @@ import app.rootstock.data.user.UserRepository
 import app.rootstock.data.workspace.Workspace
 import app.rootstock.data.workspace.WorkspaceWithChildren
 import app.rootstock.ui.channels.ChannelRepository
-import app.rootstock.ui.messages.MessageEvent
+import app.rootstock.ui.workspace.VersionRepository
 import app.rootstock.ui.workspace.WorkspaceRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
@@ -26,6 +26,7 @@ sealed class WorkspaceEvent {
     object Error : WorkspaceEvent()
     object NavigateToRoot : WorkspaceEvent()
     object UpdateFailed : WorkspaceEvent()
+    object UpdateNeeded : WorkspaceEvent()
     class Backdrop(val close: Boolean) : WorkspaceEvent()
 }
 
@@ -44,6 +45,7 @@ class WorkspaceViewModel @ViewModelInject constructor(
     private val workspaceRepository: WorkspaceRepository,
     private val channelRepository: ChannelRepository,
     private val spController: SharedPrefsController,
+    private val versionRepository: VersionRepository,
 ) :
     ViewModel(), WorkspaceEventHandler {
 
@@ -89,7 +91,6 @@ class WorkspaceViewModel @ViewModelInject constructor(
     fun editChannelStop() {
         _eventChannel.value = Event(ChannelEvent.EDIT_EXIT)
     }
-
 
     fun loadWorkspace(workspaceId: String?) {
         _workspace.value = null
@@ -291,6 +292,23 @@ class WorkspaceViewModel @ViewModelInject constructor(
             _eventChannel.value = Event(ChannelEvent.UPDATE_FAILED)
             _channels.value = _channels.value?.apply {
                 this[index] = oldChannel
+            }
+        }
+    }
+
+    init {
+        viewModelScope.launch {
+            val version = versionRepository.getVersionLocal()
+            when (val remote = versionRepository.getVersionRemote().first()) {
+                is ResponseResult.Success -> {
+                    version ?: return@launch
+                    remote.data ?: return@launch
+                    if (remote.data.version != version.version) {
+                        _eventWorkspace.value = Event(WorkspaceEvent.UpdateNeeded)
+                    }
+                }
+                else -> {
+                }
             }
         }
     }

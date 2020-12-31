@@ -1,11 +1,14 @@
 package app.rootstock.ui.main
 
 import android.animation.ObjectAnimator
+import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.Log
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -22,6 +25,7 @@ import app.rootstock.ui.channels.FavouriteChannelsFragment
 import app.rootstock.ui.launch.LauncherActivity
 import app.rootstock.ui.settings.SettingsActivity
 import app.rootstock.ui.signup.RegisterActivity
+import app.rootstock.ui.update.UpdateActivity
 import app.rootstock.utils.convertDpToPx
 import app.rootstock.views.ChannelCreateDialogFragment
 import app.rootstock.views.WorkspaceCreateDialogFragment
@@ -30,7 +34,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main_workspace.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
-import java.lang.Exception
 import javax.inject.Inject
 
 
@@ -209,6 +212,11 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
                         getString(R.string.error_channel_update_failed),
                         Toast.LENGTH_SHORT
                     ).show()
+                }
+                is WorkspaceEvent.UpdateNeeded -> {
+                    val intent = Intent(this, UpdateActivity::class.java)
+                    startActivity(intent)
+                    finishAfterTransition()
                 }
                 else -> {
                 }

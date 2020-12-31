@@ -2,6 +2,7 @@ package app.rootstock.ui.signup
 
 import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
@@ -15,6 +16,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import app.rootstock.R
 import app.rootstock.databinding.FragmentSignupBinding
+import app.rootstock.di.modules.AppModule
 import app.rootstock.ui.main.WorkspaceActivity
 import app.rootstock.utils.makeToast
 import dagger.hilt.android.AndroidEntryPoint
@@ -55,13 +57,12 @@ class SignUpFragment : Fragment() {
 
         val txtPrivacy = view?.findViewById<TextView>(R.id.privacy_policy)
         txtPrivacy?.let { setUpTextPrivacy(it) }
-
-
     }
 
     private fun setUpTextPrivacy(txtPrivacy: TextView) {
         txtPrivacy.setOnClickListener {
-            // todo: open web privacy policy
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(AppModule.URL_PRIVACY_POLICY))
+            startActivity(intent)
         }
         try {
             val spannable = SpannableString(txtPrivacy.text ?: getString(R.string.sign_up_privacy))

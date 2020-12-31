@@ -1,17 +1,21 @@
 package app.rootstock.di.modules
 
 import app.rootstock.api.ChannelService
+import app.rootstock.api.VersionService
 import app.rootstock.api.WorkspaceService
 import app.rootstock.data.channel.ChannelDao
 import app.rootstock.data.channel.ChannelFavouriteDao
 import app.rootstock.data.db.AppDatabase
 import app.rootstock.data.network.CacheCleaner
 import app.rootstock.data.prefs.SharedPrefsController
+import app.rootstock.data.version.VersionDao
 import app.rootstock.data.workspace.WorkspaceDao
 import app.rootstock.ui.channels.ChannelRepository
 import app.rootstock.ui.channels.ChannelRepositoryImpl
 import app.rootstock.ui.channels.favourites.ChannelFavouriteRepository
 import app.rootstock.ui.channels.favourites.ChannelFavouriteRepositoryImpl
+import app.rootstock.ui.workspace.VersionRepository
+import app.rootstock.ui.workspace.VersionRepositoryImpl
 import app.rootstock.ui.workspace.WorkspaceRepository
 import app.rootstock.ui.workspace.WorkspaceRepositoryImpl
 import dagger.Module
@@ -50,6 +54,11 @@ object WorkspaceModule {
     }
 
     @Provides
+    fun provideVersionService(retrofit: Retrofit): VersionService {
+        return retrofit.create(VersionService::class.java)
+    }
+
+    @Provides
     fun provideWorkspaceRepository(
         workspaceDataSource: WorkspaceService,
         workspaceDao: WorkspaceDao,
@@ -72,12 +81,25 @@ object WorkspaceModule {
     }
 
     @Provides
+    fun provideVersionDao(database: AppDatabase): VersionDao {
+        return database.versionDao()
+    }
+
+    @Provides
     fun provideChannelRepository(
         channelService: ChannelService,
         channelDao: ChannelDao,
         spController: SharedPrefsController,
     ): ChannelRepository {
         return ChannelRepositoryImpl(channelService, channelDao, spController)
+    }
+
+    @Provides
+    fun provideVersionRepository(
+        versionDao: VersionDao,
+        versionService: VersionService
+    ): VersionRepository {
+        return VersionRepositoryImpl(versionDao, versionService)
     }
 
     @Provides

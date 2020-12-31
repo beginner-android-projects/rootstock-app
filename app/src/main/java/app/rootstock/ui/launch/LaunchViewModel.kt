@@ -10,7 +10,7 @@ import app.rootstock.ui.workspace.WorkspaceRepository
 import kotlinx.coroutines.launch
 
 class LaunchViewModel @ViewModelInject constructor(
-    private val repository: UserRepository,
+    repository: UserRepository,
 ) :
     ViewModel() {
 

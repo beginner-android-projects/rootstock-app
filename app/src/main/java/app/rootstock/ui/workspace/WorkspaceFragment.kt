@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.activity.OnBackPressedCallback
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -18,6 +19,7 @@ import app.rootstock.adapters.WorkspacePagerAdapter
 import app.rootstock.databinding.FragmentWorkspaceBinding
 import app.rootstock.ui.main.WorkspaceEvent
 import app.rootstock.ui.main.WorkspaceViewModel
+import app.rootstock.utils.isTablet
 import app.rootstock.utils.makeToast
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
@@ -91,19 +93,24 @@ class WorkspaceFragment : Fragment() {
             }
         }
 
-        binding.pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageScrolled(i: Int, positionOffset: Float, positionOffsetPx: Int) {
-                indicatorWidth ?: return
-                val params = binding.indicator.layoutParams as FrameLayout.LayoutParams
+        if (requireContext().isTablet()) {
+            binding.indicator.isVisible = false
 
-                val translationOffset: Float = (positionOffset + i) * indicatorWidth!!
-                params.leftMargin = translationOffset.toInt()
-                binding.indicator.layoutParams = params
-            }
+        } else {
+            binding.pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+                override fun onPageScrolled(i: Int, positionOffset: Float, positionOffsetPx: Int) {
+                    indicatorWidth ?: return
+                    val params = binding.indicator.layoutParams as FrameLayout.LayoutParams
 
-            override fun onPageSelected(i: Int) {}
-            override fun onPageScrollStateChanged(i: Int) {}
-        })
+                    val translationOffset: Float = (positionOffset + i) * indicatorWidth!!
+                    params.leftMargin = translationOffset.toInt()
+                    binding.indicator.layoutParams = params
+                }
+
+                override fun onPageSelected(i: Int) {}
+                override fun onPageScrollStateChanged(i: Int) {}
+            })
+        }
 
         viewModel.loadWorkspace(args.workspaceId)
         viewModel.setRoot(isAtRoot())
