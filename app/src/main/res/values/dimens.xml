@@ -9,6 +9,7 @@
     <dimen name="basic_small_margin">8dp</dimen>
     <dimen name="popup_elevation">10dp</dimen>
     <dimen name="padding_16">16dp</dimen>
+    <dimen name="padding_24">24dp</dimen>
     <dimen name="padding_8">8dp</dimen>
     <dimen name="padding_32">32dp</dimen>
     <dimen name="padding_top">20dp</dimen>

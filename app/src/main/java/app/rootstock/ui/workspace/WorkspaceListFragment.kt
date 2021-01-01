@@ -1,5 +1,6 @@
 package app.rootstock.ui.workspace
 
+import android.animation.ObjectAnimator
 import android.content.res.Resources
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,13 +9,16 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import app.rootstock.R
 import app.rootstock.adapters.WorkspaceListAdapter
 import app.rootstock.data.workspace.WorkspaceI
 import app.rootstock.databinding.FragmentWorkspaceListBinding
+import app.rootstock.ui.main.WorkspaceActivity
 import app.rootstock.ui.main.WorkspaceViewModel
 import app.rootstock.utils.InternetUtil
 import app.rootstock.utils.autoFitColumns
@@ -23,6 +27,8 @@ import app.rootstock.utils.makeToast
 import app.rootstock.views.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
@@ -87,6 +93,18 @@ class WorkspaceListFragment : Fragment() {
         viewModel.workspacesChildren.observe(viewLifecycleOwner) {
             if (it != null) {
                 if (::adapter.isInitialized) {
+                    if (it.isEmpty()) {
+                        lifecycleScope.launch {
+                            delay(500)
+                            if (viewModel.workspacesChildren.value.isNullOrEmpty()) {
+                                binding.noWorkspaces.isVisible = true
+                                binding.noWorkspacesText.isVisible = true
+                            }
+                        }
+                    } else {
+                        binding.noWorkspaces.isVisible = false
+                        binding.noWorkspacesText.isVisible = false
+                    }
                     adapter.submitList(it)
                     adapter.notifyDataSetChanged()
                 }

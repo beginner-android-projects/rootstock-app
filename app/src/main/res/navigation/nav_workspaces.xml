@@ -10,8 +10,7 @@
 
         <action
             android:id="@+id/action_workspace_fragment_self"
-            app:destination="@id/workspace_fragment"
-            app:enterAnim="@anim/fragment_open_enter" />
+            app:destination="@id/workspace_fragment" />
         <argument
             android:name="workspaceId"
             android:defaultValue="@null"
@@ -20,7 +19,6 @@
 
 
     </fragment>
-
 
 
 </navigation>

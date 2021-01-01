@@ -33,14 +33,14 @@
                 imageUrl="@{workspace.imageUrl}"
                 placeholder="@{@drawable/placeholder_workspace}"
                 android:layout_width="match_parent"
-                android:layout_height="110dp"
+                android:layout_height="90dp"
                 app:layout_constraintTop_toTopOf="parent">
 
             </ImageView>
 
-            <RelativeLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -49,30 +49,35 @@
                 <TextView
                     android:id="@+id/name"
                     style="@style/Text.Item.Workspace"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginStart="24dp"
                     android:layout_toStartOf="@id/edit_workspace"
                     android:ellipsize="marquee"
+                    android:lineSpacingMultiplier="1.2"
                     android:maxLines="2"
+                    android:paddingStart="@dimen/padding_16"
                     android:text="@{workspace.name}"
-                    android:textAlignment="center"
+                    android:textAlignment="viewStart"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/edit_workspace"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
                     tools:text="shablon text asdpmasd asmdpamodmpao moapsdmpas" />
 
                 <ImageView
                     android:id="@+id/edit_workspace"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
                     android:layout_marginEnd="@dimen/padding_8"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:clickable="true"
                     android:focusable="true"
-                    android:src="@drawable/ic_more" />
+                    android:src="@drawable/ic_more"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            </RelativeLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>

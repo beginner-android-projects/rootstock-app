@@ -12,7 +12,7 @@
     <string name="log_in">log in</string>
     <string name="login_failed">Unable to log in. Check your connection</string>
     <string name="invalid_email_or_password">Email or password is invalid</string>
-    <string name="intro_title">Hello!\n Weclome to Fraktus</string>
+    <string name="intro_title">Hello!\n Welcome to Fraktus</string>
     <string name="sign_up_privacy">signing up you agree to our privacy policy</string>
     <string name="signup_title">Start by\ncreating an account</string>
     <string name="login_title">Log in\nto existing account</string>
@@ -62,4 +62,8 @@
     <string name="error_channel_update_failed">Update failed :(</string>
     <string name="error_workspace_not_created">"workspace not created :("</string>
     <string name="error_channel_not_created">channel not created :(</string>
+    <string name="home">home</string>
+    <string name="settings">settings</string>
+    <string name="no_workspaces">you don’t have any\nworkspaces here yet</string>
+    <string name="no_channels">you don’t have any\nchannels here yet</string>
 </resources>

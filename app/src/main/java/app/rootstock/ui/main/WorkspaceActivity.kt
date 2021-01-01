@@ -9,12 +9,15 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import app.rootstock.R
@@ -99,7 +102,10 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
                         )
                         viewModel.navigateToRoot()
                     }
-                    R.id.menu_settings -> navigateToSettings()
+                    R.id.menu_settings -> {
+                        navigateToSettings()
+                        return@setOnNavigationItemSelectedListener false
+                    }
                 }
                 true
             }
@@ -166,19 +172,24 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
                 }
             }
         }
-        viewModel.isAtRoot.observe(this) {
-            if (it == true) {
+        viewModel.isAtRoot.observe(this) { atRoot ->
+            if (atRoot == true) {
                 binding.bottomAppBar.menu.setGroupCheckable(0, true, true)
                 try {
+                    if (favourite.isAdded) {
+                        if (favourite.view?.isVisible == false)
+                            favourite.view?.isVisible = true
+                        return@observe
+                    }
                     supportFragmentManager.commit {
-                        val fragment =
-                            FavouriteChannelsFragment.newInstance()
                         setReorderingAllowed(true)
-                        add(R.id.favourites_container, fragment)
+                        add(R.id.favourites_container, favourite)
+
                     }
                 } catch (e: Exception) {
                 }
-            } else if (it == false) {
+            } else if (atRoot == false) {
+                favourite.view?.isVisible = false
                 binding.bottomAppBar.menu.setGroupCheckable(0, false, true)
             }
         }
@@ -223,6 +234,9 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
             }
         }
     }
+
+    var favourite: Fragment = FavouriteChannelsFragment.newInstance()
+
 
     private fun changeFabBackground(position: Int) {
         val fab = findViewById<FloatingActionButton>(R.id.fab)
@@ -285,13 +299,13 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
 
 
     companion object {
-        const val ANIMATION_DURATION_FAB = 200L
+        const val ANIMATION_DURATION_FAB = 300L
         const val DIM_AMOUNT = 0.3f
 
-        // 15f - round dps for square button
-        // 50f - for circle button
-        const val BUTTON_ROUNDED_SQUARE_SIZE = 15f
-        const val BUTTON_ROUND_SIZE = 50f
+        // 18f - round dps for square button
+        // 45f - for circle button
+        const val BUTTON_ROUNDED_SQUARE_SIZE = 18f
+        const val BUTTON_ROUND_SIZE = 45f
         const val DIALOG_CHANNEL_CREATE = "DIALOG_CHANNEL_CREATE"
         const val DIALOG_WORKSPACE_CREATE = "DIALOG_WORKSPACE_CREATE"
         const val REQUEST_CODE_CHANNEL_ACTIVITY = 100

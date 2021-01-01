@@ -8,7 +8,7 @@ import app.rootstock.data.db.DateConverter
 import com.google.gson.annotations.SerializedName
 import java.util.*
 
-@Entity(tableName = "token", primaryKeys = ["access_token", "access_token"])
+@Entity(tableName = "token", primaryKeys = ["access_token"])
 data class Token constructor(
     @ColumnInfo(name = "access_token") @SerializedName("access_token") val accessToken: String,
     @ColumnInfo(name = "refresh_token") @SerializedName("refresh_token") val refreshToken: String,

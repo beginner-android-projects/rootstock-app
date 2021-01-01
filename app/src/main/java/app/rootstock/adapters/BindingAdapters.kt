@@ -1,21 +1,14 @@
 package app.rootstock.adapters
 
-import android.graphics.Color
 import android.graphics.drawable.Drawable
-import android.text.Layout
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import app.rootstock.R
 import app.rootstock.utils.GlideApp
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.textfield.TextInputLayout
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import retrofit2.http.Url
@@ -61,29 +54,6 @@ fun bindingChannelLastMessage(textView: TextView, lastMessage: String?) {
 @BindingAdapter("drawableInt")
 fun bindDrawableInt(imageView: ImageView, id: Int) {
     imageView.setImageResource(id)
-}
-
-
-@BindingAdapter("colorFilter")
-fun bindColorFilter(imageView: ImageView, color: String?) {
-    color ?: return
-    try {
-        val c = Color.parseColor(color)
-        imageView.setColorFilter(c)
-    } catch (e: Exception) {
-        e.printStackTrace()
-    }
-}
-
-@BindingAdapter("backgroundColor")
-fun bindColorBackground(view: View, color: String?) {
-    color ?: return
-    try {
-        val c = Color.parseColor(color)
-        view.setBackgroundColor(c)
-    } catch (e: Exception) {
-        e.printStackTrace()
-    }
 }
 
 @BindingAdapter("bindDate")

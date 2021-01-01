@@ -13,10 +13,12 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import app.rootstock.R
 import app.rootstock.adapters.ChannelListAdapter
@@ -36,6 +38,8 @@ import app.rootstock.views.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 @ExperimentalCoroutinesApi
@@ -159,9 +163,15 @@ class ChannelsListFragment : Fragment() {
     private fun setObservers() {
         viewModel.channels.observe(viewLifecycleOwner) {
             if (it != null && ::adapter.isInitialized) {
+                if (it.isEmpty()) {
+                    binding.noChannels.isVisible = true
+                    binding.noChannelsText.isVisible = true
+                } else {
+                    binding.noChannels.isVisible = false
+                    binding.noChannelsText.isVisible = false
+                }
                 adapter.submitList(it)
                 adapter.notifyDataSetChanged()
-
             }
         }
 
@@ -204,7 +214,8 @@ class ChannelsListFragment : Fragment() {
         // difference between screen size and anchor location on y axis
         val ydiff = Resources.getSystem().displayMetrics.heightPixels - location[1]
         // if popup is going to be close to bottom nav bar, force yoff in opposite direction
-        if (ydiff.toFloat() / Resources.getSystem().displayMetrics.heightPixels < 0.35f) yoff = -requireContext().convertDpToPx(180f).toInt()
+        if (ydiff.toFloat() / Resources.getSystem().displayMetrics.heightPixels < 0.35f) yoff =
+            -requireContext().convertDpToPx(180f).toInt()
 
         popupWindow.showAsDropDown(anchor, 0, yoff)
         popupWindow.setOnDismissListener { viewModel.editChannelStop() }
