@@ -305,7 +305,7 @@ class WorkspaceActivity : AppCompatActivity(), ReLogInObserver {
         // 18f - round dps for square button
         // 45f - for circle button
         const val BUTTON_ROUNDED_SQUARE_SIZE = 18f
-        const val BUTTON_ROUND_SIZE = 45f
+        const val BUTTON_ROUND_SIZE = 40f
         const val DIALOG_CHANNEL_CREATE = "DIALOG_CHANNEL_CREATE"
         const val DIALOG_WORKSPACE_CREATE = "DIALOG_WORKSPACE_CREATE"
         const val REQUEST_CODE_CHANNEL_ACTIVITY = 100
